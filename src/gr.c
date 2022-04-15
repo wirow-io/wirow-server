@@ -50,6 +50,8 @@ struct gr_env g_env = {
   },
 };
 
+static char *_admin_pw;
+
 static void _env_close(void) {
   pthread_mutex_destroy(&g_env.mtx);
   if (g_env.public_overlays) {
@@ -74,10 +76,11 @@ static void usage(const char *err) {
   printf("\t-c <cfg>\t\t.ini configuration file\n");
   printf("\t-d <dir>\t\tData files directory\n");
   printf("\t-n <domain>\t\tDomain name used to obtain Let's Encrypt certs\n");
-  printf("\t-l <ip>[@<pub ip>]\tListen IP or IP mapping if server behind NAT\n");
+  printf("\t-l <ip>[@<pub ip>]\tListen IP or IP mapping if your server behind NAT\n");
   printf("\t-p <port>\t\tServer network port number\n");
+  printf("\t-a <password>\t\tSet the specified password for `admin` account\n");
   printf("\t-s\t\t\tThe server runs behind an HTTPS proxy\n");
-  printf("\t-t\t\t\tCleanup all database data on start\n");
+  printf("\t-t\t\t\tCleanup a database data before start\n");
   printf("\t-v\t\t\tShow version and license information\n");
   printf("\t-h\t\t\tShow this help message\n");
   printf("\n");
@@ -642,7 +645,7 @@ static void _configure(int argc, char *argv[]) {
   RCA(g_env.impl.xstr = xstr = iwxstr_new(), exit);
 
   int ch;
-  while ((ch = getopt(argc, argv, "l:p:c:n:d:thvs")) != -1) {
+  while ((ch = getopt(argc, argv, "l:p:c:n:d:a:thvs")) != -1) {
     switch (ch) {
       case 'h':
         usage(0);
@@ -670,6 +673,9 @@ static void _configure(int argc, char *argv[]) {
         break;
       case 's':
         under_proxy = true;
+        break;
+      case 'a':
+        _admin_pw = strdup(optarg);
         break;
       case 'l': {
         if (strcmp(optarg, "auto") == 0) {
@@ -1207,6 +1213,13 @@ iwrc gr_init_noweb(int argc, char *argv[]) {
 
   RCC(rc, finish, _db_open(argc, argv));
   RCC(rc, finish, gr_db_init());
+
+  if (_admin_pw) {
+    RCC(rc, finish, gr_db_user_create("admin", _admin_pw, 0, 0, false));
+    free(_admin_pw);
+    _admin_pw = 0;
+  }
+
   RCC(rc, finish, iwn_poller_create(8, 4, &g_env.poller));
   RCC(rc, finish, iwstw_start("grstw", 10000, false, &g_env.stw));
   RCC(rc, finish, iwtp_start("grtp-", 8, 10000, &g_env.tp));

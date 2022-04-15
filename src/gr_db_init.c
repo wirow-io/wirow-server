@@ -89,6 +89,10 @@ finish:
   return rc;
 }
 
+iwrc gr_db_user_create(const char *name, const char *pw, int64_t salt, char *pwh, bool hidden) {
+  return _system_user_add(name, pw, salt, pwh, hidden);
+}
+
 static iwrc _apply_stage_3(void) {
   return ejdb_remove_collection(g_env.db, "sessions");
 }

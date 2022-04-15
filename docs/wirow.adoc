@@ -1,9 +1,5 @@
 :attributes:
-:revdate: 2021-04-23
-:revnumber: 1
-:authors: Anton Adamansky; Andrew Denisov
-:email: adamansky@softmotions.com
-:email_2: andy@softmotions.com
+:email: info@wirow.io
 :doctype: article
 :toc!:
 :sectnums:
@@ -20,13 +16,6 @@
 
 `Linux x86_64` server instance accessible by valid domain name (DNS) from the Internet.
 
-[IMPORTANT]
-====
-Wirow is a licensed software package for you to use.
-Please do not run the same server executable in different places simultaneously, as it will interfere
-with the license check process and you will have to re-issue the license and software package.
-====
-
 === Minimal Hardware Requirements for server
 
 * 2 CPU/vCPU cores
@@ -37,27 +26,21 @@ CAUTION: The CPU can be high if you are using the video recording function in ro
 
 === Requirements for Wirow client software
 
-[IMPORTANT]
-====
-Only desktop browsers are supported by Wirow at this time. We are working on adapting Wirow
-for mobile devices and planning this feature in the first public release of Wirow.
-====
-
 ==== Supported browsers
 
-* Chrome 74
-* Firefox 70
-* Safari 14
+* Chrome 74+
+* Firefox 70+
+* Safari 14+
 
-=== Permissions Checklist
+=== Network accessibility Checklist
 
-* The firewall allows all outgoing network connections as the server must have access
+* A firewall allows all outgoing network connections as the server must have access
 to the WebRTC clients and the license server.
 * The firewall allows inbound TCP/UDP connections to the following ports
 ** HTTP `80`, HTTPS `443`
 ** WebRTC RTP ports `10000..59999`
 
-The `wirow` executable must be run by a non-root user and allowed to listen on `80` and `443` network ports.
+A `wirow` executable must be run by a non-root user and allowed to listen on `80` and `443` network ports.
 To do this, simply run the following `setcap` command:
 
 [source,sh]
@@ -70,7 +53,7 @@ sudo /usr/sbin/setcap 'cap_net_bind_service=+ep' ./wirow
 Wirow server must be accessible via the `https` protocol. This is a mandatory requirement.
 Thus, you need to point your domain registrar's DNS server to the actual IP address of the Wirow server.
 
-=== Running the Server
+=== Running the Wirow Server
 
 [source]
 ----
@@ -81,13 +64,20 @@ Usage: ./wirow [options]
   -n <domain>         Domain name used to obtain Let's Encrypt certs
   -l <ip>[@<pub ip>]  Listen IP or IP mapping if server behind NAT
   -p <port>           Server network port number
-  -s	                The server runs behind an HTTPS proxy
+  -a <password>       Set the specified password for `admin` account
+  -s                  The server runs behind an HTTPS proxy
   -t                  Clear database data on start
-  -v	                Show version and license information
+  -v                  Show version and license information
   -h                  Show this help message
 ----
 
-=== Wirow with Real IP Address
+[NOTE]
+====
+Use `-a` option to set an initial password for `admin` account at first run.
+Later in `Admin UI` you may add other users and change your password.
+====
+
+=== Wirow server with Real IP Address
 
 [source,sh]
 ----
@@ -100,17 +90,17 @@ Example:
 ./wirow -n conferences.mycompany.com
 ----
 
-In this case, Wirow will automatically install the Let’s Encrypt HTTPS
-certificate and it will be available at `+https://conferences.mycompany.com+`
+In this case, Wirow automatically installs Let’s Encrypt HTTPS
+certificates for `+https://conferences.mycompany.com+`
 
-=== Wirow behind NAT
+=== Wirow server behind NAT
 
 [source,sh]
 ----
 ./wirow -n <domain name> -l '<private ip>@<public ip>'
 ----
 
-=== Wirow behind an HTTP proxy
+=== Wirow server behind an HTTP proxy
 
 [WARNING]
 ====
