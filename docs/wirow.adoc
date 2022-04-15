@@ -50,7 +50,7 @@ sudo /usr/sbin/setcap 'cap_net_bind_service=+ep' ./wirow
 
 === Domain Name (DNS)
 
-Wirow server must be accessible via the `https` protocol. This is a mandatory requirement.
+Wirow server must be accessible by `https` protocol. This is a mandatory requirement.
 Thus, you need to point your domain registrar's DNS server to the actual IP address of the Wirow server.
 
 === Running the Wirow Server

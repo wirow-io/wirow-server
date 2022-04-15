@@ -4,7 +4,7 @@
 
 * Linux, macOS or FreeBSD
 * Git
-* CMake 3.18+
+* CMake v3.18+
 * GNU Make, autoconf, automake, ninja
 * Nodejs v14+ and Yarn v1.22+
 * Clang C/C++ compiler v10+ or GCC v9+
