@@ -1,0 +1,56 @@
+string(TOLOWER ${CMAKE_BUILD_TYPE} GR_BUILD_TYPE)
+configure_file(lic_env.h.in ${CMAKE_BINARY_DIR}/include/lic_env.h)
+set(LICENSE_COMPLETE_FILE ${CMAKE_BINARY_DIR}/license_complete.txt)
+
+if(LICENSE_SSL_VERIFY)
+  set(LICENSE_SSL_VERIFY_FLAG 1)
+else()
+  set(LICENSE_SSL_VERIFY_FLAG 0)
+endif()
+
+if(GIT_REVISION)
+  set(APP_VERSION "${GIT_REVISION}")
+else()
+  set(APP_VERSION "dev")
+endif()
+
+message("APP_VERSION ${APP_VERSION}")
+
+set(LICENSE_REQUEST_FILE
+    ""
+    CACHE STRING "App license request file")
+
+if(LICENSE_REQUEST_FILE)
+  file(REAL_PATH ${LICENSE_REQUEST_FILE} LICENSE_REQUEST_PATH BASE_DIRECTORY
+       ${CMAKE_SOURCE_DIR})
+  add_custom_target(license_complete ALL DEPENDS ${LICENSE_COMPLETE_FILE})
+else()
+  set(LICENSE_REQUEST_PATH "")
+  add_custom_target(license_complete)
+endif()
+
+set(TARGETS)
+set(LIC_VARS_HEADER ${CMAKE_BINARY_DIR}/include/lic_vars.h)
+list(APPEND TARGETS ${LIC_VARS_HEADER})
+
+if(${LICENSE_REQUEST_PATH})
+  add_custom_command(OUTPUT ${LICENSE_REQUEST_PATH} COMMAND echo '')
+endif()
+
+add_custom_command(
+  OUTPUT ${TARGETS}
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/lic.js ${LICENSE_REQUEST_PATH}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/lic.js ${LIC_VARS_HEADER}
+          ${LICENSE_SSL_VERIFY_FLAG} ${APP_VERSION} ${LICENSE_REQUEST_PATH})
+
+add_custom_target(license DEPENDS ${TARGETS})
+
+add_custom_command(
+  OUTPUT ${LICENSE_COMPLETE_FILE}
+  DEPENDS grs ${LIC_VARS_HEADER} ${CMAKE_BINARY_DIR}/src/wirow
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMAND
+    node ${CMAKE_CURRENT_SOURCE_DIR}/lic_complete.js ${LICENSE_SSL_VERIFY_FLAG}
+    ${CMAKE_BUILD_TYPE} ${CMAKE_BINARY_DIR}/src/wirow ${LIC_VARS_HEADER}
+    ${LICENSE_COMPLETE_FILE} ${LICENSE_REQUEST_PATH})

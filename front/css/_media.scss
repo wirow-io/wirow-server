@@ -1,0 +1,142 @@
+.video-toolbar {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  bottom: 0;
+  top: 0;
+  right: 0.5rem;
+  margin: 0;
+}
+
+.video-footer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 3.875rem;
+  .caption {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: bottom;
+    font-family: 'button', 'main', sans-serif;
+    border-bottom-right-radius: 0.25rem;
+    padding: 0 0.8rem;
+    background-color: var(--color_button_onmedia_background, $color_button_onmedia_background);
+    line-height: 2rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    &.itsme {
+      background-color: #b1091d;
+    }
+    svg.icon {
+      vertical-align: middle;
+      margin: -0.25em 0.25em 0 -0.5em;
+      height: 1.25em;
+      width: 1.25em;
+    }
+  }
+}
+
+.video-overlay {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+}
+
+.toggled-onmedia {
+  fill: $color_toggled_icon !important;
+}
+
+.video-aspect-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  &:before {
+    display: block;
+    content: '';
+    width: 100%;
+    padding-top: (3 / 4) * 100%;
+  }
+  > .video-block {
+    background-color: #000000;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  video {
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    object-fit: cover;
+  }
+}
+
+.video-user-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  img {
+    display: block;
+    height: 80%;
+  }
+}
+
+.fullscreen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .video-aspect-wrapper {
+    &:before {
+      display: none;
+    }
+  }
+  .video-toolbar {
+    position: fixed;
+    bottom: 2rem;
+  }
+}
+
+.fullscreen,
+.meetingGridSolo {
+  .video-block {
+    background-color: inherit;
+    video {
+      width: initial;
+    }
+  }
+}
+
+.no-overflow,
+.meetingGridSolo {
+  .video-block {
+    overflow: hidden;
+  }
+}
+
+.audio-meter {
+  position: absolute;
+  top: -2px;
+  background-color: $color_palette7;
+  height: 4px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 1000;
+}
+
+video.mirror {
+  transform: scaleX(-1);
+}

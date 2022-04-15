@@ -1,0 +1,79 @@
+label.switch {
+  cursor: pointer;
+
+  .left {
+    margin-right: 0.5rem;
+    user-select: none;
+  }
+
+  .right {
+    margin-left: 0.5rem;
+    user-select: none;
+  }
+
+  .left,
+  .right {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: $color_form_text;
+  }
+
+  .title {
+    user-select: none;
+    font-size: 0.875rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: $color_form_text;
+  }
+
+  .wrapper {
+    display: flex;
+    align-items: center;
+  }
+  input {
+    font-size: 1rem;
+    opacity: 0;
+    margin-left: -1rem;
+  }
+  .main {
+    position: relative;
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 2.31rem;
+    border: solid 2px $color_input_box_shadow_base;
+    background-color: $color_input_text_background;
+
+    .knob {
+      position: absolute;
+      left: 0.25rem;
+      top: 0.25rem;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 1.375rem;
+      background-color: $color_input_switch_knob;
+      transition: left 0.2s ease-out;
+    }
+  }
+
+  input:checked + .main .knob {
+    left: 1.75rem;
+    background-color: $color_input_switch_knob_active;
+  }
+
+  input:focus.focus-visible + .main {
+    outline: none;
+    border: solid 2px $color_input_switch_border_focused;
+  }
+
+  .main.disabled {
+    filter: brightness($color_input_text_disabled_brightness) grayscale(100%);
+  }
+
+  &.disabled {
+    cursor: unset;
+    .left,
+    .right {
+      color: $color_form_text_disabled;
+    }
+  }
+}

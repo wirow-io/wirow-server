@@ -1,0 +1,96 @@
+.meeting {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 0fr;
+
+  .content-row {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 0fr auto;
+  }
+
+  .content-main {
+    position: relative;
+    .hsplit-second {
+      overflow: auto;
+      @extend .scrollbar;
+    }
+  }
+
+  .side-area {
+    width: 100%;
+    height: 100%;
+  }
+
+  .side-area-caption {
+    padding-top: 1rem;
+    text-align: center;
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+  }
+
+  .main-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .footer {
+    height: 1.5rem;
+    background-color: $color_footer_background;
+    border-top: 1px solid $color_split_divider_background;
+    padding: 0 0.5rem;
+    display: flex;
+    align-items: center;
+    color: #9f9f9f;
+    a {
+      color: #9f9f9f;
+      text-decoration: none;
+      &:hover {
+        color: scale-color(#9f9f9f, $lightness: +30%);
+      }
+    }
+  }
+}
+
+.meeting-grid-scroll-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.meeting-grid-scroll {
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.meeting-grid {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  justify-content: center;
+  align-content: center;
+  padding: 1rem 1rem 1rem calc(1rem - 4px); // 4px - HPanel divider width
+  gap: 1rem 1rem;
+  box-sizing: border-box;
+  min-width: 200px;
+}
+
+.meetingGridSolo {
+  grid-template-columns: repeat(auto-fit, minmax(270px, calc(100vh - 2rem))); // 2rem - compensate footer
+}
+
+.meeting-settings {
+  height: 100%;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  overflow-y: auto;
+  @extend .scrollbar;
+}

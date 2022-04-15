@@ -1,0 +1,173 @@
+.app-caption {
+  padding: 2rem 0 1rem 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  svg {
+    margin-right: 1rem;
+    fill: $color_palette9;
+  }
+  a,
+  span {
+    text-decoration: none;
+    font-family: 'main', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: $color_palette9;
+  }
+}
+
+.welcome-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  .logo {
+    display: flex;
+    align-items: center;
+    svg {
+      margin-right: 1rem;
+      fill: $color_palette9;
+    }
+    a,
+    span {
+      text-decoration: none;
+      font-family: 'main', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      user-select: none;
+      color: $color_palette9;
+    }
+  }
+  .user {
+    display: flex;
+    align-items: center;
+    span {
+      font-weight: bold;
+    }
+    svg {
+      margin-left: 1em;
+      fill: $color_palette9;
+    }
+  }
+}
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  button {
+    min-width: 15rem;
+    margin: 0.33rem 4px;
+    svg {
+      &.icon {
+        fill: $color_palette9;
+      }
+    }
+    @include adaptive(mob-2) {
+      width: 100%;
+    }
+  }
+}
+
+.welcome-holder {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 50vw; // TODO: review
+}
+
+.welcome-history {
+  text-align: left;
+  margin: 0 4px;
+}
+
+.welcome-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+  .spacer {
+    flex-grow: 2;
+  }
+}
+
+.welcome-input {
+  flex-grow: 1;
+  @include adaptive(mob-2) {
+    width: 100%;
+  }
+}
+
+#welcome-input {
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+  background-color: #171e29;
+}
+
+.welcome-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.65rem 0;
+  padding: 1rem 2rem;
+  line-height: 1.5;
+  border-radius: 10px;
+  background-color: $color_button_secondary;
+  cursor: pointer;
+
+  &::-moz-focus-inner {
+    border: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    outline: none !important;
+  }
+
+  &:focus:not(.focus-visible) {
+    box-shadow: unset;
+  }
+
+  &:hover {
+    background-color: scale-color($color_button_secondary, $lightness: +10%);
+  }
+  .controls {
+    display: flex;
+    padding-left: 0.5rem;
+    button {
+      border-width: 0;
+      border-radius: 0;
+      background-color: inherit;
+      padding: 0 0.4em;
+      svg {
+        fill: #474d59;
+      }
+      &:hover {
+        svg {
+          fill: $color_palette9;
+        }
+      }
+    }
+  }
+  .time {
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.welcome {
+  background-image: url(images/bg4.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100%;
+  overflow-y: auto;
+  @extend .scrollbar;
+  text-align: center;
+}

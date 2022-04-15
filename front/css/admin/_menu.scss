@@ -1,0 +1,58 @@
+.toggled-onmedia {
+  fill: $color_toggled_icon !important;
+}
+
+.menu {
+  background-color: $color_activiy_bar;
+  border-bottom: 1px solid $color_split_divider_background;
+  font-family: 'button', 'main', sans-serif;
+  > ul {
+    padding: 0 0 0 0.5em;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    li {
+      display: inline-block;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      &.logo {
+        margin-right: 0.75rem;
+        svg {
+          fill: $color_palette9;
+        }
+      }
+      &.left {
+        margin-right: auto;
+      }
+      &.text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &.right {
+        margin-left: auto;
+      }
+    }
+  }
+
+  button {
+    margin-top: 1px;
+    margin-bottom: 0;
+    padding: 0;
+    padding-right: 0.5em;
+    border-width: 0;
+    border-radius: 0;
+    background-color: inherit;
+    svg {
+      fill: #aeaeae;
+    }
+    &.active,
+    &:hover {
+      svg {
+        fill: $color_toggled_icon;
+      }
+    }
+  }
+}

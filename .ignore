@@ -1,0 +1,16 @@
+target/
+data/
+.vscode/
+front/yarn.lock
+extra/curl
+extra/CUnit
+extra/ejdb
+extra/mediasoup
+extra/libvpx
+extra/libuv
+extra/opus
+extra/ffmpeg
+extra/libdeflate
+extra/sentry
+extra/excalidraw
+

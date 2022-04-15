@@ -1,0 +1,21 @@
+.admin-panel {
+  .users-table {
+    width: 100%;
+    th {
+      text-align: center;
+    }
+    td {
+      vertical-align: middle;
+    }
+    td.right {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tbody {
+      box-shadow: none;
+    }
+    tr:hover td {
+      background-color: #181e28;
+    }
+  }
+}

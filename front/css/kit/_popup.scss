@@ -1,0 +1,34 @@
+.popup {
+  position: fixed;
+  display: none;
+  z-index: 10;
+  border-radius: 4px;
+  border: 1px solid $color_popup_boder;
+  background-color: $color_popup_background;
+  box-sizing: border-box;
+  &:focus {
+    outline: none !important;
+  }
+  ul {
+    margin: 0;
+    padding: 0.75rem 0;
+    li {
+      font-size: 1.125rem;
+      line-height: 1.2;
+      cursor: pointer;
+      list-style-type: none;
+      margin: 0 ;
+      padding: 0.5rem 1.5rem;
+      color: $color_input_text;
+      &:hover {
+        background-color: $color_box_background_primary;
+      }
+      &:focus {
+        background-color: $color_box_background_primary;
+        outline: none !important;
+      }
+    }
+  }
+}
+
+

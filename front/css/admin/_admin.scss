@@ -1,0 +1,42 @@
+.admin-wrapper {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 0fr 1fr 0fr;
+}
+
+.admin-footer {
+  height: 1.375rem;
+  background-color: $color_footer_background;
+  border-top: 1px solid $color_split_divider_background;
+}
+
+.admin-panel-holder {
+  text-align: center;
+  height: 100%;
+}
+
+.admin-panel {
+  height: 100%;
+  background-color: $color_activiy_bar;
+  display: inline-block;
+  text-align: left;
+  min-width: 50%;
+  @media (max-width: 1200px) {
+    min-width: 60%;
+  }
+  @media (max-width: 800px) {
+    min-width: 75%;
+  }
+  @media (max-width: 640px) {
+    min-width: 90%;
+  }
+  @media (max-width: 480px) {
+    min-width: 100%;
+  }
+  .list {
+    height: calc(100% - 3.45rem); // Height of searchbox
+    overflow: auto;
+    @extend .scrollbar;
+  }
+}

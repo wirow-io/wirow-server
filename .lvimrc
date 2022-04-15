@@ -1,0 +1,34 @@
+" Local vim rc
+
+if exists('g:build_dir')
+  finish
+endif
+
+let g:build_type = get(g:, 'build_type', 'Debug')
+let g:build_tests = get(g:, 'build_tests', 'ON')
+let g:cc = get(g:, 'cc', 'clang')
+let g:cxx = get(g:, 'cxx', 'clang++')
+
+let g:root_dir = g:localvimrc_script_dir_unresolved
+let $ROOT_DIR = g:root_dir
+let $UNCRUSTIFY_CONFIG = g:root_dir.'/uncrustify.cfg'
+
+let g:build_dir = g:root_dir.'/build'
+let &g:makeprg = 'cd '.g:build_dir.' && ninja -j 4'
+let g:prettier#exec_cmd_path = g:root_dir."/front/node_modules/.bin/prettier"
+
+packadd termdebug
+let g:termdebug_wide=1
+
+nnoremap <leader>cc :call asyncrun#run('',
+        \ {'mode':'bang','cwd':g:build_dir,'save':2},
+        \ 'cmake .. -G Ninja -DCMAKE_BUILD_TYPE='.g:build_type.' -DBUILD_TESTS=ON -DIW_EXEC=ON -DCMAKE_CXX_COMPILER='.g:cxx.' -DCMAKE_C_COMPILER='.g:cc.' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCREATE_DEV_USER=ON')
+        \<CR>
+
+augroup lvimrc
+  autocmd!
+  autocmd BufWritePost ${ROOT_DIR}/docs/*.adoc
+       \ exec ':AsyncRun -silent '.expand('<afile>:h').'/generate.sh '.shellescape(expand('<afile>:t'))
+augroup END
+
+call LocalVimRCFinish()

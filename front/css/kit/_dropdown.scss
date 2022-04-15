@@ -1,0 +1,19 @@
+.dd-host {
+  // display: inline-block;
+  position: relative;
+  .dd-cont {
+    max-height: 0;
+    overflow: visible;
+  }
+  .dd {
+    z-index: 10;
+    position: absolute;
+    top: 100%;
+    min-width: 100%;
+    border-radius: 4px;
+    border: 1px solid $color_popup_boder;
+    background-color: $color_popup_background;
+    overflow: auto;
+    box-sizing: border-box;
+  }
+}

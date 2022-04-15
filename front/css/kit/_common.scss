@@ -1,0 +1,50 @@
+html {
+  overflow: hidden;
+  color: $color_text;
+  background-color: $color_background;
+  font-family: 'main', sans-serif;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+.expand {
+  height: 100%;
+  width: 100%;
+}
+
+.flex-expand {
+  flex: 1 1 auto;
+}
+
+.icon {
+  fill: $color_text_white;
+  &.inline {
+    vertical-align: bottom;
+  }
+  &.clickable {
+     cursor: pointer;
+  }
+}
+
+.text-weak {
+  color: scale-color($color_text_white, $lightness: -20%);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.excluded {
+  display: none !important;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+a {
+  color: $color_palette3;
+}

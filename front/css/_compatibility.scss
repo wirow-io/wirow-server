@@ -1,0 +1,19 @@
+.compatibility {
+  height: 100%;
+  overflow-y: auto;
+  @extend .scrollbar;
+  text-align: center;
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    box-sizing: border-box;
+    vertical-align: middle;
+  }
+  .holder {
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    margin-top: Min(10vh, 4rem);
+  }
+}

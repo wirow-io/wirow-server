@@ -1,0 +1,36 @@
+.h-split-pane {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 0fr 0fr 1fr;
+  grid-auto-rows: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  .collapsed {
+    width: 0 !important;
+  }
+  .width-smooth {
+    transition: width 100ms ease-out;
+  }
+}
+.divider {
+  cursor: ew-resize;
+  position: relative;
+  left: 0px;
+  width: 4px;
+  //margin-left: -2px;
+  //margin-right: -2px;
+  &.noresize {
+    cursor: auto;
+    background-color: transparent;
+  }
+}
+
+.h-split-pane,
+.v-split-pane {
+  .divider {
+    background-color: $color_split_divider_background;
+  }
+}

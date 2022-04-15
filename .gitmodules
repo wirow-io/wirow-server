@@ -1,0 +1,30 @@
+[submodule "extra/ejdb"]
+	path = extra/ejdb
+	url = https://github.com/Softmotions/ejdb
+[submodule "extra/ffmpeg"]
+	path = extra/ffmpeg
+	url = https://git.ffmpeg.org/ffmpeg.git
+[submodule "extra/libvpx"]
+	path = extra/libvpx
+	url = https://chromium.googlesource.com/webm/libvpx.git
+[submodule "extra/opus"]
+	path = extra/opus
+	url = https://gitlab.xiph.org/xiph/opus.git
+[submodule "extra/libdeflate"]
+	path = extra/libdeflate
+	url = https://github.com/ebiggers/libdeflate
+[submodule "extra/excalidraw"]
+	path = extra/excalidraw
+	url = https://github.com/wirow-io/wirow-excalidraw.git
+[submodule "extra/sentry"]
+	path = extra/sentry
+	url = https://github.com/getsentry/sentry-native.git
+[submodule "extra/mediasoup"]
+	path = extra/mediasoup
+	url = https://github.com/versatica/mediasoup
+[submodule "extra/CUnit"]
+	path = extra/CUnit
+	url = https://github.com/wirow-io/wirow-cunit.git
+[submodule "extra/curl"]
+	path = extra/curl
+	url = https://github.com/wirow-io/wirow-curl.git

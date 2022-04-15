@@ -1,0 +1,240 @@
+$button_border_radius: 4px;
+
+button {
+  position: relative;
+  align-items: center;
+  background-color: $color_button_backround;
+  border-radius: $button_border_radius;
+  border: solid 1px transparent;
+  box-sizing: border-box;
+  color: $color_text_button;
+  cursor: pointer;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  font: inherit;
+  font-family: 'button', 'main', sans-serif;
+  justify-content: center;
+  margin: 0.5em 2px;
+  padding: 0 0.5em;
+  outline: none;
+
+  .text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &::-moz-focus-inner {
+    border: none;
+  }
+
+  &:active {
+    filter: saturate(150%);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    outline: none !important;
+  }
+
+  &:focus:not(.focus-visible) {
+    box-shadow: unset;
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+
+  &:hover {
+    background-color: scale-color($color_button_backround, $lightness: +10%);
+  }
+
+  &.outline {
+    background-color: transparent;
+    border: 1px solid scale-color($color_text_white, $lightness: -20%);
+    &:hover {
+      border: 1px solid $color_text_white;
+    }
+  }
+
+  &.outline-warning {
+    background-color: transparent;
+    border: 1px solid scale-color($color_palette7, $lightness: -20%);
+    &:hover {
+      border: 1px solid $color_palette7;
+    }
+  }
+
+  &.outline-noborder {
+    background-color: transparent;
+  }
+
+  &.secondary {
+    background-color: $color_button_secondary;
+    &:hover {
+      background-color: scale-color($color_button_secondary, $lightness: +10%);
+    }
+  }
+
+  &.warning {
+    background-color: $color_button_warning;
+    &:hover {
+      background-color: scale-color($color_button_warning, $lightness: +10%);
+    }
+  }
+
+  &.error {
+    background-color: $color_button_error;
+    &:hover {
+      background-color: scale-color($color_button_error, $lightness: +10%);
+    }
+  }
+
+  &.green {
+    background-color: $color_button_green;
+    &:hover {
+      background-color: scale-color($color_button_green, $lightness: +10%);
+    }
+  }
+
+  &.dialog {
+    min-width: 5rem;
+  }
+
+  & {
+    font-size: 1rem;
+    height: 2rem;
+  }
+
+  &.s {
+    font-size: 0.8rem;
+    height: 1.5rem;
+  }
+
+  &.x {
+    font-size: 1.375rem;
+    height: 2.75rem;
+  }
+
+  &.xx {
+    font-size: 1.375rem;
+    height: 4.5rem;
+    padding: 0 3rem;
+    border-radius: 10px;
+  }
+
+  svg {
+    &.icon {
+      fill: $color_text_button;
+    }
+
+    &.with-text {
+      padding-right: 0.5em;
+    }
+
+    &.icon-text {
+      fill: $color_text_button;
+    }
+  }
+
+  &.onmedia {
+    background-color: var(--color_button_onmedia_background, $color_button_onmedia_background);
+    svg {
+      fill: $color_text_button;
+    }
+  }
+
+  &.transparent {
+    background-color: transparent;
+  }
+
+  // &.error,
+  // &.warning,
+  // &.green {
+  //   svg {
+  //     &.icon {
+  //       fill: $color_text_white;
+  //     }
+  //   }
+  // }
+
+  &.s1 {
+    padding: 0;
+    border: 0;
+    background: linear-gradient(to right, $color_palette2 70%, transparent 30%);
+    // &:hover {
+    //   background: linear-gradient(to right, scale-color($color_palette2, $lightness: +10%) 70%, transparent 30%);
+    // }
+    svg {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+      &.icon {
+        fill: $color_text_button;
+      }
+    }
+
+    .text {
+      display: block;
+      height: 100%;
+      width: 100%;
+      line-height: 2rem;
+      text-align: left;
+      padding: 0 0.5em;
+      background-color: $color_button_backround;
+      border-top-right-radius: $button_border_radius;
+      border-bottom-right-radius: $button_border_radius;
+      &:hover {
+        background-color: scale-color($color_button_backround, $lightness: +10%);
+      }
+    }
+
+    &.x .text {
+      line-height: 2.75rem;
+    }
+
+    &.xx .text {
+      line-height: 3.5rem;
+    }
+
+    &.secondary {
+      .text {
+        background-color: $color_button_secondary;
+        &:hover {
+          background-color: scale-color($color_button_secondary, $lightness: +10%);
+        }
+      }
+    }
+  }
+
+  &.disabled {
+    filter: brightness($color_input_button_disabled_brightness) grayscale(100%);
+    cursor: inherit;
+    pointer-events: none;
+  }
+
+  &.non-clickable {
+    cursor: auto;
+  }
+}
+
+.attention {
+  position: absolute;
+  width: 0.6rem;
+  height: 0.6rem;
+  top: -0.3rem;
+  right: -0.3rem;
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+.attention-color {
+  fill: $color_palette7 !important;
+}
+
+@keyframes -global-blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

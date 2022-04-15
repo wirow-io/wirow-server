@@ -1,0 +1,120 @@
+#modal-holder {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#modal-overlay {
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  background-color: $color_modal_overlay;
+}
+
+#modal-area-holder {
+  z-index: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow-y: auto;
+  @extend .scrollbar;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    //height: 100%;
+    box-sizing: border-box;
+  }
+}
+
+#modal-area {
+  display: inline-block;
+  vertical-align: top;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  white-space: normal;
+  margin-top: Min(10vh, 4rem);
+
+  > .box {
+    background-color: $color_modal_background;
+    //border: #000000 0.5px solid;
+    > .slot {
+      width: 100%;
+    }
+  }
+
+  h1 {
+    font-size: 1.8em;
+    margin: 0.5em 0;
+  }
+
+  @media (max-width: 640px) {
+    max-width: 100vw;
+  }
+}
+
+.modal-full-width {
+  width: calc(100vw - 4rem);
+  @media (max-width: 640px) {
+    width: 90vw;
+  }
+  @media (max-width: 480px) {
+    width: calc(100vw - 1rem);
+  }
+}
+
+.modal-medium-width {
+  width: calc(40vw - 4rem);
+  @media (max-width: 1600px) {
+    width: calc(50vw - 4rem);
+  }
+  @media (max-width: 1200px) {
+    width: calc(70vw - 4rem);
+  }
+  @media (max-width: 800px) {
+    width: calc(80vw - 4rem);
+  }
+  @media (max-width: 710px) {
+    width: calc(85vw - 4rem);
+  }
+  @media (max-width: 640px) {
+    width: 90vw;
+  }
+  @media (max-width: 480px) {
+    width: calc(100vw - 1rem);
+  }
+}
+
+.modal-small-width {
+  width: calc(20vw - 4rem);
+  @media (max-width: 1600px) {
+    width: calc(30vw - 4rem);
+  }
+  @media (max-width: 1200px) {
+    width: calc(45vw - 4rem);
+  }
+  @media (max-width: 800px) {
+    width: calc(55vw - 4rem);
+  }
+  @media (max-width: 640px) {
+    width: 90vw;
+  }
+  @media (max-width: 480px) {
+    width: calc(100vw - 1rem);
+  }
+}

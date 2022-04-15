@@ -1,0 +1,93 @@
+$color_palette0: #1a212d; // Main background
+$color_palette1: #171d26;
+$color_palette2: #94ae3f;
+$color_palette3: #ebebeb;
+$color_palette4: #323d50;
+$color_palette5: #243754;
+$color_palette6: #b1091d;
+$color_palette7: #ffaa00;
+$color_palette8: #4b9334;
+$color_palette9: #00c365;
+
+$color_toggled_icon: $color_palette7;
+$color_hover_icon: $color_palette3;
+
+$color_scrollbar_bg: rgba(
+  $color: #000000,
+  $alpha: 0.4,
+);
+$color_scrollbar_thumb: #43679d;
+
+$color_background: $color_palette0;
+$color_text_white: $color_palette3;
+
+$color_text_black: #000000;
+$color_text: $color_text_white;
+$color_text_button: $color_text_white;
+
+$color_button_backround: $color_palette5;
+$color_button_onmedia_background: rgba(
+  $color: #000000,
+  $alpha: 0.5,
+);
+$color_button_secondary: #232935;
+$color_button_warning: #c87500;
+$color_button_error: $color_palette6;
+$color_button_green: $color_palette8;
+
+$color_modal_overlay: #000000;
+$color_modal_background: $color_palette1;
+
+$color_box_background: #000000;
+$color_box_icon_fill: $color_palette3;
+$color_box_icon_fill_danger: $color_text_white;
+$color_box_background_hover: #11141b;
+$color_box_background_error: $color_palette6;
+$color_box_background_primary: $color_palette5;
+$color_box_background_secondary: $color_palette4;
+$color_box_background_warning: #c87500;
+
+$color_tooltip_background: #566a8a;
+$color_tooltip_background_error: $color_palette6;
+$color_tooltip_background_warning: $color_tooltip_background;
+
+$color_input_icon_warning: $color_palette7;
+$color_input_icon_error: #e60b28;
+$color_input_icon_success: $color_palette9;
+
+$color_input_title_text: #b4b4b4;
+$color_input_title_text_warning: $color_input_icon_warning;
+$color_input_title_text_error: $color_input_icon_error;
+
+$color_input_text: #dcdcdc;
+$color_input_text_background: #0c0f14;
+$color_input_text_disabled_brightness: 0.3;
+$color_input_text_selection: $color_palette5;
+
+$color_input_button_disabled_brightness: 0.4;
+
+$color_input_box_shadow_base: #676b6b;
+$color_input_box_shadow_error: $color_palette6;
+
+$color_input_switch_knob: $color_input_box_shadow_base;
+$color_input_switch_knob_active: $color_palette8;
+$color_input_switch_border_focused: scale-color($color_input_box_shadow_base, $lightness: +30%);
+
+$color_input_radio_border: $color_input_box_shadow_base;
+$color_input_radio_mark: $color_input_switch_knob_active;
+$color_input_radio_mark_error: $color_palette6;
+$color_input_radio_border_active: scale-color($color_input_radio_border, $lightness: +30%);
+$color_input_radio_border_error: $color_input_box_shadow_error;
+
+$color_form_text: $color_palette3;
+$color_form_text_disabled: scale-color($color_text_white, $lightness: -30%);
+
+$color_split_divider_background: #1b222c;
+
+// Popup / Dropdown
+$color_popup_boder: $color_palette4;
+$color_popup_background: scale-color($color_modal_background, $lightness: -30%);
+
+// App
+$color_activiy_bar: #0d1015;
+$color_footer_background: $color_activiy_bar;

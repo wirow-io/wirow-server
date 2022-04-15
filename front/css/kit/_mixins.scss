@@ -1,0 +1,31 @@
+@mixin adaptive($size) {
+  @if $size == mob {
+    @media (max-width: 1023px) {
+      @content;
+    }
+  } @else if $size == mob-2 {
+    @media (max-width: 766px) {
+      @content;
+    }
+  } @else if $size == mob-big {
+    @media (min-width: 767px) and (max-width: 1023px) {
+      @content;
+    }
+  } @else if $size == tablet {
+    @media (min-width: 1024px) and (max-width: 1365px) {
+      @content;
+    }
+  } @else if $size == desktop-small {
+    @media (min-width: 1366px) and (max-width: 1680px) {
+      @content;
+    }
+  } @else if $size == desktop-big {
+    @media (min-width: 1921px) {
+      @content;
+    }
+  } @else if $size == not-mob {
+    @media (min-width: 1024px) {
+      @content;
+    }
+  }
+}

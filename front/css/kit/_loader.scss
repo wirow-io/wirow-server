@@ -1,0 +1,50 @@
+.loader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &.with-text {
+    padding-right: 0.2em;
+  }
+
+  .icon {
+    animation: rotate 2s linear infinite;
+    transform-origin: center;
+  }
+
+  .path {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    animation: dash 1.5s ease-in-out infinite;
+    stroke: #ebebeb;
+    stroke-linecap: round;
+  }
+
+  .caption {
+    margin-top: 2em;
+  }
+
+  @keyframes -global-rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes -global-dash {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -35px;
+    }
+
+    100% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -124px;
+    }
+  }
+}

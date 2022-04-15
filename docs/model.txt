@@ -1,0 +1,97 @@
+
+meta:  Sessions and other meta
+
+sessions:
+  __id__: session id
+  __ts__: session update/creation time
+  __user__?: username
+  __perms__?: user permissions session key
+  ... other session keys
+
+acme: ACME protocol certs / state
+  - domain    {string}   Domain name
+  - endpoint  {string}   Acme endpoint URL
+  - ets       {int}    Certificate expiration time (seconds)
+  - cts       {int}    Certificate activation time (seconds)
+  - kid       {string?}  Account URL
+  - certs     {string?}  PEM encoded certs chain
+  - skey      {string?}  PEM encoded site private key
+  - akey      {string?}  PEM encoded account key
+
+tickets: WS connection temporal tickets
+  - name        {string, uniq}    Ticket ID
+  - session_id  {string}          User session ID
+  - ts          {number}          Ticket creating timestamp
+
+users: Greenrooms registered users
+  - name        {string, uniq}
+  - uuid        {string, uniq}   User uuid
+  - guest       {boolean}        Is guest user
+  - ctime       {int, indexed} User creation / update time
+  - pwh         {string?}        SHA256 password hash
+  - salt        {int?}         Password hash salt
+  - keywords[]  {string, indexed}
+  - removed     {boolean | undefined} Is user removed, undefined if user is created with CREATE_DEV_USER
+  - perms[]     {string}         String array of user permissions
+  - rooms[] {                    Rooms user has been participated
+              uuid: string  // Room uuid
+              ts:   int   // Time
+              name: string  // Room name
+            }
+
+joins: History of user participation (room join events) in rooms
+  - k {string, uniq} `<user_id>:<cid>` Composite key
+  - u {string} Room uuid
+  - t {int}  Timestamp
+  - o {bool}   If user is a room owner
+
+rooms: Meeting rooms
+  - uuid     {string, uniq}
+  - cid      {string, indexed} Room session ID or original room uuid if this doc persisted to history
+  - session  {boolean?}        If true this document is the room session backup
+  - name     {string}          Room name
+  - flags    {int}           Room flags
+  - ctime    {int}           Room creation time
+  - recf     {string?}         File name of the main room video recording if present
+  - events [
+       [event_name, event_time, member_id?, extra_data?],
+
+       ["created",  event_time]
+       ["closed",   event_time]
+       ["renamed",  event_time, old_name, new_name]
+       ["joined",   event_time, member_id, member_uuid, member_name]
+       ["left",     event_time, member_id, member_name]
+       ["message",  event_time, member_id, member_name, recipient_id, message]
+       ["recstart", event_time],
+       ["recstop",  event_time],
+    ]
+  }
+
+lic: License state. Single document with id = 1
+  - ick   {string}    Initial client key hardcoded in binary
+  - ck    {string}    Current license encryption key (Base64 encoded string)
+
+tasks: Persistent durable tasks
+  - ts      {int}   Task timestamp
+  - status  {int}   Task status: 0 - not started, 1 - completed successfully, -1 - failed
+  - type    {int}   Task handler type
+  - hook    {string?} Optional task hook (key to access task instance)
+  - log     {string?} Task execution log
+  - spec    {}        Freestyle task spec
+
+files: Uploaded files
+  - uuid     {string, uniq, indexed} Stored file uuid 
+  - filename {string}                Original filename
+  - owner    {int64}                 Owner user id
+  - ctime    {int64}                 File uploading time
+  - ctype    {string}                Content type
+
+gauges: Various gauge telemetry displayed in admin dashboard
+  - t       {int}   Timestamp: seconds since epoch
+  - g       {int}   Gauge type
+  - l       {int}   Gauge level
+
+whiteboards: Whiteboards saved data
+  - cid      {string, uniq} Whiteboard id, associated with room cid
+  - ctime    {int64}        Whiteboard update time
+  - elements {json}         Whiteboard saved data

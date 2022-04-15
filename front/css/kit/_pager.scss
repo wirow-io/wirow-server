@@ -1,0 +1,25 @@
+.pager {
+  margin-top: 0.5rem;
+  white-space: normal;
+
+  &.lead {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    user-select: none;
+    text-decoration: none;
+    color: $color_text_white;
+    &.knob {
+     float: right;
+     font-weight: bold;
+    }
+    &.selected {
+      pointer-events: none;
+      cursor: default;
+      font-weight: bold;
+      color: $color_palette7;
+    }
+  }
+}

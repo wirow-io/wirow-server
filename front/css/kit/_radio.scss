@@ -1,0 +1,69 @@
+label.radio {
+  display: flex;
+  align-items: center;
+
+  .main {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    border: 2px solid $color_input_radio_border;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    background-color: $color_input_text_background;
+  }
+
+  .mark {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: $color_input_radio_mark;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  input {
+    cursor: pointer;
+    opacity: 0;
+    margin-right: -1rem;
+
+    &:checked + .main .mark {
+      opacity: 1;
+    }
+
+    &:focus.focus-visible + .main .holder {
+      border-color: $color_input_radio_border_active;
+    }
+  }
+
+  .main.error {
+    color: $color_input_radio_border_error;
+    .holder {
+      border-color: $color_input_radio_border_error;
+    }
+    .mark {
+      background-color: $color_input_radio_mark_error;
+    }
+  }
+
+  .main.disabled {
+    color: $color_form_text_disabled;
+    .holder {
+      filter: brightness($color_input_text_disabled_brightness) grayscale(100%);
+    }
+  }
+}

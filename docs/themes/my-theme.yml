@@ -1,0 +1,46 @@
+extends: base
+font:
+  catalog:
+    Hack:
+      normal: Hack-Regular.ttf
+      bold: Hack-Bold.ttf
+      italic: Hack-Italic.ttf
+      bold_italic: Hack-BoldItalic.ttf
+    DejaVuSerif:
+      normal: DejaVuSerif.ttf
+      bold: DejaVuSerif-Bold.ttf
+      italic: DejaVuSerif-Italic.ttf
+      bold_italic: DejaVuSerif-BoldItalic.ttf
+    Roboto:
+      normal: Roboto-Regular.ttf
+      bold: Roboto-Bold.ttf
+      italic: RobotoMono-Italic.ttf
+      bold_italic: Roboto-BoldItalic.ttf
+
+base:
+  font-family: DejaVuSerif
+  font-size: 11
+
+heading:
+  font_family: Roboto
+  font_style: normal
+
+lead:
+  font_size: 11
+  line_height: 1.15
+
+literal:
+  font_color: #b12146
+  font_family: Hack
+
+code:
+  font_color: #333333
+  font_family: Hack
+  background_color: #f7f7f8
+
+title_page:
+  align: left
+  title_font_size: 24
+  title_font_family: Roboto
+  authors:
+    content: "{author} <{email}>"

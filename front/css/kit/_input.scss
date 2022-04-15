@@ -1,0 +1,135 @@
+.input {
+  position: relative;
+
+  input,
+  textarea {
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    font-size: 1rem;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    outline: none;
+    padding: 1.5rem 1rem 1rem 1rem;
+    line-height: 1.15;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    color: $color_input_text;
+    background-color: $color_input_text_background;
+
+    &.no-rounded {
+      border-radius: 0;
+    }
+
+    &.no-title {
+      padding: 1.5rem 1rem;
+    }
+
+    &.normal {
+      padding: 1rem;
+    }
+
+    &.small {
+      padding: 0.5rem 1rem;
+    }
+
+    &.has-right-side {
+      padding-right: 3rem;
+    }
+
+    &.has-left-side {
+      padding-left: 3rem;
+    }
+
+    &::placeholder {
+      opacity: 0.5;
+      color: $color_text_white;
+    }
+
+    &::selection {
+      background-color: rgba($color: $color_input_text_selection, $alpha: 0.99);
+    }
+
+    &:focus {
+      box-shadow: inset 0px 0px 2px 1px $color_input_box_shadow_base;
+    }
+
+    &.error-border {
+      box-shadow: inset 0px 0px 2px 1px $color_input_box_shadow_error;
+      &:focus {
+        box-shadow: inset 0px 0px 2px 1px scale-color($color_input_box_shadow_error, $lightness: +20%);
+      }
+    }
+  }
+
+  &.disabled {
+    pointer-events: none;
+    filter: brightness($color_input_text_disabled_brightness) grayscale(100%);
+  }
+
+  > .title {
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
+    font-size: 0.87rem;
+    line-height: 1;
+    color: $color_input_title_text;
+    user-select: none;
+    font-weight: 700;
+
+    //white-space: nowrap;
+    // &.required {
+    //   margin-right: 1rem
+    // }
+
+    &.required::after {
+      content: '\2217';
+      position: absolute;
+      display: inline-block;
+      right: -0.8rem;
+      top: 0.2rem;
+      font-size: 1em;
+      line-height: 0;
+      color: $color_input_title_text_error;
+    }
+  }
+
+  > .error {
+    color: $color_input_title_text_error;
+  }
+
+  > .warning {
+    color: $color_input_title_text_warning;
+  }
+
+  > .after {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  > .before {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.input-icon {
+  fill: $color_input_title_text;
+}
+
+.input-icon-error {
+  fill: $color_input_icon_error;
+}
+
+.input-icon-warning {
+  fill: $color_input_icon_warning;
+}
+
+.input-icon-success {
+  fill: $color_input_icon_success;
+}

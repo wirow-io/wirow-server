@@ -1,0 +1,1 @@
+export default 'm2 6v18h13v2h-5v2h12v-2h-5v-2h13v-18zm2 2h24v14h-24z';

@@ -1,0 +1,24 @@
+--- a/linux_syscall_support.h
++++ b/linux_syscall_support.h
+@@ -142,11 +142,13 @@ extern "C" {
+ #pragma push_macro("lstat64")
+ #pragma push_macro("pread64")
+ #pragma push_macro("pwrite64")
++#pragma push_macro("getdents64")
+ #undef stat64
+ #undef fstat64
+ #undef lstat64
+ #undef pread64
+ #undef pwrite64
++#undef getdents64
+ 
+ #if defined(__ANDROID__) && defined(__x86_64__)
+ // A number of x86_64 syscalls are blocked by seccomp on recent Android;
+@@ -4524,6 +4526,7 @@ struct kernel_statfs {
+ #pragma pop_macro("lstat64")
+ #pragma pop_macro("pread64")
+ #pragma pop_macro("pwrite64")
++#pragma pop_macro("getdents64")
+ 
+ #if defined(__cplusplus) && !defined(SYS_CPLUSPLUS)
+ }

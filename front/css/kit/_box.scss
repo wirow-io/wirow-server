@@ -1,0 +1,120 @@
+.box {
+  background-color: $color_box_background;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding: 1em;
+  border-radius: 4px;
+  margin: 1em 2px;
+  justify-content: start;
+  align-items: center;
+  white-space: normal;
+
+  &::-moz-focus-inner {
+    border: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    outline: none !important;
+  }
+
+  &:focus:not(.focus-visible) {
+    box-shadow: unset;
+  }
+
+  .slot {
+    flex-grow: 1;
+  }
+
+  .close {
+    float: right;
+    cursor: pointer;
+    user-select: none;
+    color: inherit;
+    font-size: 1.2em;
+    padding-left: 0.5em;
+    + * {
+      clear: right;
+    }
+  }
+
+  &.icon-box-before,
+  &.icon-box-after {
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    fill: $color_box_icon_fill;
+  }
+
+  &.icon-box-before {
+    padding-left: 0.5em;
+  }
+
+  &.icon-box-after {
+    padding-right: 0.5rem;
+  }
+
+  .svg-before,
+  .svg-after {
+    width: 2.625em;
+    flex-shrink: 0;
+  }
+
+  .svg-before {
+    margin-right: 0.5em;
+  }
+
+  .svg-after {
+    margin-left: 0.5em;
+    &:hover {
+      fill: $color_palette7;
+    }
+    &:focus {
+      fill: $color_palette7;
+      outline: none !important;
+    }
+    &:focus:not(.focus-visible) {
+      fill: inherit;
+    }
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &.hoverable {
+    &:hover {
+      background-color: $color_box_background_hover;
+    }
+  }
+
+  &.primary {
+    background-color: $color_box_background_primary !important;
+    &.hoverable:hover {
+      background-color: scale-color($color_box_background_primary, $lightness: +10%) !important;
+    }
+  }
+
+  &.secondary {
+    background-color: $color_box_background_secondary !important;
+    &.hoverable:hover {
+      background-color: scale-color($color_box_background_secondary, $lightness: +10%) !important;
+    }
+  }
+
+  &.warning {
+    background-color: $color_box_background_warning !important;
+    fill: $color_box_icon_fill_danger;
+    &.hoverable:hover {
+      background-color: scale-color($color_box_background_warning, $lightness: +10%) !important;
+    }
+  }
+
+  &.error {
+    background-color: $color_box_background_error !important;
+    fill: $color_box_icon_fill_danger;
+    &.hoverable:hover {
+      background-color: scale-color($color_box_background_error, $lightness: +10%) !important;
+    }
+  }
+}

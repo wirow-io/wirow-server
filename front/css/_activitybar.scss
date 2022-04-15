@@ -1,0 +1,44 @@
+.activity-bar {
+  //height: 100%;
+  display: flex;
+  width: 46px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  @extend .scrollbar;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: $color_activiy_bar;
+  border-right: 1px solid $color_split_divider_background;
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    > li {
+      margin: 0;
+    }
+  }
+
+  button {
+    border-width: 0;
+    border-radius: 0;
+    background-color: inherit;
+    svg {
+      fill: #aeaeae;
+    }
+    &:hover {
+      svg {
+        fill: $color_hover_icon;
+      }
+    }
+    &.active {
+      svg {
+        fill: $color_toggled_icon;
+      }
+    }
+    .attention {
+      top: 0.1rem;
+      right: 0.1rem;
+    }
+  }
+}

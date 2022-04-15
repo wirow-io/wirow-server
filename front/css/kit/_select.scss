@@ -1,0 +1,31 @@
+.select {
+  display: inline-block;
+  width: 100%;
+  .dd-host {
+    width: 100%;
+  }
+  &:not(.editable) input {
+    cursor: pointer;
+  }
+  .item {
+    font-size: 1.125rem;
+    line-height: 1.33;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: $color_input_text;
+    &::-moz-focus-inner {
+      border: none;
+    }
+    &:hover,
+    &:focus {
+      background-color: $color_box_background_primary;
+      outline: none !important;
+    }
+  }
+  .dd-icon {
+    transition: transform 0.2s ease-in;
+  }
+  .dd-icon-open {
+    transform: rotate(180deg);
+  }
+}

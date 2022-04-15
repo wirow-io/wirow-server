@@ -1,0 +1,22 @@
+[constants]
+toolchain = '@MUSL_HOME@'
+bin = toolchain + '/bin'
+
+[properties]
+needs_exe_wrapper = false
+
+[binaries]
+c = bin + '/x86_64-linux-musl-gcc'
+cpp = bin + '/x86_64-linux-musl-g++'
+ar = bin + '/x86_64-linux-musl-ar'
+nm = bin + '/x86_64-linux-musl-nm'
+ld = bin + '/x86_64-linux-musl-ld'
+strip = bin + '/x86_64-linux-musl-strip'
+ranlib = bin + '/x86_64-linux-musl-ranlib'
+
+[built-in options]
+c_link_args = ['-static']
+cpp_link_args = ['-static']
+libdir = toolchain + '/x86_64-linux-musl/lib'
+includedir = toolchain + '/x86_64-linux-musl/include'
+default_library = 'static'

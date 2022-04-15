@@ -1,0 +1,22 @@
+.admin-dashboard {
+  height: 100%;
+  overflow: auto;
+  @extend .scrollbar;
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.3rem;
+    button {
+      margin-bottom: 0;
+      min-width: 5rem;
+    }
+  }
+  .chart {
+    background-color: #1c222d;
+    @extend .modal-full-width;
+    margin-left: auto;
+    margin-right: auto;
+    height: 80%;
+  }
+}

@@ -1,0 +1,35 @@
+#notification-holder {
+  position: fixed;
+  z-index: 1001;
+  right: 1rem;
+  bottom: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 2rem;
+
+  max-width: 40%;
+  @media (max-width: 1200px) {
+    max-width: 60%;
+  }
+  @media (max-width: 640px) {
+    max-width: 90%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    display: inline;
+  }
+}
+:global(.notification) {
+  margin: 0.25rem 0.5rem;
+  box-sizing: border-box;
+  border: rgba($color: #ffffff, $alpha: 0.2) 0.5px solid;
+}

@@ -1,0 +1,291 @@
+:attributes:
+:revdate: 2021-04-23
+:revnumber: 1
+:authors: Anton Adamansky; Andrew Denisov
+:email: adamansky@softmotions.com
+:email_2: andy@softmotions.com
+:doctype: article
+:toc!:
+:sectnums:
+:sectnumlevels: 2
+:source-highlighter: rouge
+:pdf-style: themes/my-theme.yml
+:icons: font
+
+= Wirow
+
+== Setting Up
+
+=== General Prerequisites
+
+`Linux x86_64` server instance accessible by valid domain name (DNS) from the Internet.
+
+[IMPORTANT]
+====
+Wirow is a licensed software package for you to use.
+Please do not run the same server executable in different places simultaneously, as it will interfere
+with the license check process and you will have to re-issue the license and software package.
+====
+
+=== Minimal Hardware Requirements for server
+
+* 2 CPU/vCPU cores
+* 4 GB RAM
+* SSD storage
+
+CAUTION: The CPU can be high if you are using the video recording function in rooms.
+
+=== Requirements for Wirow client software
+
+[IMPORTANT]
+====
+Only desktop browsers are supported by Wirow at this time. We are working on adapting Wirow
+for mobile devices and planning this feature in the first public release of Wirow.
+====
+
+==== Supported browsers
+
+* Chrome 74
+* Firefox 70
+* Safari 14
+
+=== Permissions Checklist
+
+* The firewall allows all outgoing network connections as the server must have access
+to the WebRTC clients and the license server.
+* The firewall allows inbound TCP/UDP connections to the following ports
+** HTTP `80`, HTTPS `443`
+** WebRTC RTP ports `10000..59999`
+
+The `wirow` executable must be run by a non-root user and allowed to listen on `80` and `443` network ports.
+To do this, simply run the following `setcap` command:
+
+[source,sh]
+----
+sudo /usr/sbin/setcap 'cap_net_bind_service=+ep' ./wirow
+----
+
+=== Domain Name (DNS)
+
+Wirow server must be accessible via the `https` protocol. This is a mandatory requirement.
+Thus, you need to point your domain registrar's DNS server to the actual IP address of the Wirow server.
+
+=== Running the Server
+
+[source]
+----
+Usage: ./wirow [options]
+
+  -c <cfg>            .ini configuration file
+  -d <dir>            Data files directory
+  -n <domain>         Domain name used to obtain Let's Encrypt certs
+  -l <ip>[@<pub ip>]  Listen IP or IP mapping if server behind NAT
+  -p <port>           Server network port number
+  -s	                The server runs behind an HTTPS proxy
+  -t                  Clear database data on start
+  -v	                Show version and license information
+  -h                  Show this help message
+----
+
+=== Wirow with Real IP Address
+
+[source,sh]
+----
+./wirow -n <domain name>
+----
+
+Example:
+[source,sh]
+----
+./wirow -n conferences.mycompany.com
+----
+
+In this case, Wirow will automatically install the Let’s Encrypt HTTPS
+certificate and it will be available at `+https://conferences.mycompany.com+`
+
+=== Wirow behind NAT
+
+[source,sh]
+----
+./wirow -n <domain name> -l '<private ip>@<public ip>'
+----
+
+=== Wirow behind an HTTP proxy
+
+[WARNING]
+====
+We do not recommend running Wirow behind an HTTP proxy, as this will break
+one of the strongest features of the product -- the ease of installation and server configuration.
+====
+
+[WARNING]
+====
+Please keep in mind -- Wirow WebRTC RTP ports (usually in range `10000..59999`)
+must be accessible from external network even behind an HTTP proxy.
+So it is wrong to bind the server to `localhost` behind the proxy.
+====
+
+==== Example of Apache2 Proxy Configuration
+
+[source,apache]
+----
+<VirtualHost *:443>
+    SSLCertificateFile /etc/letsencrypt/live/<domain name>/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/<domain name>/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+
+    ProxyRequests           Off
+    ProxyPreserveHost       On
+
+    ProxyPass        /ws/channel  ws://<wirow ip>:8080/ws/channel
+    ProxyPassReverse /ws/channel  ws://<wirow ip>:8080/ws/channel
+
+    ProxyPass        /            http://<wirow ip>:8080/
+    ProxyPassReverse /            http://<wirow ip>:8080/
+
+    <Location "/">
+        RequestHeader set X-Forwarded-Proto "https"
+        RequestHeader set X-Forwarded-Port "443"
+    </Location>
+</VirtualHost>
+----
+
+[source,sh]
+----
+a2enmod ssl proxy proxy_http proxy_wstunnel
+----
+
+[source,sh]
+----
+./wirow -s -p 8080
+----
+
+<<<
+
+==== Example of NGINX Proxy Configuration
+
+[source,nginx]
+----
+server {
+  server_name     <domain name>;
+  listen 443 ssl;
+  ssl_certificate /etc/letsencrypt/live/<domain name>/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/<domain name>/privkey.pem;
+  include /etc/letsencrypt/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+  location /ws/channel {
+    proxy_pass http://<wirow ip>:8080/ws/channel;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+  location / {
+    proxy_pass      http://<wirow ip>:8080/;
+    proxy_redirect  default;
+  }
+}
+server {
+  server_name     <domain name>;
+  listen  80;
+  if ($host = <domain name>) {
+    return 301 https://$host$request_uri;
+  }
+  return 404;
+}
+----
+
+[source,sh]
+----
+./wirow -s -p 8080
+----
+
+== Wirow .ini Configuration
+
+Additional Wirow server parameters can be specified in the `.ini` configuration file, as shown in the example below.
+
+
+[source,sh]
+----
+./wirow ... -c ./wirow.ini ...
+----
+
+=== Example of wirow.ini Config
+
+The configuration file can be specified by `-c` option
+
+[source,sh]
+----
+./wirow -c <config.ini>
+----
+
+[source,ini]
+----
+;; Wirow example configuration.
+;;
+;; Any part of configuration may contain placeholders replaced by
+;; runtime values:
+;;
+;;  {home}              Path to user home directory.
+;;  {cwd}               Current working directory of wirow process.
+;;  {config_file_dir}   Path to directory where configuration file resides.
+;;  {programm}          Path to wirow executable.
+;;
+
+[main]
+
+;; IP address to listen.
+;;  auto - server will autodetect IP address to listen.
+;; Overridden by `-l <ip>[@<pub ip>]` command line option
+host = auto
+
+;; HTTP/HTTPS listen port.
+;; If cert_file / cert_key_file / domain_name specified this
+;; port will be used for HTTPS traffic.
+;; Overridden by `-p <port>` command line option
+;;
+;; Example:
+port = 8888
+
+;; DNS domain name used for server in order to obtain Let's Encrypt TLS certificate.
+;; Overridden by `-n <domain>` command line option
+;;
+;; Example:
+domain_name = foo.example.com
+
+;; HTTP port used to redirect user to HTTPS protocol.
+;; Also HTTP used to pass ACME challenge during process of generating Let's Encrypt TLS certificates.
+https_redirect_port = 80
+
+;; Data directory where database files resides
+data = {cwd}
+
+;; Path to x509 PEM certificate and key file for TLS layer
+;;
+;; Example:
+cert_file = {config_file_dir}/cert.pem
+cert_key_file = {config_file_dir}/key.pem
+
+;; Stun / turn servers
+[servers]
+
+;; Stun and turn servers
+;;
+;; Example:
+turn_servers = user:password@host
+stun_servers = stun.l.google.com:19305 stun1.l.google.com:19305 stun2.l.google.com:19305
+
+;; RTC / WebRTC options
+[rtc]
+
+;; WebRTC RTP ports range
+ports = 10000..59999
+
+;; Mapping <private ip> to <public ip> used for server behind NAT
+;;
+;; `auto` - Means webrtc server endpoint will listen on autodetected
+;;
+;; Example:
+;;  listen_announced_ips = 0.0.0.0@192.168.1.37
+listen_announced_ips = auto
+----

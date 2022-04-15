@@ -1,0 +1,21 @@
+#pragma once
+
+#cmakedefine01 LICENSE_SSL_VERIFY
+
+#cmakedefine01 CREATE_DEV_USER
+
+#cmakedefine01 ENABLE_WHITEBOARD
+
+#cmakedefine01 ENABLE_RECORDING
+
+#cmakedefine LIMIT_REGISTERED_USERS @LIMIT_REGISTERED_USERS@
+
+#cmakedefine GR_BUILD_TYPE @GR_BUILD_TYPE@
+
+#cmakedefine GIT_REVISION @GIT_REVISION@
+
+#cmakedefine SENTRY_DSN "@SENTRY_DSN@"
+
+#cmakedefine SENTRY_FRONT_DSN "@SENTRY_FRONT_DSN@"
+
+#cmakedefine SENTRY_FRONT_ENVELOPE "@SENTRY_FRONT_ENVELOPE@"
