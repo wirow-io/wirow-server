@@ -27,6 +27,7 @@ please contact us at info@wirow.io
 - https://github.com/excalidraw/excalidraw
 - https://ffmpeg.org
 - https://sentry.io
+- https://svelte.dev
 
 
 
