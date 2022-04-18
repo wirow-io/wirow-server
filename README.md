@@ -92,7 +92,7 @@ Wirow build artifacts are located here:
 
 ## Guides
 
-[Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc) [pdf](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.pdf)
+[Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc) ([pdf](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.pdf))
 
 
 # License
@@ -102,6 +102,7 @@ Wirow build artifacts are located here:
 GNU AFFERO GENERAL PUBLIC LICENSE
    Version 3, 19 November 2007
 
+Copyright (C) 2022 Greenrooms, Inc.
 Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
