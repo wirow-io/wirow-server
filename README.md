@@ -81,7 +81,7 @@ Wirow build artifacts are located here:
 
 ## Guides
 
-[Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/wirow.adoc) [pdf](https://github.com/wirow-io/wirow-server/wirow.pdf)
+[Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/docs/wirow.adoc) [pdf](https://github.com/wirow-io/wirow-server/docs/wirow.pdf)
 
 
 # License
