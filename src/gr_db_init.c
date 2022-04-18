@@ -120,7 +120,7 @@ static iwrc _system_user_update_pw(const char *name, const char *pw, int64_t sal
   RCC(rc, finish, jbl_set_int64(jbl, "salt", salt));
   RCC(rc, finish, jbl_set_string(jbl, "pwh", pwh));
 
-  RCC(rc, finish, jql_create(&q, "users", "/[name = :?] | apply :? | count"));
+  RCC(rc, finish, jql_create(&q, "users", "/[name = :?] | apply :?"));
   RCC(rc, finish, jql_set_str(q, 0, 0, name));
   RCC(rc, finish, jql_set_json_jbl(q, 0, 1, jbl));
   RCC(rc, finish, ejdb_update(g_env.db, q));
@@ -134,7 +134,7 @@ finish:
   return rc;
 }
 
-iwrc gr_db_user_create_or_update_pw(const char *name, const char *pw, int64_t salt, char *pwh, bool hidden) {
+iwrc gr_db_user_create_or_update_pw(const char *name, const char *pw, int64_t salt, char *pwh) {
   iwrc rc = 0;
   JQL q = 0;
   int64_t llv;
@@ -142,7 +142,7 @@ iwrc gr_db_user_create_or_update_pw(const char *name, const char *pw, int64_t sa
   RCC(rc, finish, jql_set_str(q, 0, 0, name));
   RCC(rc, finish, ejdb_count(g_env.db, q, &llv, 1));
   if (llv == 0) {
-    rc = _system_user_add(name, pw, salt, pwh, hidden);
+    rc = _system_user_add(name, pw, salt, pwh, false);
   } else {
     rc = _system_user_update_pw(name, pw, salt, pwh);
   }
