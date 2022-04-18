@@ -109,7 +109,6 @@ struct gr_env {
   const char *cert_key_file;
   const char *forced_user;
   const char *router_optons_json;
-  uint64_t    deep_idle_time;
   int  port;
   int  https_redirect_port;
   bool ssl_enabled;
@@ -131,7 +130,7 @@ struct gr_env {
   } worker;
   struct {
     bool verbose;
-    bool report_errors; /**< If true backend and frontend errors will be sent to wirow, default true */
+    bool report_errors; /**< If true backend and frontend errors will be sent to sentry server, default true */
   } log;
   struct {
     int start_port;
@@ -143,8 +142,8 @@ struct gr_env {
   } dtls;
   struct {
     int idle_timeout_sec;
-    int max_history_sessions; /**< Max number of single room sessions displayed to user */
-    int max_history_rooms;    /**< Max number of rooms kept for user. */
+    int max_history_sessions; /**< Max number of previous room sessions shown to user */
+    int max_history_rooms;    /**< Max number of previous rooms shown to user. */
   } room;
   struct {
     int idle_timeout_sec;  /**< Websocket idle connection timeout seconds  */

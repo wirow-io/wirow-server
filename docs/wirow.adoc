@@ -14,7 +14,7 @@
 
 === General Prerequisites
 
-`Linux x86_64` server instance accessible by valid domain name (DNS) from the Internet.
+`Linux x86_64` server accessible by valid domain name (DNS) from the Internet.
 
 === Minimal Hardware Requirements for server
 
@@ -32,7 +32,7 @@ CAUTION: The CPU can be high if you are using the video recording function in ro
 * Firefox 70+
 * Safari 14+
 
-=== Network accessibility Checklist
+=== Network Accessibility Checklist
 
 * A firewall allows all outgoing network connections as the server must have access
 to the WebRTC clients and the license server.
@@ -40,20 +40,18 @@ to the WebRTC clients and the license server.
 ** HTTP `80`, HTTPS `443`
 ** WebRTC RTP ports `10000..59999`
 
-A `wirow` executable must be run by a non-root user and allowed to listen on `80` and `443` network ports.
-To do this, simply run the following `setcap` command:
+A `wirow` executable must be run by a non-root user and be allowed to listen on `80` and `443` network ports.
+To do this, run the following `setcap` command on Linux:
 
 [source,sh]
 ----
 sudo /usr/sbin/setcap 'cap_net_bind_service=+ep' ./wirow
 ----
 
-=== Domain Name (DNS)
-
-Wirow server must be accessible by `https` protocol. This is a mandatory requirement.
+Wirow server must be accessible by `https` protocol and this is a mandatory requirement.
 Thus, you need to point your domain registrar's DNS server to the actual IP address of the Wirow server.
 
-=== Running the Wirow Server
+=== Running a Server
 
 [source]
 ----
@@ -64,7 +62,7 @@ Usage: ./wirow [options]
   -n <domain>         Domain name used to obtain Let's Encrypt certs
   -l <ip>[@<pub ip>]  Listen IP or IP mapping if server behind NAT
   -p <port>           Server network port number
-  -a <password>       Set the specified password for `admin` account
+  -a <password>       Resets the password for `admin` account
   -s                  The server runs behind an HTTPS proxy
   -t                  Clear database data on start
   -v                  Show version and license information
@@ -104,14 +102,14 @@ certificates for `+https://conferences.mycompany.com+`
 
 [WARNING]
 ====
-We do not recommend running Wirow behind an HTTP proxy, as this will break
-one of the strongest features of the product -- the ease of installation and server configuration.
+We do not advice running Wirow behind an HTTP proxy, as this will break
+one of the strongest features of this product -- the ease of installation and server configuration.
 ====
 
 [WARNING]
 ====
-Please keep in mind -- Wirow WebRTC RTP ports (usually in range `10000..59999`)
-must be accessible from external network even behind an HTTP proxy.
+Keep in mind -- Wirow WebRTC RTP ports (usually in range `10000..59999`)
+must be accessible from external network even when server is behind an HTTP proxy.
 So it is wrong to bind the server to `localhost` behind the proxy.
 ====
 
@@ -192,17 +190,14 @@ server {
 
 == Wirow .ini Configuration
 
-Additional Wirow server parameters can be specified in the `.ini` configuration file, as shown in the example below.
-
+Server parameters can be specified in the `.ini` configuration file, as shown in the example below.
 
 [source,sh]
 ----
 ./wirow ... -c ./wirow.ini ...
 ----
 
-=== Example of wirow.ini Config
-
-The configuration file can be specified by `-c` option
+=== Example of wirow.ini
 
 [source,sh]
 ----
@@ -213,13 +208,13 @@ The configuration file can be specified by `-c` option
 ----
 ;; Wirow example configuration.
 ;;
-;; Any part of configuration may contain placeholders replaced by
-;; runtime values:
+;; Any part of configuration may contain placeholders ( {...} )
+;; which will be replaced by the following variables:
 ;;
-;;  {home}              Path to user home directory.
+;;  {home}              Path to the user home directory.
 ;;  {cwd}               Current working directory of wirow process.
 ;;  {config_file_dir}   Path to directory where configuration file resides.
-;;  {programm}          Path to wirow executable.
+;;  {program}           Path to wirow executable.
 ;;
 
 [main]
@@ -227,7 +222,7 @@ The configuration file can be specified by `-c` option
 ;; IP address to listen.
 ;;  auto - server will autodetect IP address to listen.
 ;; Overridden by `-l <ip>[@<pub ip>]` command line option
-host = auto
+ip = auto
 
 ;; HTTP/HTTPS listen port.
 ;; If cert_file / cert_key_file / domain_name specified this
@@ -237,17 +232,17 @@ host = auto
 ;; Example:
 port = 8888
 
-;; DNS domain name used for server in order to obtain Let's Encrypt TLS certificate.
+;; DNS domain name of server in order to obtain Let's Encrypt TLS certificate.
 ;; Overridden by `-n <domain>` command line option
 ;;
 ;; Example:
 domain_name = foo.example.com
 
-;; HTTP port used to redirect user to HTTPS protocol.
-;; Also HTTP used to pass ACME challenge during process of generating Let's Encrypt TLS certificates.
+;; HTTP port used to redirect incoming HTTP request to HTTPS protocol endpoint.
+;; Option used to pass ACME challenge during process of generating Let's Encrypt TLS certificates.
 https_redirect_port = 80
 
-;; Data directory where database files resides
+;; Data directory with database, screen recordings and uploads.
 data = {cwd}
 
 ;; Path to x509 PEM certificate and key file for TLS layer
@@ -259,7 +254,7 @@ cert_key_file = {config_file_dir}/key.pem
 ;; Stun / turn servers
 [servers]
 
-;; Stun and turn servers
+;; Optional stun and turn servers
 ;;
 ;; Example:
 turn_servers = user:password@host
@@ -271,11 +266,13 @@ stun_servers = stun.l.google.com:19305 stun1.l.google.com:19305 stun2.l.google.c
 ;; WebRTC RTP ports range
 ports = 10000..59999
 
-;; Mapping <private ip> to <public ip> used for server behind NAT
+;; Mapping of <private ip> to <public ip> used for server behind NAT.
 ;;
-;; `auto` - Means webrtc server endpoint will listen on autodetected
+;; `auto` - Means webrtc server endpoint will listen on autodetected ip address.
 ;;
 ;; Example:
 ;;  listen_announced_ips = 0.0.0.0@192.168.1.37
 listen_announced_ips = auto
 ----
+
+link:./wirow-configuration.ini[Wirow server configuration reference]

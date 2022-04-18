@@ -29,17 +29,19 @@ please contact us at info@wirow.io
 * Git
 * CMake v3.18+
 * GNU Make, autoconf, automake, ninja
-* Nodejs v14+ and Yarn v1.22+
+* Nodejs v14+ and Yarn package manager v1.22+
 * Clang C/C++ compiler v10+ or GCC v9+
-* yasm assembler (yasm)
+* yasm assembler (yasm) needed by FFmpeg
 * Python 3 pip package manager (python3-pip)
 
 Example of prerequisite software installation on Debian/Ubuntu Linux:
 
 ```sh
-apt-get install -y apt-utils software-properties-common apt-transport-https sudo curl wget zip unzip gpg
+apt-get install -y apt-utils software-properties-common apt-transport-https sudo curl wget gpg
 
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+       | gpg --dearmor - i\
+       | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
 wget -qO- https://deb.nodesource.com/setup_lts.x | bash -
 wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
@@ -69,10 +71,17 @@ ninja
 Wirow build artifacts are located here:
 
 ```sh
- ./build/src/wirow    # Stripped wirow binary
+ ./build/src/wirow    # Stripped binary
  ./build/src/wirow_g  # Binary with debug symbols (Not stripped)
 ```
 
+
+
+
+
+## Guides
+
+[Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/wirow.adoc) [pdf](https://github.com/wirow-io/wirow-server/wirow.pdf)
 
 
 # License
