@@ -1231,7 +1231,7 @@ iwrc gr_init_noweb(int argc, char *argv[]) {
   RCC(rc, finish, gr_db_init());
 
   if (_admin_pw) {
-    RCC(rc, finish, gr_db_user_create("admin", _admin_pw, 0, 0, false));
+    RCC(rc, finish, gr_db_user_create_or_update_pw("admin", _admin_pw, 0, 0, false));
     free(_admin_pw);
     _admin_pw = 0;
   }

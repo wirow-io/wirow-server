@@ -106,8 +106,50 @@ finish:
   return rc;
 }
 
-iwrc gr_db_user_create(const char *name, const char *pw, int64_t salt, char *pwh, bool hidden) {
-  return _system_user_add(name, pw, salt, pwh, hidden);
+static iwrc _system_user_update_pw(const char *name, const char *pw, int64_t salt, char *pwh) {
+  iwrc rc = 0;
+  JBL jbl = 0;
+  JQL q = 0;
+  char buf[65];
+
+  if (!pwh) {
+    pwh = buf;
+    salt = gr_crypt_pwhash(pw, strlen(pw), 0, pwh);
+  }
+  RCC(rc, finish, jbl_create_empty_object(&jbl));
+  RCC(rc, finish, jbl_set_int64(jbl, "salt", salt));
+  RCC(rc, finish, jbl_set_string(jbl, "pwh", pwh));
+
+  RCC(rc, finish, jql_create(&q, "users", "/[name = :?] | apply :? | count"));
+  RCC(rc, finish, jql_set_str(q, 0, 0, name));
+  RCC(rc, finish, jql_set_json_jbl(q, 0, 1, jbl));
+  RCC(rc, finish, ejdb_update(g_env.db, q));
+
+finish:
+  jbl_destroy(&jbl);
+  jql_destroy(&q);
+  if (rc) {
+    iwlog_ecode_error3(rc);
+  }
+  return rc;
+}
+
+iwrc gr_db_user_create_or_update_pw(const char *name, const char *pw, int64_t salt, char *pwh, bool hidden) {
+  iwrc rc = 0;
+  JQL q = 0;
+  int64_t llv;
+  RCC(rc, finish, jql_create(&q, "users", "/[name = :?] | count"));
+  RCC(rc, finish, jql_set_str(q, 0, 0, name));
+  RCC(rc, finish, ejdb_count(g_env.db, q, &llv, 1));
+  if (llv == 0) {
+    rc = _system_user_add(name, pw, salt, pwh, hidden);
+  } else {
+    rc = _system_user_update_pw(name, pw, salt, pwh);
+  }
+
+finish:
+  jql_destroy(&q);
+  return rc;
 }
 
 static iwrc _apply_stage_3(void) {
