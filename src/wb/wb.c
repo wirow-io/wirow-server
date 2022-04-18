@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2022 Greenrooms, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+
 #include "wb.h"
 #include "grh.h"
 #include "rct/rct.h"
@@ -326,13 +343,13 @@ static void _wb_room_load(void *_room) {
     n3->vbool = u->readonly;
     if (u->readonly) {
       // Readonly users are not included in sync packet so dont need to hide object
-      iwn_ws_server_write_jbn(u->ws, json, false);
+      iwn_ws_server_write_jbn(u->ws, json);
     } else {
       // Send sync packet to each user without that users
       memcpy(&id[1], u->id, sizeof(u->id));
       RCC(rc, finish, jbn_at(n, id, &n2));
       jbn_remove_item(n, n2);
-      iwn_ws_server_write_jbn(u->ws, json, false);
+      iwn_ws_server_write_jbn(u->ws, json);
       jbn_add_item(n, n2);
     }
   }

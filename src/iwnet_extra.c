@@ -1,6 +1,22 @@
+/*
+ * Copyright (C) 2022 Greenrooms, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+
 #include "gr.h"
 #include "iwnet_extra.h"
-#include "utils/netstring.h"
 
 #include <iowow/iwxstr.h>
 #include <iowow/iwconv.h>
@@ -88,21 +104,12 @@ finish:
   return ret;
 }
 
-bool iwn_ws_server_write_jbl(struct iwn_ws_sess *ws, JBL json, bool as_netstring) {
+bool iwn_ws_server_write_jbl(struct iwn_ws_sess *ws, JBL json) {
   iwrc rc = 0;
   bool ret = false;
   IWXSTR *xstr = iwxstr_new();
   RCA(xstr, finish);
   RCC(rc, finish, jbl_as_json(json, jbl_xstr_json_printer, xstr, 0));
-
-  if (as_netstring) {
-    char nbuf[NUMBUSZ];
-    iwitoa(iwxstr_size(xstr), nbuf, sizeof(nbuf));
-    RCC(rc, finish, iwxstr_unshift(xstr, ":", 1));
-    RCC(rc, finish, iwxstr_unshift(xstr, nbuf, strlen(nbuf)));
-    RCC(rc, finish, iwxstr_cat(xstr, ",", 1));
-  }
-
   ret = iwn_ws_server_write(ws, iwxstr_ptr(xstr), iwxstr_size(xstr));
 
 finish:
@@ -113,21 +120,12 @@ finish:
   return ret;
 }
 
-bool iwn_ws_server_write_jbn(struct iwn_ws_sess *ws, JBL_NODE json, bool as_netstring) {
+bool iwn_ws_server_write_jbn(struct iwn_ws_sess *ws, JBL_NODE json) {
   iwrc rc = 0;
   bool ret = false;
   IWXSTR *xstr = iwxstr_new();
   RCA(xstr, finish);
   RCC(rc, finish, jbn_as_json(json, jbl_xstr_json_printer, xstr, 0));
-
-  if (as_netstring) {
-    char nbuf[NUMBUSZ];
-    iwitoa(iwxstr_size(xstr), nbuf, sizeof(nbuf));
-    RCC(rc, finish, iwxstr_unshift(xstr, ":", 1));
-    RCC(rc, finish, iwxstr_unshift(xstr, nbuf, strlen(nbuf)));
-    RCC(rc, finish, iwxstr_cat(xstr, ",", 1));
-  }
-
   ret = iwn_ws_server_write(ws, iwxstr_ptr(xstr), iwxstr_size(xstr));
 
 finish:
