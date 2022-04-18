@@ -14,7 +14,8 @@
 Example of prerequisite software installation on Debian/Ubuntu Linux:
 
 ```sh
-apt-get install -y apt-utils software-properties-common apt-transport-https sudo curl wget gpg
+apt-get install -y apt-utils software-properties-common \
+                   apt-transport-https sudo curl wget gpg
 
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
        | gpg --dearmor - i\
