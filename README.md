@@ -28,9 +28,16 @@ please contact us at info@wirow.io
 - [Sentry error reporting](https://sentry.io)
 - [Svelte Frontend Framework](https://svelte.dev)
 
-## Brief Intro
+## Intro
 
 [![Wirow intro](https://img.youtube.com/vi/14-DI3lk_P0/sddefault.jpg)](https://www.youtube.com/watch?v=14-DI3lk_P0)
+
+![](./docs/artwork/Screens/screen1.png)
+
+![](./docs/artwork/Screens/screen2.png)
+
+![](./docs/artwork/Screens/screen3.png)
+
 
 
 
