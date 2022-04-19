@@ -1,4 +1,4 @@
-# Wirow video conferencing platform (Community Edition)
+# Wirow video conferencing platform
 
 https://wirow.io
 
