@@ -17,7 +17,7 @@ readme() {
   echo -e "\n\n" >> "./README.md"
   cat "./docs/README.md" >> "./README.md"
   cat <<EOF >> "./README.md"
-#License
+# License
 
 \`\`\`
 /*
