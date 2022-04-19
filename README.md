@@ -30,7 +30,7 @@ please contact us at info@wirow.io
 
 ## Intro
 
-[![Wirow intro](https://img.youtube.com/vi/14-DI3lk_P0/sddefault.jpg)](https://www.youtube.com/watch?v=14-DI3lk_P0)
+[![Wirow intro](./docs/artwork/Screens/youtube.jpg)](https://www.youtube.com/watch?v=14-DI3lk_P0)
 
 ![](./docs/artwork/Screens/screen1.png)
 
