@@ -20,14 +20,17 @@ please contact us at info@wirow.io
 
 ## Software used by Wirow
 
-- https://github.com/versatica/mediasoup
-- https://github.com/Softmotions/ejdb
-- https://github.com/Softmotions/iwnet
-- https://github.com/Softmotions/iowow
-- https://github.com/excalidraw/excalidraw
-- https://ffmpeg.org
-- https://sentry.io
-- https://svelte.dev
+- [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
+- [EJDB2 - Embeddable JSON Database engine](https://github.com/Softmotions/ejdb)
+- [IWNET - Asynchronous HTTP Library](https://github.com/Softmotions/iwnet)
+- [Excalidraw - A Whiteboard Web UI](https://github.com/excalidraw/excalidraw)
+- [FFmpeg](https://ffmpeg.org)
+- [Sentry error reporting](https://sentry.io)
+- [Svelte Frontend Framework](https://svelte.dev)
+
+## Brief Intro
+
+[![Wirow intro](https://img.youtube.com/vi/14-DI3lk_P0/sddefault.jpg)](https://www.youtube.com/watch?v=14-DI3lk_P0)
 
 
 
