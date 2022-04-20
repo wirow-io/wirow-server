@@ -307,7 +307,7 @@ iwrc rct_resource_register_lk(void *v) {
 
   rct_resource_base_t *old = iwstree_get(rct_state.map_uuid2ptr, b->uuid);
   if (old) {
-    iwlog_error("RCT Double registration of resource: %s type: %d", old->uuid, old->type);
+    iwlog_error("RCT Double registration of resource: %s type: 0x%x", old->uuid, old->type);
   }
   iwrc rc = iwstree_put_overwrite(rct_state.map_uuid2ptr, b->uuid, b);
   RCGO(rc, finish);
