@@ -95,7 +95,7 @@ static void usage(const char *err) {
   printf("\t-n <domain>\t\tDomain name used to obtain Let's Encrypt certs\n");
   printf("\t-l <ip>[@<pub ip>]\tListen IP or IP mapping if your server behind NAT\n");
   printf("\t-p <port>\t\tServer network port number\n");
-  printf("\t-a <password>\t\tResets the password for `admin` account\n");
+  printf("\t-a <password>\t\tResets password for `admin` account\n");
   printf("\t-s\t\t\tThe server runs behind an HTTPS proxy\n");
   printf("\t-t\t\t\tCleanup a database data before start\n");
   printf("\t-v\t\t\tShow version and license information\n");
