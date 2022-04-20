@@ -13,6 +13,7 @@ t_*.json
 *.webm
 
 /.revision
+/.breakpoints
 
 /build
 /data
