@@ -48,7 +48,7 @@ please contact us at info@wirow.io
 
 ```sh
 cd ./docker
-docker build -t wirow .
+docker build --force-rm -t wirow .
 ```
 
 Please mind about the following volume dirs defined in [Dokerfile](https://github.com/wirow-io/wirow-server/blob/master/docker/Dockerfile):
