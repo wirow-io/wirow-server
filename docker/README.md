@@ -4,7 +4,7 @@
 
 ```sh
 cd ./docker
-docker build --force-rm -t wirow .
+docker build --no-cache --force-rm -t wirow .
 ```
 
 Please mind about the following volume dirs defined in [Dokerfile](https://github.com/wirow-io/wirow-server/blob/master/docker/Dockerfile):
