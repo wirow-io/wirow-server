@@ -34,8 +34,6 @@ CAUTION: The CPU can be high if you are using the video recording function in ro
 
 === Network Accessibility Checklist
 
-* A firewall allows all outgoing network connections as the server must have access
-to the WebRTC clients and the license server.
 * The firewall allows inbound TCP/UDP connections to the following ports
 ** HTTP `80`, HTTPS `443`
 ** WebRTC RTP ports `10000..59999`
