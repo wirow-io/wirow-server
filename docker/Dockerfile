@@ -17,7 +17,7 @@ RUN make -j4
 
 FROM alpine:latest
 
-COPY --from=build /wirow-server/build/src/wirow_g /wirow
+COPY --from=build /wirow-server/build/src/wirow /wirow
 RUN mkdir /data /config
 COPY ./wirow.ini /config
 
