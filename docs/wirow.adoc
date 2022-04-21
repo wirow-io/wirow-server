@@ -220,8 +220,20 @@ Server parameters can be specified in the `.ini` configuration file, as shown in
 [main]
 
 ;; IP address to listen.
-;;  auto - server will autodetect IP address to listen.
-;; Overridden by `-l <ip>[@<pub ip>]` command line option
+;; Also defines a mapping between private and public ip
+;; for servers behind NAT of Docker for webrtc protocol.
+;;
+;;  The following forms are supported:
+;;
+;;  - auto - server will autodetect IP address to listen.
+;;  - <ip> - real ip address to listen.
+;;  - <private ip>@<public ip> - Mapping of <private ip> to <public ip> if server behind NAT.
+;;
+;; `ip` option is overridden by `-l <ip>[@<pub ip>]` command line option
+;;
+;; Example:
+;;  ip = 0.0.0.0@192.168.1.37
+
 ip = auto
 
 ;; HTTP/HTTPS listen port.
@@ -266,13 +278,6 @@ stun_servers = stun.l.google.com:19305 stun1.l.google.com:19305 stun2.l.google.c
 ;; WebRTC RTP ports range
 ports = 10000..59999
 
-;; Mapping of <private ip> to <public ip> used for server behind NAT.
-;;
-;; `auto` - Means webrtc server endpoint will listen on autodetected ip address.
-;;
-;; Example:
-;;  listen_announced_ips = 0.0.0.0@192.168.1.37
-listen_announced_ips = auto
 ----
 
 link:./wirow-configuration.ini[Wirow server configuration reference]

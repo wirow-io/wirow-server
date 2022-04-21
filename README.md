@@ -42,7 +42,32 @@ please contact us at info@wirow.io
 
 
 
-## Building from sources
+## Building Docker Image
+
+[Wirow server Dockerfile](./docker/Dockerfile)
+
+```sh
+cd ./docker
+docker build -t wirow .
+```
+
+Please mind about the following volume dirs defined in [Dokerfile](./docker/Dockerfile):
+- `/data` Where wirow database, uploads, room recording located.
+- `/config` Where `wirow.ini` configuration used by server.
+
+Before starting Wirow docker container
+- Read [Wirow server Administrator's Guide](./docs/wirow.adoc)
+- Review `/config/wirow.ini` ip/network options, ssl certs section (if you don't plat to use Let's Encrypt).
+
+```sh
+docker run wirow -h
+```
+
+```sh
+docker run wirow -n mywirow.example.com
+```
+
+## Building from sources by hands
 
 ### Build Prerequisites
 

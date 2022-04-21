@@ -2,7 +2,8 @@
   "name": "wirow",
   "version": "1.0.0",
   "private": "true",
-  "license": "private",
+  "author": "info@wirow.io"
+  "license": "AGPL-3.0",
   "main": "src/index.ts",
   "devDependencies": {
     "@babel/core": "^7.15.5",

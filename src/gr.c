@@ -420,6 +420,7 @@ static int _ini_handler(
     if (!strcmp(name, "ports")) {
       _add_rtc_ports(value);
     } else if (!strcmp(name, "listen_announced_ips")) {
+      // Deprecated. Use [main] ip option.
       rc = _add_servers(GR_LISTEN_ANNOUNCED_IP_TYPE, value);
       if (!rc) {
         g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_ANNOUNCED_IP;
