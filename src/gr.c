@@ -913,7 +913,6 @@ static void _configure(int argc, char *argv[]) {
     g_env.port = g_env.port > 0 ? g_env.port : (g_env.ssl_enabled ? 443 : 8080);
   }
 
-#ifdef LICENSE_ID
   if (!under_proxy && !(g_env.domain_name || (g_env.cert_file && g_env.cert_key_file))) {
     usage_err
       = "HTTPS support with real domain name must be enabled for your Wirow server."
@@ -921,11 +920,6 @@ static void _configure(int argc, char *argv[]) {
         "\n Please check the wirow.pdf manual";
     goto usage;
   }
-#else
-  // Compiler does not allow variable to be setted but not used
-  if (!under_proxy) {
-  }
-#endif
 
   return;
 
