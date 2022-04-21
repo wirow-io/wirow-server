@@ -56,8 +56,8 @@ Please mind about the following volume dirs defined in [Dokerfile](https://githu
 - `/config/wirow.ini` configuration used by server.
 
 Before starting Wirow docker container
-- Read [Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc)
-- Review `/config/wirow.ini` ip/network options, ssl certs section (if you don't plat to use Let's Encrypt).
+- Read the [Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc)
+- Review `/config/wirow.ini` ip/network options, ssl certs section (if you don't plan to use Let's Encrypt).
 
 ```sh
 docker run wirow -h
