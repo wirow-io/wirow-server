@@ -52,7 +52,7 @@ docker build -t wirow .
 ```
 
 Please mind about the following volume dirs defined in [Dokerfile](https://github.com/wirow-io/wirow-server/blob/master/docker/Dockerfile):
-- `/data` Where wirow database, uploads, room recording located.
+- `/data` Where wirow database, uploads, room recordings located.
 - `/config/wirow.ini` configuration used by server.
 
 Before starting Wirow docker container
