@@ -13,6 +13,8 @@ readme() {
   echo "Generating README.md";
   cat "./INFO.md" > "./README.md"
   echo -e "\n\n" >> "./README.md"
+  cat "./docker/README.md" >> "./README.md"
+  echo -e "\n\n" >> "./README.md"
   cat "./BUILDING.md" >> "./README.md"
   echo -e "\n\n" >> "./README.md"
   cat "./docs/README.md" >> "./README.md"
