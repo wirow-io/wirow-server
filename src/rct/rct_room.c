@@ -455,7 +455,7 @@ static void* _rct_member_findref_by_flag_lk(rct_room_member_t *member, uint32_t 
   if (member) {
     for (int i = 0, l = iwulist_length(&member->resource_refs); i < l; ++i) {
       struct rct_resource_ref *r = iwulist_at2(&member->resource_refs, i);
-      if (r->flags & flags) {
+      if ((r->flags & flags) && r->b && !r->b->closed ) {
         return r->b;
       }
     }
@@ -1756,12 +1756,15 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
                || member->room->owner_user_id == member->user_id;
   }
 
+  // FIXME
   if (need_rts) {
     rct_resource_base_t *b = _rct_member_findref_by_flag_lk(member, MRES_RECV_TRANSPORT);
     if (b) {
       cids[0] = b->id;
     }
   }
+
+  // FIXME
   if (need_sts) {
     rct_resource_base_t *b = _rct_member_findref_by_flag_lk(member, MRES_SEND_TRANSPORT);
     if (b) {
