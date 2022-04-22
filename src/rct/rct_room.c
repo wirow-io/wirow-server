@@ -563,7 +563,7 @@ static iwrc _rct_room_join_lk(
     }
   }
 
-  RCB(finish,  pool = iwpool_create_empty());
+  RCB(finish, pool = iwpool_create_empty());
   RCB(finish, member = iwpool_calloc(sizeof(*member), pool));
 
   member->pool = pool;
@@ -1971,6 +1971,7 @@ finish:
 
 static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
   /* Payload: {
+      uuid: transport id
       kind: RTP_KIND_VIDEO | RTP_KIND_AUDIO
       paused: boolean
       rtpParameters: {...}
@@ -1980,7 +1981,7 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
      }
    */
   iwrc rc = 0;
-  const char *error = 0;
+  const char *error = 0, *uuid;
 
   uint32_t kind;
   wrc_resource_t producer_id, transport_id, observer_id = 0;
@@ -2003,15 +2004,17 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
     paused = n->vbool;
   }
 
+  jbn_at(ctx->payload, "/uuid", &n);
+  CHECK_JBN_TYPE(n, finish, JBV_STR);
+  uuid = n->vptr;
+
   RCC(rc, finish, jbn_at(ctx->payload, "/rtpParameters", &rtp_parameters));
   CHECK_JBN_TYPE(rtp_parameters, finish, JBV_OBJECT);
 
   member = rct_resource_by_id_locked(_wss_member_get(ctx->wss), RCT_TYPE_ROOM_MEMBER, __func__);
   locked = true;
 
-  transport = rct_resource_ref_lk(
-    _rct_member_findref_by_flag_lk(member, MRES_SEND_TRANSPORT),
-    1, __func__);
+  transport = rct_resource_ref_lk(_rct_member_findref_by_uuid_lk(member, uuid), 1, __func__);
   if (!transport) {
     rc = GR_ERROR_RESOURCE_NOT_FOUND;
     goto finish;

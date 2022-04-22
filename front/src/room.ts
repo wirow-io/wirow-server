@@ -685,6 +685,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   }
 
   private onTransportProduce(
+    transport: Transport,
     kind: MediaTrackKind,
     rtpParameters: RtpParameters,
     appData: any,
@@ -694,6 +695,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     const paused = appData?.paused === true;
     sendAwait({
       cmd: 'transport_produce',
+      uuid: transport.id,
       kind: rtpStreamKindAsFlags(kind),
       paused,
       rtpParameters,
@@ -724,7 +726,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     if (direction === 'send') {
       transport.on('produce', ({ kind, rtpParameters, appData }, resolve, reject) => {
         log.debug.enabled && log.debug(`Room.transportUse() | Event produce, kind: ${kind}`);
-        this.onTransportProduce(kind, rtpParameters, appData, resolve, reject);
+        this.onTransportProduce(transport, kind, rtpParameters, appData, resolve, reject);
       });
     }
     return transport;
