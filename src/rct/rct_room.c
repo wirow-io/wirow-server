@@ -1838,7 +1838,7 @@ finish:
 
 static iwrc _transport_connect(struct ws_message_ctx *ctx, void *op) {
   /* Payload: {
-      flags: MRES_SEND_TRANSPORT | MRES_RECV_TRANSPORT
+      uuid: transport UUID
       dtlsParameters: {...}
      }
      Response: {}
@@ -1847,20 +1847,20 @@ static iwrc _transport_connect(struct ws_message_ctx *ctx, void *op) {
   const char *error = 0;
 
   JBL_NODE n;
-  uint32_t flags;
   wrc_resource_t transport_id;
   rct_transport_connect_t *spec;
   rct_room_member_t *member = 0;
+  const char *uuid;
 
-  RCC(rc, finish, jbn_at(ctx->payload, "/flags", &n));
-  CHECK_JBN_TYPE(n, finish, JBV_I64);
-  flags = n->vi64;
+  RCC(rc, finish, jbn_at(ctx->payload, "/uuid", &n));
+  CHECK_JBN_TYPE(n, finish, JBV_STR);
+  uuid = n->vptr;
 
   RCC(rc, finish, jbn_at(ctx->payload, "/dtlsParameters", &n));
   CHECK_JBN_TYPE(n, finish, JBV_OBJECT);
 
   member = rct_resource_by_id_locked(_wss_member_get(ctx->wss), RCT_TYPE_ROOM_MEMBER, __func__);
-  rct_transport_t *transport = _rct_member_findref_by_flag_lk(member, flags);
+  rct_transport_t *transport = _rct_member_findref_by_uuid_lk(member, uuid);
   transport_id = transport ? transport->id : 0;
   rct_resource_unlock(member, __func__);
 

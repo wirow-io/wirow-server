@@ -388,7 +388,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     const myStream = request.type === 'meeting' || owner ? ownVideoStream : undefined;
     await this.device.load({ routerRtpCapabilities: this.rtpCapabilities });
 
-    this.memberOwn = new RoomMember(this, member, storeGet(nickname), owner, myStream); // Only video for me!
+    this.memberOwn = new RoomMember(this, member, storeGet(nickname), owner, myStream); // Video is only for me!
     this.members = this.syncOrderingOfMembers([
       ...members.map((m) => new RoomMember(this, m[0], m[1], m[2])),
       this.memberOwn,
@@ -670,14 +670,14 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   }
 
   private onTransportConnect(
-    direction: TransportDirection,
+    transport: Transport,
     dtlsParameters: DtlsParameters,
     resolve: () => void,
     reject: (err: any) => void
   ) {
     sendAwait({
       cmd: 'transport_connect',
-      flags: transportDirectionAsFlags(direction),
+      uuid: transport.id,
       dtlsParameters,
     })
       .then(() => resolve()) // Strip any args to be passed into resolve()
@@ -715,7 +715,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   private transportUse(transport: Transport, direction: TransportDirection): Transport {
     transport.on('connect', ({ dtlsParameters }, resolve, reject) => {
       log.debug.enabled && log.debug('Room.transportUse() | Event: connect');
-      this.onTransportConnect(direction, dtlsParameters, resolve, reject);
+      this.onTransportConnect(transport, dtlsParameters, resolve, reject);
     });
     transport.on('connectionstatechange', (state) => {
       log.debug.enabled && log.debug(`Room.transportUse() | Event: connectionstatechange: ${state}`);
