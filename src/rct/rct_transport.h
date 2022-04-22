@@ -126,3 +126,12 @@ iwrc rct_transport_plain_connect_spec_create(
   rct_transport_connect_t **spec_out);
 
 iwrc _rct_transport_plain_connect(rct_transport_plain_t *transport, rct_transport_plain_connect_t *spec);
+
+
+//
+// Module
+//
+
+iwrc rct_transport_module_init(void);
+
+void rct_transport_module_close(void);

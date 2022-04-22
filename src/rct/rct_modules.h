@@ -19,12 +19,14 @@
 #include "rct.h"
 
 iwrc rct_worker_module_init(void);
+iwrc rct_transport_module_init(void);
 iwrc rct_producer_export_module_init(void);
 iwrc rct_consumer_module_init(void);
 iwrc rct_room_module_init(void);
 
 void rct_worker_module_shutdown(void);
 void rct_worker_module_close(void);
+void rct_transport_module_close(void);
 void rct_producer_export_module_close(void);
 void rct_consumer_module_close(void);
 void rct_room_module_close(void);

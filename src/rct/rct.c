@@ -856,6 +856,7 @@ static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data
       if (g_env.log.verbose) {
         iwlog_info("RCT WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE: %u", resource_id);
       }
+
       break;
     case WRC_EVT_TRANSPORT_SCTP_STATE_CHANGE:
       if (g_env.log.verbose) {
@@ -1103,6 +1104,7 @@ iwrc rct_init() {
   wrc_register_uuid_resolver(_rct_wrc_uuid_resolver);
 
   RCC(rc, finish, rct_worker_module_init());
+  RCC(rc, finish, rct_transport_module_init());
   RCC(rc, finish, rct_consumer_module_init());
   RCC(rc, finish, rct_producer_export_module_init());
   RCC(rc, finish, rct_room_module_init());
@@ -1128,6 +1130,7 @@ void rct_close(void) {
   rct_producer_export_module_close();
   rct_consumer_module_close();
   rct_room_module_close();
+  rct_transport_module_close();
   rct_worker_module_close();
   _destroy_lk();
 }

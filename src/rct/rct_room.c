@@ -451,11 +451,11 @@ static iwrc _room_leave_wss(struct ws_session *wss) {
   return 0;
 }
 
-static void* _rct_member_findref_by_flag_lk(rct_room_member_t *member, uint32_t flags) {
+static void* _rct_member_findref_by_flag_lk(rct_room_member_t *member, uint32_t flags, bool closed) {
   if (member) {
     for (int i = 0, l = iwulist_length(&member->resource_refs); i < l; ++i) {
       struct rct_resource_ref *r = iwulist_at2(&member->resource_refs, i);
-      if ((r->flags & flags) && r->b && !r->b->closed ) {
+      if ((r->flags & flags) && r->b->closed == closed) {
         return r->b;
       }
     }
@@ -1722,9 +1722,12 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
   uint32_t direction = 0;
   bool locked = false, need_sts = false, need_rts = false;
   rct_transport_webrtc_spec_t *rts = 0, *sts = 0;
-  wrc_resource_t router_id, tsids[2] = { 0 }, cids[2] = { 0 };
+  wrc_resource_t router_id, tsids[2] = { 0 };
 
   JBL_NODE n;
+  IWULIST clist = { 0 };
+
+  RCC(rc, finish, iwulist_init(&clist, 4, sizeof(wrc_resource_t)));
   RCC(rc, finish, jbn_from_json("{}", &n, ctx->pool));
 
   {
@@ -1756,27 +1759,26 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
                || member->room->owner_user_id == member->user_id;
   }
 
-  // FIXME
-  if (need_rts) {
-    rct_resource_base_t *b = _rct_member_findref_by_flag_lk(member, MRES_RECV_TRANSPORT);
-    if (b) {
-      cids[0] = b->id;
+  { // Close previously opened transports
+    uint32_t flags = 0;
+    if (need_rts) {
+      flags |= MRES_RECV_TRANSPORT;
     }
-  }
-
-  // FIXME
-  if (need_sts) {
-    rct_resource_base_t *b = _rct_member_findref_by_flag_lk(member, MRES_SEND_TRANSPORT);
-    if (b) {
-      cids[1] = b->id;
+    if (need_sts) {
+      flags |= MRES_SEND_TRANSPORT;
+    }
+    for (int i = 0, l = iwulist_length(&member->resource_refs); i < l; ++i) {
+      struct rct_resource_ref *r = iwulist_at2(&member->resource_refs, i);
+      if ((r->flags & flags) && !r->b->closed) {
+        iwulist_push(&clist, &r->b->id);
+      }
     }
   }
   rct_unlock(), locked = false; // Unlock but keeping +1 ref to member
 
-  for (int i = 0; i < 2; ++i) {
-    if (cids[i]) {
-      rct_transport_close(cids[i]);
-    }
+  for (size_t i = 0, l = iwulist_length(&clist); i < l; ++l) {
+    wrc_resource_t id = *(wrc_resource_t*) iwulist_at2(&clist, i);
+    rct_transport_close_async(id);
   }
 
   if (need_rts) {
@@ -1812,19 +1814,32 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
       jbn_add_item(n, spec);
 
       // Good, now finish registration
-      RCC(rc, finish, iwulist_unshift(&member->resource_refs, &(struct rct_resource_ref) {
+      rc = iwulist_unshift(&member->resource_refs, &(struct rct_resource_ref) {
         .b = rct_resource_ref_lk(transport, 1, __func__),
         .flags = flags
-      }));
-      RCC(rc, finish, iwhmap_put(_map_resource_member,
-                                 (void*) (uintptr_t) transport->id, (void*) (uintptr_t) member->id));
-      // All is ok, keep transport open at exit
+      });
+      if (rc) {
+        rct_resource_ref_lk(transport, -1, __func__);
+        goto finish;
+      }
+
+      rc = iwhmap_put(_map_resource_member,
+                      (void*) (uintptr_t) transport->id, (void*) (uintptr_t) member->id);
+      if (rc) {
+        rct_resource_ref_lk(transport, -1, __func__);
+        iwulist_remove(&member->resource_refs, 0);
+        goto finish;
+      }
+
+      // All is good, keep transport open at exit
       tsids[i] = 0;
     }
   }
 
 finish:
   rct_resource_ref_unlock(member, locked, -1, __func__);
+  iwulist_destroy_keep(&clist);
+
   if (rc) {
     if (!error) {
       error = "error.unspecified";
@@ -1836,6 +1851,7 @@ finish:
       }
     }
   }
+
   return grh_ws_send_confirm2(ctx, n, error);
 }
 
@@ -1882,9 +1898,9 @@ finish:
 static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_id) {
   iwrc rc = 0;
 
-  bool locked, can_consume;
   JBL jbl;
   JBL_NODE resp, n;
+  bool locked, can_consume;
   wrc_resource_t consumer_transport_id, consumer_id, producer_member_id;
 
   rct_transport_t *transport;
@@ -1902,7 +1918,7 @@ static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_i
   }
   producer_member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) producer_id);
   producer_member = rct_resource_by_id_locked_lk(producer_member_id, RCT_TYPE_ROOM_MEMBER, __func__);
-  transport = _rct_member_findref_by_flag_lk(member, MRES_RECV_TRANSPORT);
+  transport = _rct_member_findref_by_flag_lk(member, MRES_RECV_TRANSPORT, false);
   if (!producer_member || !transport) {
     iwlog_warn("No recv transport or producer member for consumer member %u", member_id);
     goto finish;
@@ -2194,7 +2210,7 @@ static iwrc _acquire_room_streams(struct ws_message_ctx *ctx, void *op) {
     if (m != member) {
       for (int i = 0, l = iwulist_length(&m->resource_refs); i < l; ++i) {
         struct rct_resource_ref *rr = iwulist_at2(&m->resource_refs, i);
-        if (rr->b->type == RCT_TYPE_PRODUCER) {
+        if (!rr->b->closed && rr->b->type == RCT_TYPE_PRODUCER) {
           iwulist_push(&slots, &rr->b->id);
         }
       }

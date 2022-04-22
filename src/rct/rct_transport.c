@@ -296,3 +296,33 @@ finish:
   }
   return rc;
 }
+
+static void _on_dtls_state_change(wrc_resource_t id, JBL data) {
+  if (data) {
+    const char *state;
+    if (jbl_object_get_str(data, "dtlsState", &state) == 0 && strcmp("closed", state) == 0) {
+      rct_transport_close_async(id);
+    }
+  }
+}
+
+static iwrc _rct_event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data, void *op) {
+  switch (evt) {
+    case WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE:
+      _on_dtls_state_change(resource_id, data);
+      break;
+    default:
+      break;
+  }
+  return 0;
+}
+
+static uint32_t _event_handler_id;
+
+iwrc rct_transport_module_init(void) {
+  return wrc_add_event_handler(_rct_event_handler, 0, &_event_handler_id);
+}
+
+void rct_transport_module_close(void) {
+  wrc_remove_event_handler(_event_handler_id);
+}
