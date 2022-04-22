@@ -24,7 +24,7 @@ please contact us at info@wirow.io
 If you have a question, advice or an issue related to your server setup ask for help at [Wirow Discussion Group](https://github.com/wirow-io/wirow-server/discussions).
 Please be patient and note what project maintainers have limited time provide a free support on this forum.
 
-Fill an [issue](https://github.com/wirow-io/wirow-server/issues) If you believe that Wirow has a software bug.
+Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe that Wirow has a software bug.
 
 ## Software used by Wirow
 
