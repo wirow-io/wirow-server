@@ -40,6 +40,13 @@ please contact us at info@wirow.io
 ![](./docs/artwork/Screens/screen3.png)
 
 
+## How to get support
+
+If you have a question, advice or an issue related to your server setup ask for help at [Wirow Discussion Group](https://github.com/wirow-io/wirow-server/discussions).
+Please be patient and note what project maintainers have limited time provide a free support on this forum.
+
+Fill an [issue](https://github.com/wirow-io/wirow-server/issues) If you believe that Wirow has a software bug.
+
 
 
 ## Building Docker Image
