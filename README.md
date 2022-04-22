@@ -67,7 +67,7 @@ Before starting Wirow docker container
 - Review `/config/wirow.ini` ip/network options, ssl certs section (if you don't plan to use Let's Encrypt).
 
 ```sh
-docker run wirow -h
+docker run --rm wirow -h
 ```
 
 ```sh
