@@ -26,16 +26,6 @@ Please be patient and note what project maintainers have limited time provide a 
 
 Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe that Wirow has a software bug.
 
-## Software used by Wirow
-
-- [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
-- [EJDB2 - Embeddable JSON Database engine](https://github.com/Softmotions/ejdb)
-- [IWNET - Asynchronous HTTP Library](https://github.com/Softmotions/iwnet)
-- [Excalidraw - A Whiteboard Web UI](https://github.com/excalidraw/excalidraw)
-- [FFmpeg](https://ffmpeg.org)
-- [Sentry error reporting](https://sentry.io)
-- [Svelte Frontend Framework](https://svelte.dev)
-
 ## Intro
 
 [![Wirow intro](./docs/artwork/Screens/youtube.jpg)](https://www.youtube.com/watch?v=14-DI3lk_P0)
@@ -46,4 +36,13 @@ Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe 
 
 ![](./docs/artwork/Screens/screen3.png)
 
+## Software used by Wirow
+
+- [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
+- [EJDB2 - Embeddable JSON Database engine](https://github.com/Softmotions/ejdb)
+- [IWNET - Asynchronous HTTP Library](https://github.com/Softmotions/iwnet)
+- [Excalidraw - A Whiteboard Web UI](https://github.com/excalidraw/excalidraw)
+- [FFmpeg](https://ffmpeg.org)
+- [Sentry error reporting](https://sentry.io)
+- [Svelte Frontend Framework](https://svelte.dev)
 
