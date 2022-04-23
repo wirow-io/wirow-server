@@ -89,6 +89,7 @@ Example:
 
 docker run --name wirow wirow -n mywirow.example.com -a start01
 ```
+Later you may change your password and manage users by Admin UI.
 
 ### Wirow server on your host with own HTTPS certificates
 
