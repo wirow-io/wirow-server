@@ -34,7 +34,7 @@ Example:
 
 ```sh
 
-# Below the `start01` is the initial password for `admin` user
+# Below `start01` is the initial password for `admin` user
 
 docker run --name wirow wirow -n mywirow.example.com -a start01
 ```
@@ -60,7 +60,7 @@ echo -e '\n\n[main]' >> ./wirow.ini
 echo 'cert_file = {config_file_dir}/wirow-ecdsacert.pem' >> ./wirow.ini
 echo 'cert_key_file = {config_file_dir}/wirow-eckey.pem' >> ./wirow.ini
 
-# Below the `start01` is the initial password for admin user
+# Below `start01` is the initial password for admin user
 
 docker run --name wirow -v ${WORKDIR}/config:/config wirow -a start01
 
