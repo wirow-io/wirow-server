@@ -49,7 +49,7 @@ Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe 
 
 
 
-## Building Docker Image
+## Wirow Docker Image
 
 [Wirow server Dockerfile](https://github.com/wirow-io/wirow-server/blob/master/docker/Dockerfile)
 
