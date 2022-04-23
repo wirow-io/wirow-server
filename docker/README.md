@@ -1,4 +1,4 @@
-## Wirow Docker Image
+## Docker Image
 
 [Wirow server Dockerfile](https://github.com/wirow-io/wirow-server/blob/master/docker/Dockerfile)
 
