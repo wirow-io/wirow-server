@@ -84,7 +84,10 @@ Please check what your host is accessible by your domain name and 80/443, 44300-
 Example:
 
 ```sh
-docker run --name wirow wirow -n mywirow.example.com
+
+# Below the `start01` is the initial password for `admin` user
+
+docker run --name wirow wirow -n mywirow.example.com -a start01
 ```
 
 ### Wirow server on your host with own HTTPS certificates
@@ -108,7 +111,7 @@ echo -e '\n\n[main]' >> ./wirow.ini
 echo 'cert_file = {config_file_dir}/wirow-ecdsacert.pem' >> ./wirow.ini
 echo 'cert_key_file = {config_file_dir}/wirow-eckey.pem' >> ./wirow.ini
 
-# Below the `start01` is an initial password for admin user
+# Below the `start01` is the initial password for admin user
 
 docker run --name wirow -v ${WORKDIR}/config:/config wirow -a start01
 
