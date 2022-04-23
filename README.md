@@ -36,6 +36,11 @@ Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe 
 
 ![](./docs/artwork/Screens/screen3.png)
 
+## Guides
+
+- [Wirow Server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc) ([pdf](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.pdf))
+- [Wirow Server Configuration Reference](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow-configuration.ini)
+
 ## Software used by Wirow
 
 - [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
