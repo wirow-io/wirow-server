@@ -21,7 +21,7 @@ Before starting Wirow docker container
 docker run --rm wirow -h
 ```
 
-**Now we have three options to run Wirow server:**
+**Now we have three options how to run a Wirow server:**
 - Wirow server on your domain with Let's Encrypt HTTPS Certificates. (Recommended)
 - Wirow server on your host with own HTTPS certificates.
 - Wirow server behind HTTP proxy.
