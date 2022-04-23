@@ -664,6 +664,8 @@ static void _on_msg(struct _worker *w, char *cmd, size_t cmd_len) {
         rc = _notify_event_handlers(WRC_EVT_AUDIO_OBSERVER_SILENCE, target_resource, 0, 0), data_with_event = false;
       } else if (!strcmp(event, "volumes")) {
         rc = _notify_event_handlers(WRC_EVT_AUDIO_OBSERVER_VOLUMES, target_resource, jbl, 0);
+      } else if (!strcmp(event, "dominantspeaker")) {
+        rc = _notify_event_handlers(WRC_EVT_ACTIVE_SPEAKER, target_resource, jbl, 0);
       } else if (!strcmp(event, "icestatechange")) {
         rc = _notify_event_handlers(WRC_EVT_TRANSPORT_ICE_STATE_CHANGE, target_resource, jbl, 0);
       } else if (!strcmp(event, "iceselectedtuplechange")) {
