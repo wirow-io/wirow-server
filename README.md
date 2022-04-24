@@ -77,7 +77,7 @@ Before starting Wirow docker container
 docker run --rm wirow -h
 ```
 
-**Now you have three ways how to run a Wirow server:**
+**You have three options how to run a Wirow server:**
 - Wirow server on your domain with Let's Encrypt HTTPS Certificates. (Recommended)
 - Wirow server on your host with own HTTPS certificates.
 - Wirow server behind HTTP proxy.
@@ -98,7 +98,7 @@ Later you may change your password and manage users by Admin UI.
 
 ### Wirow server on your host with own HTTPS certificates
 
-Here is the Example how it could be done:
+Here is the Example:
 
 ```sh
 
@@ -133,7 +133,7 @@ docker run --name wirow -v ${WORKDIR}/config:/config wirow -a start01
 23 Apr 17:15:06.791 INFO: HTTP/HTTPS redirect port: 80
 ```
 
-Now open your browser `https://172.17.0.2` (specific to this example) then enter `admin/start01` credentials at login page.
+Point your browser `https://172.17.0.2` (specific to this example) then use `admin/start01` credentials at login page.
 Later you may change your password and manage users by Admin UI.
 
 ### Wirow server behind HTTP proxy
