@@ -1168,8 +1168,8 @@ iwrc gr_shutdown_noweb(void) {
   IWRC(iwtp_shutdown(&g_env.tp, true), rc);
   IWRC(iwstw_shutdown(&g_env.stw, true), rc);
   iwn_poller_destroy(&g_env.poller);
-  wrc_close();
   rct_close();
+  wrc_close();
   grh_ws_close();
   iwn_wf_destroy(g_env.wf);
   iwn_wf_destroy(g_env.wf80);
