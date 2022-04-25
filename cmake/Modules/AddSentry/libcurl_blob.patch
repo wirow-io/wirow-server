@@ -1,0 +1,94 @@
+--- a/include/sentry.h
++++ b/include/sentry.h
+@@ -815,6 +815,13 @@ SENTRY_API void sentry_options_set_ca_certs(
+ SENTRY_API const char *sentry_options_get_ca_certs(
+     const sentry_options_t *opts);
+ 
++/**
++ * Configures the ssl certificates blob for verification.
++ * See CURLOPT_CAINFO_BLOB in libcurl
++ */
++SENTRY_API void sentry_options_set_ca_certs_blob(
++    sentry_options_t *opts, void *blob, size_t blob_len);
++
+ /**
+  * Configures the name of the http transport thread.
+  */
+--- a/src/sentry_options.c
++++ b/src/sentry_options.c
+@@ -78,6 +78,7 @@ sentry_options_free(sentry_options_t *opts)
+     sentry_free(opts->dist);
+     sentry_free(opts->http_proxy);
+     sentry_free(opts->ca_certs);
++    sentry_free(opts->ca_certs_blob);
+     sentry_free(opts->transport_thread_name);
+     sentry__path_free(opts->database_path);
+     sentry__path_free(opts->handler_path);
+@@ -207,6 +208,15 @@ sentry_options_get_ca_certs(const sentry_options_t *opts)
+     return opts->ca_certs;
+ }
+ 
++void
++sentry_options_set_ca_certs_blob(sentry_options_t *opts, void *blob, size_t blob_len)
++{
++    sentry_free(opts->ca_certs_blob);
++    opts->ca_certs_blob = sentry_malloc(blob_len);
++    opts->ca_certs_blob_len = blob_len;
++    memcpy(opts->ca_certs_blob, blob, blob_len);
++}
++
+ void
+ sentry_options_set_transport_thread_name(
+     sentry_options_t *opts, const char *name)
+--- a/src/sentry_options.h
++++ b/src/sentry_options.h
+@@ -37,6 +37,8 @@ typedef struct sentry_options_s {
+     char *dist;
+     char *http_proxy;
+     char *ca_certs;
++    void *ca_certs_blob;
++    size_t ca_certs_blob_len;
+     char *transport_thread_name;
+     sentry_path_t *database_path;
+     sentry_path_t *handler_path;
+--- a/src/transports/sentry_transport_curl.c
++++ b/src/transports/sentry_transport_curl.c
+@@ -19,6 +19,7 @@ typedef struct curl_transport_state_s {
+     CURL *curl_handle;
+     char *http_proxy;
+     char *ca_certs;
++    struct curl_blob ca_certs_blob;
+     sentry_rate_limiter_t *ratelimiter;
+     bool debug;
+ } curl_bgworker_state_t;
+@@ -52,6 +53,7 @@ sentry__curl_bgworker_state_free(void *_state)
+     sentry__dsn_decref(state->dsn);
+     sentry__rate_limiter_free(state->ratelimiter);
+     sentry_free(state->ca_certs);
++    sentry_free(state->ca_certs_blob.data);
+     sentry_free(state->http_proxy);
+     sentry_free(state);
+ }
+@@ -77,6 +79,12 @@ sentry__curl_transport_start(
+     state->ca_certs = sentry__string_clone(options->ca_certs);
+     state->curl_handle = curl_easy_init();
+     state->debug = options->debug;
++    if (options->ca_certs_blob) {
++        size_t blob_len = options->ca_certs_blob_len;
++        state->ca_certs_blob.data = sentry_malloc(blob_len);
++        state->ca_certs_blob.len = blob_len;
++        memcpy(state->ca_certs_blob.data, options->ca_certs_blob, blob_len);
++    }
+ 
+     sentry__bgworker_setname(bgworker, options->transport_thread_name);
+ 
+@@ -181,6 +189,9 @@ sentry__curl_send_task(void *_envelope, void *_state)
+     if (state->ca_certs) {
+         curl_easy_setopt(curl, CURLOPT_CAINFO, state->ca_certs);
+     }
++    if (state->ca_certs_blob.data) {
++        curl_easy_setopt(curl, CURLOPT_CAINFO_BLOB, &state->ca_certs_blob);
++    }
+ 
+     CURLcode rv = curl_easy_perform(curl);
+ 

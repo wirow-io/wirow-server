@@ -20,6 +20,7 @@
 #include "gr_task_worker.h"
 #include "gr_db_init.h"
 #include "gr_crypt.h"
+#include "gr_sentry.h"
 #include "grh_routes.h"
 #include "grh_session.h"
 #include "grh_ws.h"
@@ -1317,6 +1318,9 @@ int main(int argc, char **argv) {
     return rv;
   }
   iwrc rc = RCR(gr_init_noweb(argc, argv));
+
+  RCC(rc, finish, gr_sentry_init(argc, argv));
+
   RCC(rc, finish, grh_routes_configure());
   RCC(rc, finish, _server_listen());
 
@@ -1337,6 +1341,7 @@ finish:
       gr_shutdown_noweb();
     }
   }
+  gr_sentry_dispose();
   iwlog_info2("Goodbye!");
   return rc ? EXIT_FAILURE : EXIT_SUCCESS;
 }
