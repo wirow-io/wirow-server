@@ -99,7 +99,7 @@ translations.update({
     'ChatInput.tooltip_send_file': 'Send file',
     'ChatInput.file_dropzone': 'Drop files here to send',
     'ChatInput.file_upload_error': 'Error uploading file {name}',
-    'ChatInput.file_upload_success': 'File sended {name}',
+    'ChatInput.file_upload_success': 'File uploaded {name}',
     'ChatInput.file_upload_progress': 'Uploading {count} files: {percent}%',
     'ChatInput.file_upload_forbidden': 'You should be logged in to send files',
     'ChatInput.file_size_limit': 'File {name} is bigger than allowed {limit}Mb',
