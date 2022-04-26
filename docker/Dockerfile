@@ -13,8 +13,6 @@ ENV CFLAGS=-static
 ENV CXX=clang++
 ENV CXXFLAGS=-static
 RUN cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DIW_EXEC=ON
-    # -DSENTRY_DSN=https://03df4a1959b04851a3584fe644c00dba@sentry.greenrooms.io/2 \
-    # -DSENTRY_FRONT_DSN=https://cf164227e7c8415eae2e905d984c258d@sentry.greenrooms.io/3 \
 RUN make -j4
 
 FROM alpine:latest
