@@ -72,7 +72,9 @@ static int _handler_wf_root(struct iwn_wf_req *req, void *user_data) {
 static int _handler_basic(struct iwn_wf_req *req, void *data) {
   req->http->on_request_dispose = grh_req_data_dispose_all;
   req->http->session_cookie_max_age_sec = g_env.session_cookies_max_age;
-  req->http->session_cookie_params = "; samesite=none";
+  if (iwn_http_request_is_secure(req->http)) {
+    req->http->session_cookie_params = "; samesite=none";
+  }
   grh_auth_request_init(req);
   for (struct gr_pair *h = g_env.http_headers; h; h = h->next) {
     if (h->name && h->sv) {

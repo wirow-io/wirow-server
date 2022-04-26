@@ -24,6 +24,8 @@
 #include <iowow/iwutils.h>
 #include <iowow/iwlog.h>
 
+#include <iwnet/iwnet.h>
+
 #include <string.h>
 #include <errno.h>
 #include <arpa/inet.h>
@@ -356,7 +358,11 @@ iwrc gr_sentry_init(int argc, char **argv) {
 
   sentry_options_set_auto_session_tracking(options, 0);
 
+#ifdef DEBUG
   sentry_options_set_debug(options, 1);
+#endif
+
+  sentry_options_set_ca_certs_blob(options, (void*)iwn_cacerts, iwn_cacerts_len);
 
 #ifdef GIT_REVISION
   sentry_options_set_release(options, XSTR(GIT_REVISION));
