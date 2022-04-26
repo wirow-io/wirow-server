@@ -22,94 +22,56 @@
 </script>
 
 <template>
-  {#if member}
-    <Video {stream} audioLevel={$audioLevel * 0.5} mirror={member.itsme && !$sharingEnabled}>
-      {#if !$videoEnabled}
-        <VideoUserOverlay name={$name} />
-      {/if}
-      <div class="video-toolbar">
-        {#if member.itsme}
-          {#if $videoInputDevices.length > 0}
-            <Tooltip>
-              <Button
-                bind:toggled={$videoInputMuted}
-                icon={videoIcon}
-                toggleIcon={videoMuteIcon}
-                toggleIconClass="toggled-onmedia"
-                componentClass="onmedia"
-              />
-              <div slot="tooltip">
-                {$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
-              </div>
-            </Tooltip>
-          {/if}
-          {#if $audioInputDevices.length > 0}
-            <Tooltip>
-              <Button
-                bind:toggled={$audioInputMuted}
-                icon={microphoneIcon}
-                toggleIcon={microphoneMuteIcon}
-                toggleIconClass="toggled-onmedia"
-                componentClass="onmedia"
-              />
-              <div slot="tooltip">
-                {$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
-              </div>
-            </Tooltip>
-          {/if}
-          <div class="flex-expand" />
+  <Video {stream} audioLevel={$audioLevel * 0.5} mirror={member.itsme && !$sharingEnabled}>
+    {#if !$videoEnabled}
+      <VideoUserOverlay name={$name} />
+    {/if}
+    <div class="video-toolbar">
+      {#if member.itsme}
+        {#if $videoInputDevices.length > 0}
           <Tooltip>
             <Button
-              autotoggle={false}
-              componentClass="onmedia"
-              icon={desktopIcon}
-              on:click={() => member.onToggleSharing()}
-              toggleIcon={desktopIcon}
+              bind:toggled={$videoInputMuted}
+              icon={videoIcon}
+              toggleIcon={videoMuteIcon}
               toggleIconClass="toggled-onmedia"
-              toggled={$sharingEnabled}
+              componentClass="onmedia"
             />
             <div slot="tooltip">
-              {$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
+              {$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
             </div>
           </Tooltip>
+        {/if}
+        {#if $audioInputDevices.length > 0}
           <Tooltip>
             <Button
-              on:click={() => member.toggleFullscreen()}
-              toggled={member.fullscreen}
-              autotoggle={false}
-              componentClass="onmedia"
-              icon={fullScreenIcon}
-              toggleIcon={fullScreenIcon}
+              bind:toggled={$audioInputMuted}
+              icon={microphoneIcon}
+              toggleIcon={microphoneMuteIcon}
               toggleIconClass="toggled-onmedia"
+              componentClass="onmedia"
             />
             <div slot="tooltip">
-              {$_(
-                member.fullscreen
-                  ? 'MeetingGridUnit.tooltip_exit_fuulscreen'
-                  : 'MeetingGridUnit.tooltip_enter_fuulscreen'
-              )}
+              {$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
             </div>
           </Tooltip>
-        {:else}
+        {/if}
+        <div class="flex-expand" />
+        <Tooltip>
           <Button
-            hidden={$videoEnabled}
-            toggled={!$videoEnabled}
-            clickable={false}
-            icon={videoIcon}
-            toggleIcon={videoMuteIcon}
-            toggleIconClass="toggled-onmedia"
+            autotoggle={false}
             componentClass="onmedia"
-          />
-          <Button
-            hidden={$audioEnabled}
-            toggled={!$audioEnabled}
-            clickable={false}
-            icon={microphoneIcon}
-            toggleIcon={microphoneMuteIcon}
+            icon={desktopIcon}
+            on:click={() => member.onToggleSharing()}
+            toggleIcon={desktopIcon}
             toggleIconClass="toggled-onmedia"
-            componentClass="onmedia"
+            toggled={$sharingEnabled}
           />
-          <div class="flex-expand" />
+          <div slot="tooltip">
+            {$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
+          </div>
+        </Tooltip>
+        <Tooltip>
           <Button
             on:click={() => member.toggleFullscreen()}
             toggled={member.fullscreen}
@@ -119,16 +81,50 @@
             toggleIcon={fullScreenIcon}
             toggleIconClass="toggled-onmedia"
           />
+          <div slot="tooltip">
+            {$_(
+              member.fullscreen ? 'MeetingGridUnit.tooltip_exit_fuulscreen' : 'MeetingGridUnit.tooltip_enter_fuulscreen'
+            )}
+          </div>
+        </Tooltip>
+      {:else}
+        <Button
+          hidden={$videoEnabled}
+          toggled={!$videoEnabled}
+          clickable={false}
+          icon={videoIcon}
+          toggleIcon={videoMuteIcon}
+          toggleIconClass="toggled-onmedia"
+          componentClass="onmedia"
+        />
+        <Button
+          hidden={$audioEnabled}
+          toggled={!$audioEnabled}
+          clickable={false}
+          icon={microphoneIcon}
+          toggleIcon={microphoneMuteIcon}
+          toggleIconClass="toggled-onmedia"
+          componentClass="onmedia"
+        />
+        <div class="flex-expand" />
+        <Button
+          on:click={() => member.toggleFullscreen()}
+          toggled={member.fullscreen}
+          autotoggle={false}
+          componentClass="onmedia"
+          icon={fullScreenIcon}
+          toggleIcon={fullScreenIcon}
+          toggleIconClass="toggled-onmedia"
+        />
+      {/if}
+    </div>
+    <div class="video-footer">
+      <div class="caption" class:itsme={member.itsme}>
+        {#if isRoomOwner}
+          <Icon size="" icon={crownIcon} />
         {/if}
+        {$name}
       </div>
-      <div class="video-footer">
-        <div class="caption" class:itsme={member.itsme}>
-          {#if isRoomOwner}
-            <Icon size="" icon={crownIcon} />
-          {/if}
-          {$name}
-        </div>
-      </div>
-    </Video>
-  {/if}
+    </div>
+  </Video>
 </template>
