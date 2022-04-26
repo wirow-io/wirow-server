@@ -185,9 +185,14 @@ struct gr_env {
     int max_entries;  /**< Maximum number of entries in the 'volumes”' event. Default 16. */
     int threshold;    /**< Minimum average volume (in dBvo from -127 to 0) for entries in the 'volumes' event. Default
                          -55.*/
-    int  interval_ms; /*< Interval in ms for checking audio volumes. Default 1000. */
+    int  interval_ms; /*< Interval in ms for checking audio volumes. Default 800. */
     bool disabled;
   } alo;
+  /// Active speaker observer
+  struct {
+    int  interval_ms; /*< Interval in ms for checking active speacker event. Default: 300. */
+    bool disabled;
+  } aso;
   struct {
     const char *endpoint;                /**< ACME service directory endpoint */
   } acme;

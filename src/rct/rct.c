@@ -218,6 +218,7 @@ void rct_resource_get_worker_id_lk(void *v, wrc_resource_t *worker_id_out) {
       *worker_id_out = ((rct_transport_t*) b)->router->worker_id;
       break;
     case RCT_TYPE_OBSERVER_AL:
+    case RCT_TYPE_OBSERVER_AS:
       *worker_id_out = ((rct_rtp_observer_t*) b)->router->worker_id;
       break;
     default:
@@ -949,6 +950,11 @@ static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data
       // if (g_env.log.verbose) {
       //   iwlog_info("RCT WRC_EVT_AUDIO_OBSERVER_VOLUMES: %u", resource_id);
       // }
+      break;
+    case WRC_EVT_ACTIVE_SPEAKER:
+      if (g_env.log.verbose) {
+        iwlog_info("RCT WRC_EVT_ACTIVE_SPEAKER: %u", resource_id);
+      }
       break;
     case WRC_EVT_ROOM_CREATED:
       if (g_env.log.verbose) {

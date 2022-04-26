@@ -81,8 +81,9 @@ extern struct rct_state rct_state;
 #define RCT_TYPE_CONSUMER         0x80U
 #define RCT_TYPE_CONSUMER_DATA    0x100U
 #define RCT_TYPE_CONSUMER_ALL     (RCT_TYPE_CONSUMER | RCT_TYPE_CONSUMER_DATA)
-#define RCT_TYPE_OBSERVER_AL      0x200U
-#define RCT_TYPE_OBSERVER_ALL     (RCT_TYPE_OBSERVER_AL)
+#define RCT_TYPE_OBSERVER_AL      0x200U // Audio level
+#define RCT_TYPE_OBSERVER_AS      0x400U // Active speaker
+#define RCT_TYPE_OBSERVER_ALL     (RCT_TYPE_OBSERVER_AL | RCT_TYPE_OBSERVER_AS)
 
 #define RCT_TYPE_ROOM        0x400U
 #define RCT_TYPE_ROOM_MEMBER 0x800U
@@ -381,8 +382,8 @@ struct rct_resource_ref {
 #define RCT_ROOM_MEETING 0x01U
 #define RCT_ROOM_WEBINAR 0x02U
 #define RCT_ROOM_PRIVATE 0x04U
-// Audio level observer enabled
-#define RCT_ROOM_ALO 0x08U
+#define RCT_ROOM_ALO     0x08U // Audio level observer enabled
+#define RCT_ROOM_ASO     0x10U // Active specaker observer enabled
 // Room members leave/join events are not stored into room log
 #define RCT_ROOM_LIGHT RCT_ROOM_WEBINAR
 
@@ -400,8 +401,8 @@ typedef struct rct_room {
   bool     close_pending;
   bool     close_pending_task;
 #if (ENABLE_WHITEBOARD == 1)
-  char     *whiteboard_link; // Link that stores actual link for whiteboard opening
-  int      num_whiteboard_clicks; // How many times whiteboard has been opened. On first notify room members
+  char *whiteboard_link;       // Link that stores actual link for whiteboard opening
+  int   num_whiteboard_clicks; // How many times whiteboard has been opened. On first notify room members
 #endif
 } rct_room_t;
 
@@ -418,9 +419,9 @@ typedef struct rct_room_member {
   JBL_NODE rtp_capabilities;
 } rct_room_member_t;
 
-const char *rct_resource_type_name(int type);
+const char* rct_resource_type_name(int type);
 
-void *rct_resource_close_lk(void *b);
+void* rct_resource_close_lk(void *b);
 
 void rct_resource_close(wrc_resource_t resource_id);
 
@@ -428,9 +429,9 @@ void rct_resource_ref_unlock(void *b, bool locked, int nrefs, const char *tag);
 
 void rct_resource_ref_keep_locking(void *b, bool locked, int nrefs, const char *tag);
 
-void *rct_resource_ref_locked(void *b, int nrefs, const char *tag);
+void* rct_resource_ref_locked(void *b, int nrefs, const char *tag);
 
-void *rct_resource_ref_lk(void *b, int nrefs, const char *tag);
+void* rct_resource_ref_lk(void *b, int nrefs, const char *tag);
 
 iwrc rct_resource_register_lk(void *b);
 
@@ -459,19 +460,19 @@ iwrc rct_set_resource_data(wrc_resource_t resource_id, const char *data);
  * @param resource_id Resource identifier.
  * @return Pointer to associated data or NULL
  */
-char *rct_get_resource_data_copy(wrc_resource_t resource_id);
+char* rct_get_resource_data_copy(wrc_resource_t resource_id);
 
-void *rct_resource_by_uuid_unsafe(const char *resource_uuid, int type);
+void* rct_resource_by_uuid_unsafe(const char *resource_uuid, int type);
 
-void *rct_resource_by_id_unsafe(wrc_resource_t resource_id, int type);
+void* rct_resource_by_id_unsafe(wrc_resource_t resource_id, int type);
 
-void *rct_resource_by_uuid_locked(const char *resource_uuid, int type, const char *tag);
+void* rct_resource_by_uuid_locked(const char *resource_uuid, int type, const char *tag);
 
-void *rct_resource_by_id_locked(wrc_resource_t resource_id, int type, const char *tag);
+void* rct_resource_by_id_locked(wrc_resource_t resource_id, int type, const char *tag);
 
-void *rct_resource_by_id_locked_lk(wrc_resource_t resource_id, int type, const char *tag);
+void* rct_resource_by_id_locked_lk(wrc_resource_t resource_id, int type, const char *tag);
 
-void *rct_resource_by_id_locked_exists(wrc_resource_t resource_id, int type, const char *tag);
+void* rct_resource_by_id_locked_exists(wrc_resource_t resource_id, int type, const char *tag);
 
 void rct_resource_unlock_exists(void *b, const char *tag);
 
@@ -521,7 +522,7 @@ iwrc rct_resource_json_command_lk_then_unlock(
   JBL              cmd_data,
   JBL             *cmd_out);
 
-const char *rct_hash_func_name(rct_hash_func_e hf);
+const char* rct_hash_func_name(rct_hash_func_e hf);
 
 rct_hash_func_e rct_name_to_hash_func(const char *name);
 

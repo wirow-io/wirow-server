@@ -578,6 +578,17 @@ static int _ini_handler(
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
+  } else if (!strcmp(section, "aso")) {
+    if (!strcmp(name, "interval_ms")) {
+      int64_t llv = iwatoi(value);
+      if (llv > 0) {
+        g_env.aso.interval_ms = llv;
+      }
+    } else if (!strcmp(name, "disabled")) {
+      PARSE_BOOL(g_env.aso.disabled);
+    } else {
+      iwlog_warn("Config: Unknown [%s] section property %s", section, name);
+    }
   } else if (!strcmp(section, "acme")) {
     if (!strcmp(name, "endpoint")) {
       g_env.acme.endpoint = iwpool_strdup(pool, value, &rc);
@@ -844,6 +855,9 @@ static void _configure(int argc, char *argv[]) {
   }
   if (g_env.alo.threshold == 0) {
     g_env.alo.threshold = -55;
+  }
+  if (g_env.aso.interval_ms < 1) {
+    g_env.aso.interval_ms = 300;
   }
   if (g_env.log.verbose) {
     iwlog_info("worker:router_options=\n%s", g_env.router_optons_json ?: "");

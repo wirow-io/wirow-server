@@ -1,6 +1,6 @@
 #cd ./build/src/rct/tests
 file ./build/src/wirow_g
-set args -c ./config/testing.ini
+set args -c ./config/development.ini
 
 set confirm off
 set follow-fork-mode parent

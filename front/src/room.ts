@@ -132,6 +132,11 @@ interface RoomMemberJoinEvent {
   owner: boolean;
 }
 
+interface ActiveSpeakerEvent {
+  event: 'ACTIVE_SPEAKER';
+  member: string;
+}
+
 interface VolumesEvent {
   event: 'VOLUMES';
   data: Array<[string, number]>;
@@ -937,6 +942,10 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     this.safeEmit('silence', this);
   }
 
+  private onActiveSpeaker(ev: ActiveSpeakerEvent) {
+    // TODO:
+  }
+
   private onWSCommand(cmd: string, msg: WSMessage) {
     switch (cmd) {
       case 'consumer':
@@ -964,6 +973,9 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
         break;
       case 'SILENCE':
         this.onSilence();
+        break;
+      case 'ACTIVE_SPEAKER':
+        this.onActiveSpeaker(<ActiveSpeakerEvent>msg);
         break;
       case 'ROOM_MEMBER_JOIN':
         if (msg.room === this.uuid) {
