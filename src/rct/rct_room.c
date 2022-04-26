@@ -25,6 +25,7 @@
 #include "rct/rct_producer.h"
 #include "rct/rct_consumer.h"
 #include "rct/rct_observer_al.h"
+#include "rct/rct_observer_as.h"
 #include "utils/html.h"
 #include "lic/lic.h"
 
@@ -645,6 +646,20 @@ static iwrc _rct_room_alo_attach(wrc_resource_t room_id) {
                                 &observer_id);
 }
 
+/// Attach active-speaker observer to the room
+static iwrc _rct_room_aso_attach(wrc_resource_t room_id) {
+  wrc_resource_t router_id, observer_id;
+  rct_room_t *room = rct_resource_by_id_locked(room_id, RCT_TYPE_ROOM, __func__);
+  if (!room) {
+    rct_resource_unlock(room, __func__);
+    return GR_ERROR_RESOURCE_NOT_FOUND;
+  }
+  router_id = room->router->id;
+  rct_resource_unlock(room, __func__);
+
+  return rct_observer_as_create(router_id, g_env.aso.interval_ms, &observer_id);
+}
+
 #if (ENABLE_WHITEBOARD == 1)
 
 static iwrc _rct_init_whiteboard(rct_room_t *room) {
@@ -967,6 +982,9 @@ static iwrc _room_create(struct ws_message_ctx *ctx, void *op) {
     if (!g_env.alo.disabled) {
       spec.flags |= RCT_ROOM_ALO;
     }
+    if (!g_env.aso.disabled) {
+      spec.flags |= RCT_ROOM_ASO;
+    }
   }
 
   RCC(rc, finish, _member_fill_join_spec(spec.uuid, ctx->wss, member_node, &spec.member));
@@ -985,6 +1003,9 @@ static iwrc _room_create(struct ws_message_ctx *ctx, void *op) {
 
   if (spec.flags & RCT_ROOM_ALO) {
     RCC(rc, finish, _rct_room_alo_attach(room_id));
+  }
+  if (spec.flags & RCT_ROOM_ASO) {
+    RCC(rc, finish, _rct_room_aso_attach(room_id));
   }
 
 finish:
@@ -2003,7 +2024,8 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
   const char *error = 0, *uuid;
 
   uint32_t kind;
-  wrc_resource_t producer_id, transport_id, observer_id = 0;
+  wrc_resource_t producer_id, transport_id;
+  wrc_resource_t al_observer_id = 0, as_observer_id = 0;
   JBL_NODE n = 0, rtp_parameters;
 
   bool locked = false, paused = false;
@@ -2041,11 +2063,13 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
   transport_id = transport->id;
 
   // Find audio level observer
-  if ((kind & RTP_KIND_AUDIO) && (member->room->flags & RCT_ROOM_ALO)) {
+  if ((kind & RTP_KIND_AUDIO) && (member->room->flags & (RCT_ROOM_ALO | RCT_ROOM_ASO))) {
     for (struct rct_rtp_observer *o = member->room->router->observers; o; o = o->next) {
       if (o->type & RCT_TYPE_OBSERVER_AL) {
-        observer_id = o->id;
-        break;
+        al_observer_id = o->id;
+      }
+      if (o->type & RCT_TYPE_OBSERVER_AS) {
+        as_observer_id = o->id;
       }
     }
   }
@@ -2085,8 +2109,11 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
     _consumer_create(id, producer->id);
   }
 
-  if (observer_id) {
-    RCC(rc, finish, rct_observer_add_producer(observer_id, producer_id));
+  if (al_observer_id) {
+    RCC(rc, finish, rct_observer_add_producer(al_observer_id, producer_id));
+  }
+  if (as_observer_id) {
+    RCC(rc, finish, rct_observer_add_producer(as_observer_id, producer_id));
   }
 
   RCC(rc, finish, jbn_from_json("{}", &n, ctx->pool));
@@ -2918,6 +2945,64 @@ finish:
   iwpool_destroy(pool);
 }
 
+void _on_active_speaker(wrc_resource_t resource_id, JBL data) {
+  iwrc rc = 0;
+  JBL jbl = 0;
+  JBL_NODE n;
+  wrc_resource_t room_id = 0;
+  IWPOOL *pool = iwpool_create(jbl_size(data) * 2);
+  RCB(finish, pool);
+
+  jbl_at(data, "/data/producerId", &jbl);
+  if (!jbl || jbl_type(jbl) != JBV_STR) {
+    goto finish;
+  }
+  const char *producer_id = jbl_get_str(jbl);
+  RCC(rc, finish, jbn_from_json("{}", &n, pool));
+  RCC(rc, finish, jbn_add_item_str(n, "event", "ACTIVE_SPEAKER", IW_LLEN("ACTIVE_SPEAKER"), 0, pool));
+
+  rct_lock();
+  rct_rtp_observer_t *o = rct_resource_by_id_unsafe(resource_id, RCT_TYPE_OBSERVER_AS);
+  if (o) {
+    rct_room_t *room = o->router->room;
+    if (room) {
+      room_id = room->id;
+      rct_resource_base_t *b = rct_resource_by_uuid_unsafe(producer_id, RCT_TYPE_PRODUCER);
+      if (b) {
+        wrc_resource_t mid = (wrc_resource_t) (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) b->id);
+        b = rct_resource_by_id_unsafe(mid, RCT_TYPE_ROOM_MEMBER);
+        if (b) {
+          jbn_add_item_str(n, "member", b->uuid, IW_UUID_STR_LEN, 0, pool);
+        } else {
+          room_id = 0;
+        }
+      }
+    }
+  }
+  rct_unlock();
+
+  if (room_id) {
+    struct send_task *t = malloc(sizeof(*t));
+    if (t) {
+      *t = (struct send_task) {
+        .room_id = room_id,
+        .jbn = n,
+        .pool = pool,
+        .tag = __func__
+      };
+      RCC(rc, finish, iwtp_schedule(g_env.tp, _send_to_task, t));
+      pool = 0; // pool will be destroyed by _send_to_task
+    }
+  }
+
+finish:
+  jbl_destroy(&jbl);
+  iwpool_destroy(pool);
+  if (rc) {
+    iwlog_ecode_error3(rc);
+  }
+}
+
 #if (ENABLE_RECORDING == 1)
 
 void _on_recording(wrc_resource_t room_id, bool recording) {
@@ -3003,6 +3088,9 @@ static iwrc _rct_event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL 
       break;
     case WRC_EVT_AUDIO_OBSERVER_VOLUMES:
       _on_alo_volumes(resource_id, data);
+      break;
+    case WRC_EVT_ACTIVE_SPEAKER:
+      _on_active_speaker(resource_id, data);
       break;
 #if (ENABLE_RECORDING == 1)
     case WRC_EVT_ROOM_RECORDING_ON:

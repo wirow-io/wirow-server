@@ -1,5 +1,6 @@
 greenrooms (1.0.0) UNRELEASED; urgency=medium
 
+  * Implemented: Active speaker identification on server side.
   * Fix: critical bugs in iwnet
   * Fix: disabled Set-Cookie samesite=node for non secure connections
   * Added Docker image
