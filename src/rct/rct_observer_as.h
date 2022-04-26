@@ -16,10 +16,13 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#include <iwnet/iwn_wf.h>
+/**
+ * Active speaker observer.
+ */
 
-iwrc gr_sentry_init(int argc, char **argv);
+#include "rct_observer.h"
 
-iwrc grh_route_sentry(struct iwn_wf_route *parent);
-
-iwrc gr_sentry_dispose(void);
+iwrc rct_observer_as_create(
+  wrc_resource_t  router_id,
+  int             interval_ms,
+  wrc_resource_t *out_observer_id);
