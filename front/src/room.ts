@@ -171,7 +171,8 @@ export type RoomEvents =
   | 'roomName'
   | 'recordingStatus'
   | 'volumes'
-  | 'silence';
+  | 'silence'
+  | 'activeSpeaker';
 
 const TRACKED_EVENTS = new Set([
   'VOLUMES',
@@ -193,17 +194,6 @@ const TRACKED_EVENTS = new Set([
 const TRACKED_COMMANDS = new Set(['consumer', 'broadcast_message', 'message', 'member_info', 'room_info']);
 
 export const roomStore = writable<Room | undefined>(undefined);
-
-function transportDirectionAsFlags(direction: TransportDirection): number {
-  switch (direction) {
-    case 'send':
-      return MRES_SEND_TRANSPORT;
-    case 'recv':
-      return MRES_RECV_TRANSPORT;
-    default:
-      return 0;
-  }
-}
 
 function rtpStreamKindAsFlags(kind: MediaTrackKind | string): number {
   switch (kind) {
@@ -943,7 +933,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   }
 
   private onActiveSpeaker(ev: ActiveSpeakerEvent) {
-    // TODO:
+    this.safeEmit('activeSpeaker', ev.member);
   }
 
   private onWSCommand(cmd: string, msg: WSMessage) {

@@ -78,7 +78,7 @@
 <template>
   <div class="video-aspect-wrapper {componentClass}">
     <div class="audio-meter" style="width:0" bind:this={audioMeterRef} />
-    <div class="video-block"><video bind:this={videoRef} class:mirror={mirror} playsinline autoplay /></div>
+    <div class="video-block"><video bind:this={videoRef} class:mirror playsinline autoplay /></div>
     <slot />
   </div>
 </template>
