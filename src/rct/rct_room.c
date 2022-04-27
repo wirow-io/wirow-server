@@ -558,7 +558,8 @@ static iwrc _rct_room_join_lk(
   if (id) {
     _wss_member_unset(spec->wss); // Unset link to wss
     member = rct_resource_by_id_unsafe(id, RCT_TYPE_ROOM_MEMBER);
-  } else if (spec->member_uuid[0]) {
+  }
+  if (!member && spec->member_uuid[0]) {
     member = rct_resource_by_uuid_unsafe(spec->member_uuid, RCT_TYPE_ROOM_MEMBER);
   }
   if (member) {
