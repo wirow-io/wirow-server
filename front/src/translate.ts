@@ -195,8 +195,8 @@ translations.update({
     'ActivityBar.tooltip_shareScreen': 'Share screen',
     'ActivityBar.tooltip_shareScreenStop': 'Stop screen sharing',
 
-    'MeetingGridUnit.tooltip_enter_fuulscreen': 'Enter fullscreen',
-    'MeetingGridUnit.tooltip_exit_fuulscreen': 'Exit fullscreen',
+    'MeetingGridUnit.tooltip_enter_fulscreen': 'Enter fullscreen',
+    'MeetingGridUnit.tooltip_exit_fulscreen': 'Exit fullscreen',
 
 
     'RoomInfoDialog.activity': 'Activity',

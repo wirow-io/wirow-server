@@ -189,6 +189,7 @@ const TRACKED_EVENTS = new Set([
   'ROOM_RECORDING_ON',
   'ROOM_RECORDING_OFF',
   'ROOM_WHITEBOARD_INIT',
+  'ACTIVE_SPEAKER',
 ]);
 
 const TRACKED_COMMANDS = new Set(['consumer', 'broadcast_message', 'message', 'member_info', 'room_info']);
@@ -290,6 +291,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   readonly producers: Producer[] = [];
   readonly stateSend = writable<RoomConnectionState>('');
   readonly stateRecv = writable<RoomConnectionState>('');
+  readonly activeSpeaker = writable<string>('');
   readonly stateMerged = derived<[Readable<RoomConnectionState>, Readable<RoomConnectionState>], RoomConnectionState>(
     [this.stateSend, this.stateRecv],
     ([ss, rs]): RoomConnectionState => {
@@ -933,6 +935,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   }
 
   private onActiveSpeaker(ev: ActiveSpeakerEvent) {
+    this.activeSpeaker.set(ev.member);
     this.safeEmit('activeSpeaker', ev.member);
   }
 

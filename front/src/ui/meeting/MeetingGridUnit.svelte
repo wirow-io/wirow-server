@@ -17,12 +17,20 @@
 
   export let memberUuid: string;
 
-  const member = $meetingRoomStore?.memberByUUID(memberUuid)!;
+  const room = $meetingRoomStore!;
+  const member = room.memberByUUID(memberUuid)!;
+
   let { stream, name, audioEnabled, audioLevel, videoEnabled, isRoomOwner } = member;
+  let { activeSpeaker: activeSpeakerStore } = room;
+  let activeSpeaker = false;
+
+  $: {
+    activeSpeaker = !member.itsme && !member.fullscreen && $videoEnabled && $activeSpeakerStore === memberUuid;
+  }
 </script>
 
 <template>
-  <Video {stream} audioLevel={$audioLevel * 0.5} mirror={member.itsme && !$sharingEnabled}>
+  <Video {stream} {activeSpeaker} audioLevel={$audioLevel * 0.5} mirror={member.itsme && !$sharingEnabled}>
     {#if !$videoEnabled}
       <VideoUserOverlay name={$name} />
     {/if}
@@ -83,7 +91,7 @@
           />
           <div slot="tooltip">
             {$_(
-              member.fullscreen ? 'MeetingGridUnit.tooltip_exit_fuulscreen' : 'MeetingGridUnit.tooltip_enter_fuulscreen'
+              member.fullscreen ? 'MeetingGridUnit.tooltip_exit_fuulscreen' : 'MeetingGridUnit.tooltip_enter_fulscreen'
             )}
           </div>
         </Tooltip>

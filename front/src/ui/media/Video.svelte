@@ -2,13 +2,15 @@
   import { onMount } from 'svelte';
 
   export let stream: MediaProvider | null = null;
-  export let audioLevel: number = 0;
+  export let audioLevel = 0;
   export let componentClass = '';
-  export let mirror: boolean = false;
+  export let mirror = false;
+  export let activeSpeaker = false;
 
   let videoRef: HTMLElement | undefined;
   let audioMeterRef: HTMLElement | undefined;
   let animationFrameId: number | undefined;
+  let stateClass = '';
 
   function initVideo(..._: any[]) {
     const video = videoRef as HTMLMediaElement;
@@ -65,18 +67,32 @@
     }
   }
 
+  function updateActiveSpeaker(val: boolean) {
+    if (val === true) {
+      stateClass = 'active-speaker';
+      videoRef?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    } else {
+      stateClass = '';
+    }
+  }
+
   onMount(() => {
     updateAudioLevel();
     return () => {};
   });
 
+  function onClick() {
+    videoRef?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
+
   $: initVideo(stream, videoRef);
   $: updateAudioLevel(audioLevel);
+  $: updateActiveSpeaker(activeSpeaker);
 </script>
 
 <!-- svelte-ignore a11y-media-has-caption -->
 <template>
-  <div class="video-aspect-wrapper {componentClass}">
+  <div class="video-aspect-wrapper {stateClass} {componentClass}" on:click={onClick}>
     <div class="audio-meter" style="width:0" bind:this={audioMeterRef} />
     <div class="video-block"><video bind:this={videoRef} class:mirror playsinline autoplay /></div>
     <slot />

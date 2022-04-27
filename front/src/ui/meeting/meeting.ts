@@ -272,7 +272,7 @@ export class MeetingRoom {
 
   readonly roomName: Writable<string>;
 
-  readonly activeSpeaker: Writable<string>;
+  readonly activeSpeaker: Readable<string>;
 
   readonly memberOnFullScreen: Readable<MeetingMember | undefined>;
 
@@ -341,7 +341,7 @@ export class MeetingRoom {
     this._members.forEach((m) => this.uuid2member.set(m.uuid, m));
     this.members = writable(this._members);
     this.roomName = writable(room.name);
-    this.activeSpeaker = writable('');
+    this.activeSpeaker = room.activeSpeaker;
 
     this.membersOnGrid = derived<Readable<MeetingMember[]>, MeetingMember[]>(this.members, (members) => {
       if (this.room.type === 'webinar') {
@@ -373,12 +373,6 @@ export class MeetingRoom {
     room.addListener('volumes', this.onVolumes);
     this.onRecordingStatus = this.onRecordingStatus.bind(this);
     room.addListener('recordingStatus', this.onRecordingStatus);
-    this.onActiveSpeaker = this.onActiveSpeaker.bind(this);
-    room.addListener('activeSpeaker', this.onActiveSpeaker);
-  }
-
-  private onActiveSpeaker(memberId: string) {
-    this.activeSpeaker.set(memberId);
   }
 
   private onVolumes(v: Array<[string, number]>) {

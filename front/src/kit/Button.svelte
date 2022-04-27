@@ -125,7 +125,7 @@
     disabled={disabled || loading}
     class:disabled
     class:hidden
-    class:no-clickable={!clickable}
+    class:non-clickable={!clickable}
     on:click|stopPropagation={onClick}
   >
     {#if loading}

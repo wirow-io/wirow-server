@@ -213,7 +213,8 @@ button {
   }
 
   &.non-clickable {
-    cursor: auto;
+    cursor: inherit;
+    pointer-events: none;
   }
 }
 

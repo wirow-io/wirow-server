@@ -1,9 +1,9 @@
 greenrooms (1.0.0) UNRELEASED; urgency=medium
 
-  * Implemented: Active speaker identification on server side.
-  * Fix: critical bugs in iwnet
-  * Fix: disabled Set-Cookie samesite=node for non secure connections
-  * Added Docker image
-  * Disabled building of unneeded libdeflate shared library
+  * Implemented: Active speaker identification.
+  * Fix: iwnet upgraded (critical bugs fixed).
+  * Fix: disabled Set-Cookie samesite=node for non secure connections.
+  * Added Docker image.
+  * Disabled building of unneeded libdeflate shared library.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 11 Mar 2020 17:24:44 +0700
