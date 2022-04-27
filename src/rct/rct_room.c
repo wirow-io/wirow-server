@@ -556,12 +556,14 @@ static iwrc _rct_room_join_lk(
 
   wrc_resource_t id = _wss_member_get(spec->wss);
   if (id) {
-    iwlog_warn("Member %" PRIu32 " is joined already, unlinking...", id);
     _wss_member_unset(spec->wss); // Unset link to wss
     member = rct_resource_by_id_unsafe(id, RCT_TYPE_ROOM_MEMBER);
-    if (member) {
-      rct_resource_close_lk(member);
-    }
+  } else if (spec->member_uuid[0]) {
+    member = rct_resource_by_uuid_unsafe(spec->member_uuid, RCT_TYPE_ROOM_MEMBER);
+  }
+  if (member) {
+    iwlog_warn("Member %s already joined, unlinking...", member->uuid);
+    rct_resource_close_lk(member);
   }
 
   RCB(finish, pool = iwpool_create_empty());
