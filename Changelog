@@ -1,4 +1,4 @@
-greenrooms (1.0.0) UNRELEASED; urgency=medium
+greenrooms (1.0.1) UNRELEASED; urgency=medium
 
   * Implemented: Active speaker identification.
   * Fix: iwnet upgraded (critical bugs fixed).
