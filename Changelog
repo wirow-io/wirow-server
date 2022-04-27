@@ -1,5 +1,6 @@
 greenrooms (1.0.1) UNRELEASED; urgency=medium
 
+  * Fix: Endless loop due to typo.
   * Implemented: Active speaker identification.
   * Fix: iwnet upgraded (critical bugs fixed).
   * Fix: disabled Set-Cookie samesite=node for non secure connections.

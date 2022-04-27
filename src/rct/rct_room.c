@@ -417,6 +417,9 @@ static void _member_close_lk(void *m) {
   // Unregister room member
   for (rct_room_member_t *p = room->members, *pp = 0; p; p = p->next) {
     if (p->id == member->id) {
+      if (room->active_speaker_member_id == p->id) {
+        room->active_speaker_member_id = 0;
+      }
       if (pp) {
         pp->next = p->next;
       } else {
@@ -553,18 +556,19 @@ static iwrc _rct_room_join_lk(
   rct_room_t *room = 0;
   rct_room_member_t *member = 0;
   IWPOOL *pool = 0;
+  bool has_member_uuid = spec->member_uuid[0] != '\0';
 
   wrc_resource_t id = _wss_member_get(spec->wss);
   if (id) {
-    _wss_member_unset(spec->wss); // Unset link to wss
     member = rct_resource_by_id_unsafe(id, RCT_TYPE_ROOM_MEMBER);
   }
-  if (!member && spec->member_uuid[0]) {
+  if (!member && has_member_uuid) {
     member = rct_resource_by_uuid_unsafe(spec->member_uuid, RCT_TYPE_ROOM_MEMBER);
   }
   if (member) {
     iwlog_warn("Member %s already joined, unlinking...", member->uuid);
     rct_resource_close_lk(member);
+    has_member_uuid = false;
   }
 
   RCB(finish, pool = iwpool_create_empty());
@@ -577,7 +581,7 @@ static iwrc _rct_room_join_lk(
   member->close = _member_close_lk;
   member->dispose = _member_dispose_lk;
 
-  if (spec->member_uuid[0]) {
+  if (has_member_uuid) {
     memcpy(member->uuid, spec->member_uuid, IW_UUID_STR_LEN);
   } else {
     iwu_uuid4_fill(member->uuid);
@@ -812,6 +816,7 @@ static iwrc _room_join(struct ws_message_ctx *ctx, void *op) {
        room: room uuid,
        name: room name,
        member: room member uuid,
+       activeSpeaker: uuid,
        members: [
          [member_uuid, member_name],
          ...
@@ -866,12 +871,16 @@ finish:
   } else {
     RCC(rc, fatal, jbn_from_json("{}", &n, ctx->pool));
     rct_room_member_t *member = rct_resource_by_id_locked(member_id, RCT_TYPE_ROOM_MEMBER, __func__);
+    rct_room_member_t *active_speaker = rct_resource_by_id_unsafe(room->active_speaker_member_id, RCT_TYPE_ROOM_MEMBER);
     if (member) {
       jbn_add_item_str(n, "room", member->room->uuid, -1, 0, ctx->pool);
       jbn_add_item_str(n, "cid", member->room->cid, -1, 0, ctx->pool);
       jbn_add_item_i64(n, "ts", member->room->cid_ts, 0, ctx->pool);
       jbn_add_item_str(n, "name", member->room->name, -1, 0, ctx->pool);
-      jbn_add_item_str(n, "member", member->uuid, -1, 0, ctx->pool);
+      jbn_add_item_str(n, "member", member->uuid, IW_UUID_STR_LEN, 0, ctx->pool);
+      if (active_speaker) {
+        jbn_add_item_str(n, "activeSpeaker", active_speaker->uuid, IW_UUID_STR_LEN, 0, ctx->pool);
+      }
       jbn_add_item_bool(n, "owner", member->user_id == member->room->owner_user_id, 0, ctx->pool);
       jbn_add_item_bool(n, "recording", member->room->has_started_recording, 0, ctx->pool);
 #if (ENABLE_WHITEBOARD == 1)
@@ -1800,7 +1809,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
   }
   rct_unlock(), locked = false; // Unlock but keeping +1 ref to member
 
-  for (size_t i = 0, l = iwulist_length(&clist); i < l; ++l) {
+  for (size_t i = 0, l = iwulist_length(&clist); i < l; ++i) {
     wrc_resource_t id = *(wrc_resource_t*) iwulist_at2(&clist, i);
     rct_transport_close_async(id);
   }
@@ -2975,6 +2984,7 @@ void _on_active_speaker(wrc_resource_t resource_id, JBL data) {
         wrc_resource_t mid = (wrc_resource_t) (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) b->id);
         b = rct_resource_by_id_unsafe(mid, RCT_TYPE_ROOM_MEMBER);
         if (b) {
+          room->active_speaker_member_id = b->id;
           jbn_add_item_str(n, "member", b->uuid, IW_UUID_STR_LEN, 0, pool);
         } else {
           room_id = 0;

@@ -394,12 +394,13 @@ typedef struct rct_room {
   rct_router_t *router;
   char *name;
   struct rct_room_member *members;
-  int64_t  owner_user_id;
-  uint32_t flags;
-  int      num_recording_sessions;
-  bool     has_started_recording;
-  bool     close_pending;
-  bool     close_pending_task;
+  int64_t owner_user_id;
+  wrc_resource_t active_speaker_member_id;
+  uint32_t       flags;
+  int  num_recording_sessions;
+  bool has_started_recording;
+  bool close_pending;
+  bool close_pending_task;
 #if (ENABLE_WHITEBOARD == 1)
   char *whiteboard_link;       // Link that stores actual link for whiteboard opening
   int   num_whiteboard_clicks; // How many times whiteboard has been opened. On first notify room members

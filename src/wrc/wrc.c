@@ -687,7 +687,6 @@ static void _on_msg(struct _worker *w, char *cmd, size_t cmd_len) {
       } else if (!strcmp(event, "layerschange")) {
         rc = _notify_event_handlers(WRC_EVT_CONSUMER_LAYERSCHANGE, target_resource, jbl, 0);
       } else {
-        fprintf(stderr, "!!!!unknown event=%s\n", event);
         data_with_event = false;
       }
       // TODO:

@@ -74,10 +74,11 @@ interface CreateRoomResponse {
   ts: number; /// Room creation timestamp
   rtpCapabilities: RtpCapabilities;
   member: string; /// Member UUID
+  activeSpeaker?: string; /// Active speaker UUID
   owner: boolean; /// If calling user is a room owner
   recording: boolean; /// True if recording session is active
   members: [member_uuid: string, member_name: string, is_owner: boolean][];
-  whiteboard: string | undefined; /// Pre-generated whiteboard link (if exists)
+  whiteboard?: string; /// Pre-generated whiteboard link (if exists)
 }
 
 interface InitTransportResponse {
@@ -371,6 +372,9 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
       headerExtensions: rtpCapabilities.headerExtensions?.filter((ext) => ext.uri !== 'urn:3gpp:video-orientation'),
     };
     this.whiteboard = whiteboard;
+    if (resp.activeSpeaker) {
+      this.activeSpeaker.set(resp.activeSpeaker);
+    }
 
     const user = getUserSnapshot();
     if (user) {
