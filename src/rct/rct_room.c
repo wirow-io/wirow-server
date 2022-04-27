@@ -556,19 +556,19 @@ static iwrc _rct_room_join_lk(
   rct_room_t *room = 0;
   rct_room_member_t *member = 0;
   IWPOOL *pool = 0;
-  bool has_member_uuid = spec->member_uuid[0] != '\0';
+  bool member_has_uuid = spec->member_uuid[0] != '\0';
 
   wrc_resource_t id = _wss_member_get(spec->wss);
   if (id) {
     member = rct_resource_by_id_unsafe(id, RCT_TYPE_ROOM_MEMBER);
   }
-  if (!member && has_member_uuid) {
+  if (!member && member_has_uuid) {
     member = rct_resource_by_uuid_unsafe(spec->member_uuid, RCT_TYPE_ROOM_MEMBER);
   }
   if (member) {
     iwlog_warn("Member %s already joined, unlinking...", member->uuid);
     rct_resource_close_lk(member);
-    has_member_uuid = false;
+    member_has_uuid = false;
   }
 
   RCB(finish, pool = iwpool_create_empty());
@@ -581,7 +581,7 @@ static iwrc _rct_room_join_lk(
   member->close = _member_close_lk;
   member->dispose = _member_dispose_lk;
 
-  if (has_member_uuid) {
+  if (member_has_uuid) {
     memcpy(member->uuid, spec->member_uuid, IW_UUID_STR_LEN);
   } else {
     iwu_uuid4_fill(member->uuid);
