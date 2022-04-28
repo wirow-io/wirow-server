@@ -4,7 +4,7 @@ https://wirow.io
 
 A full featured self-hosted video web-conferencing platform shipped as a single executable.
 
-- Works on any Linux machine.
+- Works on Linux, FreeBSD.
 - Single executable, no setup is required.
 - Let's Encrypt integration - instant SSL certs generation for your web-conferencing host.
 - Unlimited meeting rooms and webinars.
