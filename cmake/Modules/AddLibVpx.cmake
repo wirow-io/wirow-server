@@ -2,18 +2,18 @@ set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libvpx.a")
 
 set(PATCH_COMMAND "${CMAKE_CURRENT_LIST_DIR}/AddLibVpx/patch.sh")
 
+if(DEFINED CMAKE_C_COMPILER)
+  set(CONFIGURE_ENV "CC=${CMAKE_C_COMPILER} ${CONFIGURE_ENV}")
+endif()
+if(DEFINED CMAKE_CXX_COMPILER)
+  set(CONFIGURE_ENV "CXX=${CMAKE_CXX_COMPILER} ${CONFIGURE_ENV}")
+endif()
+
 set(CONFIGURE_COMMAND
-    "./configure --prefix=${CMAKE_BINARY_DIR} --disable-examples --disable-docs \
+    "${CONFIGURE_ENV} ./configure --prefix=${CMAKE_BINARY_DIR} --disable-examples --disable-docs \
                         --disable-tools --enable-vp8 --enable-vp9 --enable-vp9-highbitdepth \
                         --as=yasm --disable-sse4_1 --disable-runtime_cpu_detect \
                         --disable-unit-tests")
-if(DEFINED CMAKE_C_COMPILER)
-  set(BUILD_COMMAND "CC=${CMAKE_C_COMPILER} ${BUILD_COMMAND}")
-endif()
-if(DEFINED CMAKE_CXX_COMPILER)
-  set(BUILD_COMMAND "CXX=${CMAKE_CXX_COMPILER} ${BUILD_COMMAND}")
-endif()
-
 ExternalProject_Add(
   extern_vpx
   PREFIX ${CMAKE_BINARY_DIR}

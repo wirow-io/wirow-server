@@ -17,7 +17,7 @@
 
 #include "gr_watcher.h"
 
-#if defined __linux__
+#if defined(__linux__)
 
 #include "grh_ws.h"
 #include <iwnet/iwn_scheduler.h>
@@ -95,6 +95,7 @@ iwrc gr_watcher_init(void) {
 #else
 
 iwrc gr_watcher_init(void) {
+  iwlog_warn("No gr_watcher mmodule on this system");
   return 0;
 }
 

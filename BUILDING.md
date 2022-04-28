@@ -5,8 +5,8 @@
 * Linux, macOS or FreeBSD
 * Git
 * CMake v3.18+
-* GNU Make, autoconf, automake, ninja
-* Nodejs v14+ and Yarn package manager v1.22+
+* GNU Make, autoconf, automake, libtool, ninja (optional)
+* Nodejs v16+ and Yarn package manager v1.22+
 * Clang C/C++ compiler v10+ or GCC v9+
 * yasm assembler (yasm) needed by FFmpeg
 * Python 3 pip package manager (python3-pip)
