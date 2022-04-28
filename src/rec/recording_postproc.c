@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <regex.h>
 #include <string.h>
 #include <errno.h>

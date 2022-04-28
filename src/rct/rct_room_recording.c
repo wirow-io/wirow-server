@@ -31,6 +31,8 @@
 #include <assert.h>
 #include <stdatomic.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 extern struct gr_env g_env;
 
