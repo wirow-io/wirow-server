@@ -2,7 +2,7 @@
 
 ### Build Prerequisites
 
-* Linux, macOS or FreeBSD
+* Linux or FreeBSD
 * Git
 * CMake v3.18+
 * GNU Make, autoconf, automake, libtool, ninja (optional)

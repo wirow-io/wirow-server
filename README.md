@@ -4,7 +4,7 @@ https://wirow.io
 
 A full featured self-hosted video web-conferencing platform shipped as a single executable.
 
-- Works on Linux, FreeBSD.
+- Works on Linux and FreeBSD.
 - Single executable, no setup is required.
 - Let's Encrypt integration - instant SSL certs generation for your web-conferencing host.
 - Unlimited meeting rooms and webinars.
@@ -148,11 +148,11 @@ Please refer to [Wirow server Administrator's Guide](https://github.com/wirow-io
 
 ### Build Prerequisites
 
-* Linux, macOS or FreeBSD
+* Linux or FreeBSD
 * Git
 * CMake v3.18+
-* GNU Make, autoconf, automake, ninja
-* Nodejs v14+ and Yarn package manager v1.22+
+* GNU Make, autoconf, automake, libtool, ninja (optional)
+* Nodejs v16+ and Yarn package manager v1.22+
 * Clang C/C++ compiler v10+ or GCC v9+
 * yasm assembler (yasm) needed by FFmpeg
 * Python 3 pip package manager (python3-pip)
