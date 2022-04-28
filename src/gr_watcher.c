@@ -16,10 +16,11 @@
  */
 
 #include "gr_watcher.h"
+
+#if defined __linux__
+
 #include "grh_ws.h"
-
 #include <iwnet/iwn_scheduler.h>
-
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -90,3 +91,11 @@ iwrc gr_watcher_init(void) {
   }
   return rc;
 }
+
+#else
+
+iwrc gr_watcher_init(void) {
+  return 0;
+}
+
+#endif
