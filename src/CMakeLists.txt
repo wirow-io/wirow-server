@@ -158,11 +158,14 @@ add_dependencies(grs_g generated license)
 target_link_libraries(grs_g PUBLIC ${PROJECT_LLIBRARIES})
 set_target_properties(grs_g PROPERTIES COMPILE_FLAGS "-DIW_EXEC" OUTPUT_NAME
                                                                  wirow_g)
-add_custom_command(
-  TARGET grs_g
-  POST_BUILD
-  COMMAND ${CMAKE_OBJCOPY} --compress-debug-sections=zlib
-          "$<TARGET_FILE:grs_g>")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_custom_command(
+    TARGET grs_g
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} --compress-debug-sections=zlib
+            "$<TARGET_FILE:grs_g>")
+endif()
 
 add_custom_target(
   grs ALL
