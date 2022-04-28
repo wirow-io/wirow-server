@@ -81,7 +81,7 @@ static iwrc _fetch_hash_and_blob(
   IWP_FILE_STAT fstat;
   br_sha256_context ctx;
 
-  iwrc rc = RCR(iwp_exec_path(path));
+  iwrc rc = RCR(iwp_exec_path(path, sizeof(path)));
   RCR(iwp_fstat(path, &fstat));
 
   if (fstat.size < LICENSE_BLOB_MAX_SIZE) {
