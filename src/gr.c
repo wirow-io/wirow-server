@@ -50,6 +50,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
+#include <pthread_np.h>
+#endif
+
 #define GRSTART_FLAG_USE_AUTO_IP             0x01U
 #define GRSTART_FLAG_CONFIG_HAS_ANNOUNCED_IP 0x02U
 #define GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS 0x04U

@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <errno.h>
-#include <linux/limits.h>
 
 int64_t gr_crypt_pwhash(const void *input, size_t len, int64_t salt, char hash[65]) {
   uint64_t seed = salt;
