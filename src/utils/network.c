@@ -30,7 +30,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <ejdb2/iowow/iwlog.h>
+#include <iowow/iwlog.h>
 
 static int _ifa_score(struct ifaddrs *ifa) {
   if (  !ifa->ifa_addr
@@ -39,10 +39,26 @@ static int _ifa_score(struct ifaddrs *ifa) {
   }
   const char *name = ifa->ifa_name;
   if (name) {
-    if ((strncmp(name, "eth", 3) == 0) || (strncmp(name, "en", 2) == 0)) {
+    if (  strncmp(name, "eth", 3) == 0 || strncmp(name, "en", 2) == 0
+#ifdef __FreeBSD__
+       || strcmp(name, "vtn0") == 0
+       || strcmp(name, "dc0") == 0
+       || strcmp(name, "ed0") == 0
+       || strcmp(name, "em0") == 0
+       || strcmp(name, "re0") == 0
+#endif
+          ) {
+      return ifa->ifa_addr->sa_family == AF_INET ? 4 : 3;
+    } else if (  strncmp(name, "wl", 2) == 0
+#ifdef __FreeBSD__
+              || strncmp(name, "dc", 2) == 0
+              || strncmp(name, "ed", 2) == 0
+              || strncmp(name, "em", 2) == 0
+              || strncmp(name, "re", 2) == 0
+              || strncmp(name, "vt", 2) == 0
+#endif
+                 ) {
       return ifa->ifa_addr->sa_family == AF_INET ? 3 : 2;
-    } else if (strncmp(name, "wl", 2) == 0) {
-      return ifa->ifa_addr->sa_family == AF_INET ? 2 : 1;
     }
   }
   return 0;

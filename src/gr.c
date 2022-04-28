@@ -906,7 +906,8 @@ static void _configure(int argc, char *argv[]) {
       RCGO(rc, exit);
       iwlog_info("Autodetected external IP address for wirow server: %s", g_env.auto_ip);
     } else {
-      iwlog_warn2("Failed to detect network IP address of wirow server");
+      g_env.auto_ip = "127.0.0.1";
+      iwlog_warn("Failed to detect network IP address of wirow server, fallback to: %s", g_env.auto_ip);
     }
   }
 
