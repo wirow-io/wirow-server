@@ -65,7 +65,7 @@ set(CONFIGURE_COMMAND
  --enable-filter=aformat,format,vflip,hflip,transpose,color,scale,trim,atrim,setpts,asetpts,amerge,anullsrc,pan,null,anull,overlay,concat,copy,acopy,abuffer,buffer,abuffersink,buffersink \
  --enable-bsf=setts \
  --pkg-config-flags=\"--static\" \
- --extra-ldflags=\"-static -lpthread -L${CMAKE_BINARY_DIR}/lib\" \
+ --extra-ldflags=\"-lpthread -L${CMAKE_BINARY_DIR}/lib\" \
  --extra-cflags=\"-I${CMAKE_BINARY_DIR}/include\" \
  --extra-cxxflags=\"-I${CMAKE_BINARY_DIR}/include\"")
 
