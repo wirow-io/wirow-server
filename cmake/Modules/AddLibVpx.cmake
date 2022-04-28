@@ -1,5 +1,7 @@
 set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libvpx.a")
 
+set(PATCH_COMMAND "${CMAKE_CURRENT_LIST_DIR}/AddLibVpx/patch.sh")
+
 set(CONFIGURE_COMMAND
     "./configure --prefix=${CMAKE_BINARY_DIR} --disable-examples --disable-docs \
                         --disable-tools --enable-vp8 --enable-vp9 --enable-vp9-highbitdepth \
@@ -18,6 +20,7 @@ ExternalProject_Add(
   URL ${CMAKE_SOURCE_DIR}/extra/libvpx
   BUILD_IN_SOURCE ON
   CONFIGURE_COMMAND sh -c "${CONFIGURE_COMMAND}"
+  PATCH_COMMAND sh -c "${PATCH_COMMAND}"
   BUILD_BYPRODUCTS ${BYPRODUCT}
   LOG_UPDATE OFF
   LOG_BUILD OFF

@@ -8,7 +8,7 @@ set(LIBSWSCALE "${CMAKE_BINARY_DIR}/lib/libswscale.a")
 set(LIBSWRESAMPLE "${CMAKE_BINARY_DIR}/lib/libswresample.a")
 set(LIBFFMPEGCL "${CMAKE_BINARY_DIR}/lib/libffmpegcl.a")
 
-set(PATCH_COMMAND "${CMAKE_SOURCE_DIR}/cmake/Modules/AddFFmpeg/patch.sh")
+set(PATCH_COMMAND "${CMAKE_CURRENT_LIST_DIR}/AddFFmpeg/patch.sh")
 
 set(CONFIGURE_COMMAND
     "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/lib/pkgconfig \
