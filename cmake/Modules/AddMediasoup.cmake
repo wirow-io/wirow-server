@@ -6,15 +6,21 @@ set(ABASE "${MEDIASOUP_OUT_DIR}/Release")
 
 set(LIBMEDIASOUP "${ABASE}/libmediasoup-worker.a")
 
+find_program(MAKE_EXEC gmake)
+if(NOT MAKE_EXEC)
+  set(MAKE_EXEC make)
+endif()
+
 set(MEDIASOUP_BUILD_COMMAND
-    "make -C ${MEDIASOUP_SOURCE_DIR}/worker \
+  "${MAKE_EXEC} -C ${MEDIASOUP_SOURCE_DIR}/worker \
     MEDIASOUP_BUILDTYPE=Release MEDIASOUP_OUT_DIR=${MEDIASOUP_OUT_DIR} \
           libmediasoup-worker")
 
 if(CMAKE_CROSSCOMPILING)
   if(CROSS_NAME)
-    configure_file(${CMAKE_CURRENT_LIST_DIR}/AddMediasoup/meson-${CROSS_NAME}.ini.in
-                   ${CMAKE_BINARY_DIR}/meson-${CROSS_NAME}.ini @ONLY)
+    configure_file(
+      ${CMAKE_CURRENT_LIST_DIR}/AddMediasoup/meson-${CROSS_NAME}.ini.in
+      ${CMAKE_BINARY_DIR}/meson-${CROSS_NAME}.ini @ONLY)
     set(MEDIASOUP_BUILD_COMMAND
         "MESON_ARGS='--cross-file ${CMAKE_BINARY_DIR}/meson-${CROSS_NAME}.ini' ${MEDIASOUP_BUILD_COMMAND}"
     )

@@ -10,6 +10,8 @@ file(
   FILES_MATCHING
   PATTERN "*.sh")
 
+find_program(YARN_EXEC yarn REQUIRED NO_CMAKE_FIND_ROOT_PATH)
+
 if(CMAKE_CROSSCOMPILING)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/host_tools)
   file(TO_NATIVE_PATH ${CMAKE_COMMAND} native_cmake_command)
@@ -95,7 +97,7 @@ set(FRONT_BUILD
     -E
     env
     ${_ENVS}
-    yarn
+    ${YARN_EXEC}
     --non-interactive
     --no-progress
     run
@@ -118,7 +120,7 @@ add_custom_command(
   DEPENDS hoststrliteral
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/front
   USES_TERMINAL
-  COMMAND yarn --non-interactive --no-progress install --check-files
+  COMMAND ${YARN_EXEC} --non-interactive --no-progress install --check-files
   COMMAND ${FRONT_BUILD}
   COMMAND
     $<TARGET_FILE:hoststrliteral> -i "data_favicon_ico"
@@ -193,11 +195,11 @@ if(ENABLE_WHITEBOARD)
     DEPENDS hoststrliteral extern_excalidraw
     CONFIGURE_COMMAND ""
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND yarn --non-interactive --no-progress remove
+    BUILD_COMMAND ${YARN_EXEC} --non-interactive --no-progress remove
                   @excalidraw/excalidraw
-    COMMAND yarn --non-interactive --no-progress add "file:${LIBEXCALIDRAW}"
-    COMMAND yarn --non-interactive --no-progress install --check-files
-    COMMAND yarn --non-interactive --no-progress run build
+    COMMAND ${YARN_EXEC} --non-interactive --no-progress add "file:${LIBEXCALIDRAW}"
+    COMMAND ${YARN_EXEC} --non-interactive --no-progress install --check-files
+    COMMAND ${YARN_EXEC} --non-interactive --no-progress run build
     COMMAND
       $<TARGET_FILE:hoststrliteral> -i "data_front_whiteboard_index"
       build/index.html >

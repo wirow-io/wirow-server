@@ -1,8 +1,12 @@
 include(ExternalProject)
 
 set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libdeflate.a")
-
 set(BUILD_ENV "PREFIX=${CMAKE_BINARY_DIR} DISABLE_SHARED=1")
+
+find_program(MAKE_EXEC gmake)
+if(NOT MAKE_EXEC)
+  set(MAKE_EXEC make)
+endif()
 
 if(DEFINED CMAKE_C_COMPILER)
   set(BUILD_ENV "CC=${CMAKE_C_COMPILER} ${BUILD_ENV}")
@@ -12,8 +16,8 @@ if(DEFINED CMAKE_CXX_COMPILER)
   set(BUILD_ENV "CXX=${CMAKE_CXX_COMPILER} ${BUILD_ENV}")
 endif()
 
-set(BUILD_COMMAND "${BUILD_ENV} make")
-set(INSTALL_COMMAND "${BUILD_ENV} make install")
+set(BUILD_COMMAND "${BUILD_ENV} ${MAKE_EXEC}")
+set(INSTALL_COMMAND "${BUILD_ENV} ${MAKE_EXEC} install")
 
 ExternalProject_Add(
   extern_deflate
