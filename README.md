@@ -51,7 +51,7 @@ Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe 
 - [Sentry error reporting](https://sentry.io)
 - [Svelte Frontend Framework](https://svelte.dev)
 
--e 
+
 
 
 ## Docker Image
@@ -141,7 +141,7 @@ Later you may change your password and manage users by Admin UI.
 Please refer to [Wirow server Administrator's Guide](https://github.com/wirow-io/wirow-server/blob/master/docs/wirow.adoc)
 
 
--e 
+
 
 
 ## Building from sources by hands
@@ -200,7 +200,7 @@ Wirow build artifacts are located here:
 ```
 
 
--e 
+
 
 
 ## Guides
