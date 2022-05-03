@@ -187,6 +187,8 @@ const char* rct_resource_type_name(int type) {
       return "ROOM_MEMBER         ";
     case RCT_TYPE_OBSERVER_AL:
       return "RCT_TYPE_OBSERVER_AL";
+    case RCT_TYPE_OBSERVER_AS:
+      return "RCT_TYPE_OBSERVER_AS";
     case RCT_TYPE_PRODUCER_EXPORT:
       return "RCT_TYPE_PRODUCER_EX";
     default:
