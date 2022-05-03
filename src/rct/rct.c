@@ -336,7 +336,6 @@ finish:
 
 int rct_resource_get_number_of_type_lk(int type) {
   int num = 0;
-  void *val;
   IWHMAP_ITER iter;
   iwhmap_iter_init(rct_state.map_id2ptr, &iter);
   while (iwhmap_iter_next(&iter)) {
