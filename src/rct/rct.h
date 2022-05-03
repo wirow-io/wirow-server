@@ -22,7 +22,7 @@
 #include <ejdb2/iowow/iwlog.h>
 #include <ejdb2/iowow/iwuuid.h>
 #include <ejdb2/iowow/iwpool.h>
-#include <ejdb2/iowow/iwstree.h>
+#include <ejdb2/iowow/iwhmap.h>
 #include <ejdb2/iowow/iwarr.h>
 #include <ejdb2/jbl.h>
 #include <stdbool.h>
@@ -59,8 +59,8 @@ struct rct_state {
   pthread_mutex_t mtx;
   JBL_NODE available_capabilities;
   IWPOOL  *pool;
-  IWSTREE *map_uuid2ptr;
-  IWSTREE *map_id2ptr;
+  IWHMAP  *map_uuid2ptr;
+  IWHMAP  *map_id2ptr;
 };
 
 extern struct gr_env g_env;

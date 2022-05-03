@@ -73,10 +73,10 @@ static void _resource_gauge_update_lk(rct_resource_base_t *b) {
 }
 
 static void _resource_unregister_lk(wrc_resource_t resource_id) {
-  rct_resource_base_t *b = iwstree_get(rct_state.map_id2ptr, &resource_id);
+  rct_resource_base_t *b = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
   if (b) {
-    iwstree_remove(rct_state.map_uuid2ptr, b->uuid);
-    iwstree_remove(rct_state.map_id2ptr, &b->id);
+    iwhmap_remove(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
+    iwhmap_remove(rct_state.map_uuid2ptr, b->uuid);
     if (b->wid) {
       wrc_ajust_load_score(b->wid, -1);
     }
@@ -306,13 +306,13 @@ iwrc rct_resource_register_lk(void *v) {
   }
   assert(b->type > 0 && b->type < RCT_TYPE_UPPER);
 
-  rct_resource_base_t *old = iwstree_get(rct_state.map_uuid2ptr, b->uuid);
+  rct_resource_base_t *old = iwhmap_get(rct_state.map_uuid2ptr, b->uuid);
   if (old) {
     iwlog_error("RCT Double registration of resource: %s type: 0x%x", old->uuid, old->type);
   }
-  iwrc rc = iwstree_put_overwrite(rct_state.map_uuid2ptr, b->uuid, b);
+  iwrc rc = iwhmap_put(rct_state.map_uuid2ptr, b->uuid, b);
   RCGO(rc, finish);
-  RCC(rc, finish, iwstree_put_overwrite(rct_state.map_id2ptr, &b->id, b));
+  RCC(rc, finish, iwhmap_put(rct_state.map_id2ptr, (void*) (intptr_t) b->id, b));
 
   wrc_resource_t wid = 0;
   if (b->type == RCT_TYPE_ROUTER) {
@@ -337,21 +337,13 @@ finish:
 int rct_resource_get_number_of_type_lk(int type) {
   int num = 0;
   void *val;
-  IWSTREE_ITER iter;
-  iwrc rc = iwstree_iter_init(rct_state.map_id2ptr, &iter);
-  RCGO(rc, finish);
-  while (iwstree_iter_has_next(&iter)) {
-    RCC(rc, finish, iwstree_iter_next(&iter, 0, &val));
-    rct_resource_base_t *b = val;
+  IWHMAP_ITER iter;
+  iwhmap_iter_init(rct_state.map_id2ptr, &iter);
+  while (iwhmap_iter_next(&iter)) {
+    const rct_resource_base_t *b = iter.val;
     if (b && (b->type & type)) {
       ++num;
     }
-  }
-  iwstree_iter_close(&iter);
-finish:
-  if (rc) {
-    iwlog_ecode_error3(rc);
-    return -1;
   }
   return num;
 }
@@ -390,7 +382,7 @@ iwrc rct_resource_probe_by_uuid(const char *resource_uuid, rct_resource_base_t *
   }
   iwrc rc = 0;
   _lock();
-  rct_resource_base_t *rp = iwstree_get(rct_state.map_uuid2ptr, resource_uuid);
+  rct_resource_base_t *rp = iwhmap_get(rct_state.map_uuid2ptr, resource_uuid);
   if (!rp) {
     memset(b, 0, sizeof(*b));
     rc = IW_ERROR_NOT_EXISTS;
@@ -407,7 +399,7 @@ iwrc rct_resource_probe_by_id(wrc_resource_t resource_id, rct_resource_base_t *b
   }
   iwrc rc = 0;
   _lock();
-  rct_resource_base_t *rp = iwstree_get(rct_state.map_id2ptr, &resource_id);
+  rct_resource_base_t *rp = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
   if (!rp) {
     memset(b, 0, sizeof(*b));
     rc = IW_ERROR_NOT_EXISTS;
@@ -429,7 +421,7 @@ void* rct_resource_by_uuid_unsafe(const char *resource_uuid, int type) {
   if (!resource_uuid) {
     return 0;
   }
-  rct_resource_base_t *rp = iwstree_get(rct_state.map_uuid2ptr, resource_uuid);
+  rct_resource_base_t *rp = iwhmap_get(rct_state.map_uuid2ptr, resource_uuid);
   if (rp && type && (rp->type != type)) {
     iwlog_error("RTC Type: %d of resource: %d,%s doesn't much required type: %d", rp->type, rp->id, rp->uuid, type);
     return 0;
@@ -438,7 +430,7 @@ void* rct_resource_by_uuid_unsafe(const char *resource_uuid, int type) {
 }
 
 void* rct_resource_by_id_unsafe(wrc_resource_t resource_id, int type) {
-  rct_resource_base_t *rp = iwstree_get(rct_state.map_id2ptr, &resource_id);
+  rct_resource_base_t *rp = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
   if (rp && type && !(rp->type & type)) {
     return 0;
   }
@@ -1047,11 +1039,6 @@ static wrc_resource_t _rct_wrc_uuid_resolver(const char *uuid) {
   return b.id;
 }
 
-static int _map_handle2ptr_cmp(const void *p1, const void *p2) {
-  wrc_resource_t r1 = *(wrc_resource_t*) p1;
-  wrc_resource_t r2 = *(wrc_resource_t*) p2;
-  return r1 < r2 ? -1 : r1 > r2 ? 1 : 0;
-}
 
 static const char* _ecodefn(locale_t locale, uint32_t ecode) {
   if (!((ecode > _RCT_ERROR_START) && (ecode < _RCT_ERROR_END))) {
@@ -1086,11 +1073,11 @@ static const char* _ecodefn(locale_t locale, uint32_t ecode) {
 static void _destroy_lk(void) {
   wrc_register_uuid_resolver(0);
   if (rct_state.map_id2ptr) {
-    iwstree_destroy(rct_state.map_id2ptr);
+    iwhmap_destroy(rct_state.map_id2ptr);
     rct_state.map_id2ptr = 0;
   }
   if (rct_state.map_uuid2ptr) {
-    iwstree_destroy(rct_state.map_uuid2ptr);
+    iwhmap_destroy(rct_state.map_uuid2ptr);
     rct_state.map_uuid2ptr = 0;
   }
   iwpool_destroy(rct_state.pool);
@@ -1101,8 +1088,8 @@ iwrc rct_init() {
   iwrc rc = RCR(iwlog_register_ecodefn(_ecodefn));
 
   RCB(finish, rct_state.pool = iwpool_create(512));
-  RCB(finish, rct_state.map_id2ptr = iwstree_create(_map_handle2ptr_cmp, 0));
-  RCB(finish, rct_state.map_uuid2ptr = iwstree_create(iwstree_str_cmp, 0));
+  RCB(finish, rct_state.map_id2ptr = iwhmap_create_i32(0));
+  RCB(finish, rct_state.map_uuid2ptr = iwhmap_create_str(0));
 
   RCC(rc, finish, jbn_from_json((void*) data_supported_rtp_capabilities,
                                 &rct_state.available_capabilities, rct_state.pool));

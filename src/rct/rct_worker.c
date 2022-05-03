@@ -21,17 +21,11 @@
 #include <ejdb2/iowow/iwarr.h>
 
 static void _rct_on_worker_shutdown(wrc_resource_t worker_id) {
-  bool locked = true;
   rct_lock();
-
-  IWSTREE_ITER iter;
-  IWSTREE *tree = rct_state.map_id2ptr;
-  iwrc rc = iwstree_iter_init(tree, &iter);
-  RCGO(rc, finish);
-
-  while (iwstree_iter_has_next(&iter)) {
-    rct_resource_base_t *h;
-    RCC(rc, finish, iwstree_iter_next(&iter, 0, (void**) &h));
+  IWHMAP_ITER iter;
+  iwhmap_iter_init(rct_state.map_id2ptr, &iter);
+  while (iwhmap_iter_next(&iter)) {
+    const rct_resource_base_t *h = iter.val;
     if (h->type == RCT_TYPE_ROUTER) {
       rct_router_t *router = (void*) h;
       if (worker_id == -1 || router->worker_id == worker_id) {
@@ -39,15 +33,7 @@ static void _rct_on_worker_shutdown(wrc_resource_t worker_id) {
       }
     }
   }
-
-finish:
-  iwstree_iter_close(&iter);
-  if (locked) {
-    rct_unlock();
-  }
-  if (rc) {
-    iwlog_ecode_error3(rc);
-  }
+  rct_unlock();
 }
 
 iwrc rct_worker_acquire_for_router(wrc_resource_t *worker_id_out) {

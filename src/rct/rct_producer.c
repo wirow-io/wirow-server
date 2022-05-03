@@ -21,8 +21,9 @@
 #include "utils/utf8.h"
 #include "utils/network.h"
 
-#include <ejdb2/iowow/iwutils.h>
-#include <ejdb2/iowow/iwarr.h>
+#include <iowow/iwutils.h>
+#include <iowow/iwarr.h>
+#include <iowow/iwstree.h>
 #include <assert.h>
 
 #define REPORT(msg_)                         \
