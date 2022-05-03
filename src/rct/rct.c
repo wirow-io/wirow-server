@@ -50,7 +50,7 @@ void rct_unlock(void) {
 
 static void _resource_gauge_update_lk(rct_resource_base_t *b) {
   uint32_t gauge = 0;
-  int gtype = b->type;
+  int32_t gtype = b->type;
   switch (b->type) {
     case RCT_TYPE_ROOM:
       gauge = GAUGE_ROOMS;
@@ -1038,7 +1038,6 @@ static wrc_resource_t _rct_wrc_uuid_resolver(const char *uuid) {
   }
   return b.id;
 }
-
 
 static const char* _ecodefn(locale_t locale, uint32_t ecode) {
   if (!((ecode > _RCT_ERROR_START) && (ecode < _RCT_ERROR_END))) {

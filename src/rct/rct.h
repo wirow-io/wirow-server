@@ -85,10 +85,10 @@ extern struct rct_state rct_state;
 #define RCT_TYPE_OBSERVER_AS      0x400U // Active speaker
 #define RCT_TYPE_OBSERVER_ALL     (RCT_TYPE_OBSERVER_AL | RCT_TYPE_OBSERVER_AS)
 
-#define RCT_TYPE_ROOM        0x400U
-#define RCT_TYPE_ROOM_MEMBER 0x800U
+#define RCT_TYPE_ROOM        0x800U
+#define RCT_TYPE_ROOM_MEMBER 0x1000U
 
-#define RCT_TYPE_PRODUCER_EXPORT 0x1000U
+#define RCT_TYPE_PRODUCER_EXPORT 0x2000U
 
 #define RCT_TYPE_UPPER (RCT_TYPE_PRODUCER_EXPORT + 1)
 
@@ -103,7 +103,7 @@ typedef enum {
 } rct_hash_func_e;
 
 #define RCT_RESOURCE_BASE_FIELDS            \
-  int type;                                 \
+  int32_t type;                             \
   wrc_resource_t id;                        \
   char uuid[IW_UUID_STR_LEN + 1];           \
   /* Unsafe fields, resource must be \

@@ -1,5 +1,7 @@
 greenrooms (1.0.1) UNRELEASED; urgency=medium
 
+  * Fix: Wrong number of active rooms in admin pane.
+  * Perf: iwstree replaced by iwhmap.
   * Fix: Endless loop due to typo.
   * Implemented: Active speaker identification.
   * Fix: iwnet upgraded (critical bugs fixed).
