@@ -1,6 +1,7 @@
 wirow (1.0.2) UNRELEASED; urgency=medium
 
-  * ice_servers config parameter replaces deprecated turn_servers/stun_server options
+  * Impl: wirow.ini TURN/STUN servers now used by web client.
+  * Impl: ice_servers config parameter replaces deprecated turn_servers/stun_server options.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 04 May 2022 21:53:52 +0700
 
@@ -11,7 +12,7 @@ wirow (1.0.1) testing; urgency=medium
   * Fix: Wrong number of active rooms in admin pane.
   * Perf: iwstree replaced by iwhmap.
   * Fix: Endless loop due to typo.
-  * Implemented: Active speaker identification.
+  * Impl: Active speaker identification.
   * Fix: iwnet upgraded (critical bugs fixed).
   * Fix: disabled Set-Cookie samesite=node for non secure connections.
   * Implemented: Added Docker image.
