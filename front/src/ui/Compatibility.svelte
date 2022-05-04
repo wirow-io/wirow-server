@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import Bowser from 'bowser';
+  import Bowser, { BROWSER_MAP } from 'bowser';
   import * as semver from 'semver';
   import { _ } from 'svelte-intl';
   import Box from '../kit/Box.svelte';
@@ -13,7 +13,6 @@
   const safariVerion = Config.minSafariVersion;
   const webKitVersion = Config.minWebKitVersion;
   const geckoVersion = Config.minGeckoVersion;
-  const blinkVersion = Config.minBlinkVersion;
 
   const namecmp = (a: string | undefined, b: string) => a && a.toLowerCase() === b.toLowerCase();
   const vercmp = (ver: string | undefined, check: string) => ver && semver.satisfies(ver, check);
@@ -26,6 +25,7 @@
     // https://github.com/lancedikson/bowser/blob/f09411489ced05811c91cc6670a8e4ca9cbe39a7/src/constants.js
     const OS_MAP = Bowser.OS_MAP;
     const ENGINE_MAP = Bowser.ENGINE_MAP;
+    const BROWSER_MAP = Bowser.BROWSER_MAP;
 
     const result = Bowser.getParser(window.navigator.userAgent).parse().getResult();
     const { os, engine, browser } = result;
@@ -38,12 +38,18 @@
     status = !(
       namecmp(os.name, OS_MAP.iOS) ||
       namecmp(os.name, OS_MAP.Android) ||
+      namecmp(os.name, OS_MAP.ChromeOS) ||
+      namecmp(engine.name, ENGINE_MAP.Blink) ||
       (namecmp(engine.name, ENGINE_MAP.WebKit) && vercmp(browser.version, `>=${webKitVersion}`)) ||
-      (namecmp(engine.name, ENGINE_MAP.Gecko) && vercmp(browser.version, `>=${geckoVersion}`)) ||
-      (namecmp(engine.name, ENGINE_MAP.Blink) && vercmp(browser.version, `>=${blinkVersion}`))
+      (namecmp(engine.name, ENGINE_MAP.Gecko) && vercmp(browser.version, `>=${geckoVersion}`))
     );
 
     fail = status && result;
+    if (fail) {
+      console.warn('Engine: ', engine);
+      console.warn('Browser: ', browser);
+      console.warn('OS: ', os);
+    }
     return status;
   }
 </script>
