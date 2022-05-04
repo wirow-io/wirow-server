@@ -9,7 +9,7 @@
   import microphoneMuteIcon from '../../kit/icons/microphoneMute';
   import videoIcon from '../../kit/icons/video';
   import videoMuteIcon from '../../kit/icons/videoMute';
-  import { audioInputDevices,audioInputMuted,sharingEnabled,videoInputDevices,videoInputMuted } from '../../media';
+  import { audioInputDevices, audioInputMuted, sharingEnabled, videoInputDevices, videoInputMuted } from '../../media';
   import Video from '../media/Video.svelte';
   import VideoUserOverlay from '../media/VideoUserOverlay.svelte';
   import { meetingRoomStore } from './meeting';
@@ -86,7 +86,7 @@
           icon={videoIcon}
           toggleIcon={videoMuteIcon}
           toggleIconClass="toggled-onmedia"
-          componentClass="onmedia"
+          componentClass="transparent"
         />
         <Button
           hidden={$audioEnabled}
@@ -95,7 +95,7 @@
           icon={microphoneIcon}
           toggleIcon={microphoneMuteIcon}
           toggleIconClass="toggled-onmedia"
-          componentClass="onmedia"
+          componentClass="transparent"
         />
         <div class="flex-expand" />
         <Button

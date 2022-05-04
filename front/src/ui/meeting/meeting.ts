@@ -242,7 +242,7 @@ export class MeetingMember {
     if (track.kind === 'audio') {
       this._audioEnabled.set(track.enabled == true && track.muted == false);
     } else if (track.kind === 'video') {
-      this._videoEnabled.set(track.enabled == true && track.muted == false);
+      this._videoEnabled.set(track.enabled == true);
     }
   }
 
