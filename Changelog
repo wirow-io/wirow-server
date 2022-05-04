@@ -1,4 +1,4 @@
-greenrooms (1.0.1) UNRELEASED; urgency=medium
+wirow (1.0.1) testing; urgency=medium
 
   * UI: Added room time tracker.
   * UI: Media devices detection improvements.
@@ -11,4 +11,4 @@ greenrooms (1.0.1) UNRELEASED; urgency=medium
   * Implemented: Added Docker image.
   * Fix: Disabled building of unneeded libdeflate shared library.
 
- -- Anton Adamansky <adamansky@gmail.com>  Wed, 11 Mar 2020 17:24:44 +0700
+ -- Anton Adamansky <adamansky@gmail.com>  Wed, 04 May 2022 14:41:15 +0700

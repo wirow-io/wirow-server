@@ -42,9 +42,33 @@ readme() {
 EOF
 }
 
+release_tag() {
+  echo "Creating a Wirow release"
+  readme
+
+  git pull origin master
+  dch --distribution testing --no-force-save-on-release --release "" -c ./Changelog
+  VERSION=`dpkg-parsechangelog -l./Changelog -SVersion`
+  TAG="v${VERSION}"
+  CHANGESET=`dpkg-parsechangelog -l./Changelog -SChanges | sed '/^wirow.*/d' | sed '/^\s*$/d'`
+  git add ./Changelog
+  git add ./README.md
+
+  if ! git diff-index --quiet HEAD --; then
+    git commit -a -m"${TAG} landed"
+    git push origin master
+  fi
+
+  echo "${CHANGESET}" | git tag -f -a -F - "${TAG}"
+  git push origin -f --tags
+}
+
 while [ "$1" != "" ]; do
   case $1 in
     "-d"  )  readme
+             exit
+             ;;
+    "-r" )   release_tag
              exit
              ;;
   esac
