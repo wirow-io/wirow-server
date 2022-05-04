@@ -177,7 +177,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
     j = 0;
   }
   for (i = len - 2; i > j; --i) {
-    if (server[i] == ':') {
+    if (server[i] == ':' && server[i + 1] > '0' && server[i + 1] <= '9') {
       k = i;
       break;
     }
