@@ -417,7 +417,10 @@ static int _ini_handler(
       }
     } else if (!strcmp(name, "stun_servers")) {
       type = GR_STUN_SERVER_TYPE;
-      g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS;
+      rc = _add_servers(type, value);
+      if (!rc) {
+        g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS;
+      }
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
