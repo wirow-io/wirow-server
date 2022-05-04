@@ -45,9 +45,7 @@
 
     fail = status && result;
     if (fail) {
-      console.warn('Engine: ', engine);
-      console.warn('Browser: ', browser);
-      console.warn('OS: ', os);
+      console.warn('Browser: ', result);
     }
     return status;
   }
