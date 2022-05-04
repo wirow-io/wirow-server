@@ -25,7 +25,6 @@
     // https://github.com/lancedikson/bowser/blob/f09411489ced05811c91cc6670a8e4ca9cbe39a7/src/constants.js
     const OS_MAP = Bowser.OS_MAP;
     const ENGINE_MAP = Bowser.ENGINE_MAP;
-    const BROWSER_MAP = Bowser.BROWSER_MAP;
 
     const result = Bowser.getParser(window.navigator.userAgent).parse().getResult();
     const { os, engine, browser } = result;
