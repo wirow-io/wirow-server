@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
-  import Bowser, { BROWSER_MAP } from 'bowser';
+  import Bowser from 'bowser';
   import * as semver from 'semver';
   import { _ } from 'svelte-intl';
-  import Box from '../kit/Box.svelte';
   import { Config } from '../config';
+  import Box from '../kit/Box.svelte';
 
   let status: boolean | undefined = undefined;
   let fail: Bowser.Parser.ParsedResult | false = false;
