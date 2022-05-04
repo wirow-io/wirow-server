@@ -1833,6 +1833,32 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
         "/sctpParameters",
         0
       }, true, false, ctx->pool));
+
+      JBL_NODE servers = 0;
+      for (struct gr_server *s = g_env.servers; s; s = s->next) {
+        if (s->type == GR_STUN_SERVER_TYPE || s->type == GR_TURN_SERVER_TYPE) {
+          if (!servers) {
+            RCC(rc, finish, jbn_add_item_arr(spec, "iceServers", &servers, ctx->pool));
+          }
+          JBL_NODE n;
+          jbn_add_item_obj(servers, 0, &n, ctx->pool);
+          if (s->user) {
+            RCC(rc, finish, jbn_add_item_str(n, "username", s->user, -1, 0, ctx->pool));
+          }
+          if (s->password) {
+            RCC(rc, finish, jbn_add_item_str(n, "credential", s->password, -1, 0, ctx->pool));
+            RCC(rc, finish, jbn_add_item_str(n, "credentialType", "password", IW_LLEN("password"), 0, ctx->pool));
+          }
+          if (s->port) {
+            char buf[strlen(s->host) + 65];
+            snprintf(buf, sizeof(buf), "%s:%d", s->host, s->port);
+            RCC(rc, finish, jbn_add_item_str(n, "urls", buf, -1, 0, ctx->pool));
+          } else {
+            RCC(rc, finish, jbn_add_item_str(n, "urls", s->host, -1, 0, ctx->pool));
+          }
+        }
+      }
+
       if (flags & MRES_RECV_TRANSPORT) {
         spec->key = "recvTransport";
       } else {

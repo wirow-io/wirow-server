@@ -792,14 +792,6 @@ static void _configure(int argc, char *argv[]) {
     g_env.start_flags |= GRSTART_FLAG_USE_AUTO_IP;
   }
 
-  if (!(g_env.start_flags & GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS)) {
-    RCC(rc, exit, _add_servers(GR_STUN_SERVER_TYPE,
-                               "stun.l.google.com:19305"
-                               " stun1.l.google.com:19305"
-                               " stun2.l.google.com:19305"));
-    g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS;
-  }
-
   if (!g_env.host) {
     g_env.host = "auto";
     g_env.start_flags |= GRSTART_FLAG_USE_AUTO_IP;
