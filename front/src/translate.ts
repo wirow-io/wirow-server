@@ -178,6 +178,8 @@ translations.update({
     'MeetingPrepareDialog.webinar': 'Webinar',
     'MeetingPrepareDialog.your_display_name': 'Your name',
     'MeetingPrepareDialog.room_display_name': 'Room name',
+    'MeetingPrepareDialog.open_settings': 'Open settings pane',
+    'MeetingPrepareDialog.close_settings': 'Close settings pane',
 
     'Meeting.tooltip_open_chat': 'Open chat window',
     'Meeting.tooltip_close_chat': 'Close chat window',

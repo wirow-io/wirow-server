@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount,tick } from 'svelte';
   import { _ } from 'svelte-intl';
   import { checkAutoplay } from '../../checks';
-  import { RCT_ROOM_MEETING, RCT_ROOM_WEBINAR } from '../../constants';
+  import { RCT_ROOM_MEETING,RCT_ROOM_WEBINAR } from '../../constants';
   import type { RoomType } from '../../interfaces';
   import Box from '../../kit/Box.svelte';
   import Button from '../../kit/Button.svelte';
@@ -16,25 +16,25 @@
   import videoMuteIcon from '../../kit/icons/videoMute';
   import Input from '../../kit/Input.svelte';
   import Loader from '../../kit/Loader.svelte';
-  import { closeModal, updateCurrentModalOpts } from '../../kit/Modal.svelte';
+  import { closeModal,updateCurrentModalOpts } from '../../kit/Modal.svelte';
   import { sendNotification } from '../../kit/Notifications.svelte';
   import {
-    acquireMediaDevices,
-    audioInputMuted,
-    closeAllMediaTracks,
-    getDevicesStore,
-    mediaDevicesAcquireState,
-    streamTrigger,
-    streamVideo,
-    videoInputDevices,
-    videoInputMuted,
+  acquireMediaDevices,
+  audioInputMuted,
+  closeAllMediaTracks,
+  getDevicesStore,
+  mediaDevicesAcquireState,
+  streamTrigger,
+  streamVideo,
+  videoInputDevices,
+  videoInputMuted
   } from '../../media';
   import { recommendedTimeout } from '../../notify';
   import { canCreateRoomOfType } from '../../permissions';
-  import { createRoom, Room } from '../../room';
-  import { roomBrowserUUID, route } from '../../router';
+  import { createRoom,Room } from '../../room';
+  import { roomBrowserUUID,route } from '../../router';
   import { nickname } from '../../user';
-  import { createValidationContext, getValidate } from '../../validate';
+  import { createValidationContext,getValidate } from '../../validate';
   import { sendAwait } from '../../ws';
   import MediaDevicesSelector from '../media/MediaDevicesSelector.svelte';
   import Video from '../media/Video.svelte';
@@ -181,7 +181,7 @@
     if (nn == null || nn == '') {
       sendNotification({
         text: $_('MeetingPrepareDialog.room_missing_name'),
-        timeout: recommendedTimeout * 2
+        timeout: recommendedTimeout * 2,
       });
       return null;
     }
@@ -334,6 +334,7 @@
                     toggleIcon={videoMuteIcon}
                     toggleIconClass="toggled-onmedia"
                     componentClass="x onmedia"
+                    title={$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
                   />
                 {/if}
                 {#if $audioInputDevices.length > 0}
@@ -343,6 +344,7 @@
                     toggleIcon={microphoneMuteIcon}
                     toggleIconClass="toggled-onmedia"
                     componentClass="x onmedia"
+                    title={$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
                   />
                 {/if}
                 {#if $allDevices.length > 0}
@@ -351,6 +353,9 @@
                     icon={cogIcon}
                     toggleIconClass="toggled-onmedia"
                     componentClass="x onmedia"
+                    title={$_(
+                      openSettings ? 'MeetingPrepareDialog.close_settings' : 'MeetingPrepareDialog.open_settings'
+                    )}
                   />
                 {/if}
               </div>
