@@ -56,8 +56,7 @@
 
 #define GRSTART_FLAG_USE_AUTO_IP             0x01U
 #define GRSTART_FLAG_CONFIG_HAS_ANNOUNCED_IP 0x02U
-#define GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS 0x04U
-#define GRSTART_FLAG_CONFIG_HAS_TURN_SERVERS 0x08U
+#define GRSTART_FLAG_CONFIG_HAS_ICE_SERVERS  0x04U
 
 struct gr_env g_env = {
   .mtx                                = PTHREAD_MUTEX_INITIALIZER,
@@ -154,7 +153,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
   iwrc rc = 0;
   IWPOOL *pool = g_env.impl.pool;
   int i = 0, j = 0, k = 0;
-  char *user = 0, *password = 0, *port = 0, *host = 0;
+  char *user = 0, *password = 0, *port = 0, *host = 0, *query = 0;
   for (i = len - 2; i > 0; --i) {
     if (server[i] == '@') {
       j = i;
@@ -163,8 +162,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
   }
   if (j > 0) {
     for (i = 0; i < j && server[i] != ':'; ++i);
-    user = iwpool_alloc(i + 1, pool);
-    RCA(user, finish);
+    RCB(finish, user = iwpool_alloc(i + 1, pool));
     memcpy(user, server, i);
     user[i] = '\0';
     if (++i < j) {
@@ -177,6 +175,14 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
     j = 0;
   }
   for (i = len - 2; i > j; --i) {
+    if (server[i] == '?') {
+      RCB(finish, query = iwpool_alloc(len - i, pool));
+      memcpy(query, server + i + 1, len - i - 1);
+      query[len - i - 1] = '\0';
+      break;
+    }
+  }
+  for (i = i > j ? i - 1 : len - 2; i > j; --i) {
     if (server[i] == ':' && server[i + 1] > '0' && server[i + 1] <= '9') {
       k = i;
       break;
@@ -184,8 +190,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
   }
   i = 0;
   if (k > 0) {
-    port = iwpool_alloc(len - k, pool);
-    RCA(port, finish);
+    RCB(finish, port = iwpool_alloc(len - k, pool));
     memcpy(port, server + k + 1, len - k - 1);
     port[len - k - 1] = '\0';
     i = iwatoi(port);
@@ -194,8 +199,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
     }
   }
   k = (k > 0 ? k : len) - j;
-  host = iwpool_alloc(k + 1, pool);
-  RCA(host, finish);
+  RCB(finish, host = iwpool_alloc(k + 1, pool));
   memcpy(host, server + j, k);
   host[k] = '\0';
 
@@ -206,6 +210,7 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
   grs->port = i;
   grs->user = user;
   grs->password = password;
+  grs->query = query;
   grs->next = 0;
   struct gr_server *s = g_env.servers;
   if (!s) {
@@ -412,17 +417,14 @@ static int _ini_handler(
     }
   } else if (!strcmp(section, "servers")) {
     gr_server_e type = 0;
-    if (!strcmp(name, "turn_servers")) {
-      type = GR_TURN_SERVER_TYPE;
+    if (  !strcmp(name, "ice_servers")
+       || !strcmp(name, "turn_servers") // deprecated
+       || !strcmp(name, "stun_servers") // deprecated
+          ) {
+      type = GR_ICE_SERVER_TYPE;
       rc = _add_servers(type, value);
       if (!rc) {
-        g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_TURN_SERVERS;
-      }
-    } else if (!strcmp(name, "stun_servers")) {
-      type = GR_STUN_SERVER_TYPE;
-      rc = _add_servers(type, value);
-      if (!rc) {
-        g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_STUN_SERVERS;
+        g_env.start_flags |= GRSTART_FLAG_CONFIG_HAS_ICE_SERVERS;
       }
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);

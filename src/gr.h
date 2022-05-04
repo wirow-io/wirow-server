@@ -72,8 +72,7 @@ typedef enum {
 
 typedef enum {
   GR_UNKNOWN_SERVER_TYPE,
-  GR_STUN_SERVER_TYPE,
-  GR_TURN_SERVER_TYPE,
+  GR_ICE_SERVER_TYPE,
   GR_LISTEN_ANNOUNCED_IP_TYPE,
 } gr_server_e;
 
@@ -83,6 +82,7 @@ struct gr_server {
   int   port;
   char *user;
   char *password;
+  char *query;
   struct gr_server *next;
 };
 

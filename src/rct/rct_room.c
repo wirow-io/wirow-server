@@ -1754,6 +1754,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
 
   JBL_NODE n;
   IWULIST clist = { 0 };
+  IWXSTR *xstr = 0;
 
   RCC(rc, finish, iwulist_init(&clist, 4, sizeof(wrc_resource_t)));
   RCC(rc, finish, jbn_from_json("{}", &n, ctx->pool));
@@ -1836,7 +1837,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
 
       JBL_NODE servers = 0;
       for (struct gr_server *s = g_env.servers; s; s = s->next) {
-        if (s->type == GR_STUN_SERVER_TYPE || s->type == GR_TURN_SERVER_TYPE) {
+        if (s->type == GR_ICE_SERVER_TYPE) {
           if (!servers) {
             RCC(rc, finish, jbn_add_item_arr(spec, "iceServers", &servers, ctx->pool));
           }
@@ -1849,13 +1850,19 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
             RCC(rc, finish, jbn_add_item_str(n, "credential", s->password, -1, 0, ctx->pool));
             RCC(rc, finish, jbn_add_item_str(n, "credentialType", "password", IW_LLEN("password"), 0, ctx->pool));
           }
-          if (s->port) {
-            char buf[strlen(s->host) + 65];
-            snprintf(buf, sizeof(buf), "%s:%d", s->host, s->port);
-            RCC(rc, finish, jbn_add_item_str(n, "urls", buf, -1, 0, ctx->pool));
+          if (xstr) {
+            iwxstr_clear(xstr);
           } else {
-            RCC(rc, finish, jbn_add_item_str(n, "urls", s->host, -1, 0, ctx->pool));
+            RCB(finish, xstr = iwxstr_new());
           }
+          RCC(rc, finish, iwxstr_cat2(xstr, s->host));
+          if (s->port) {
+            RCC(rc, finish, iwxstr_printf(xstr, ":%d", s->port));
+          }
+          if (s->query) {
+            RCC(rc, finish, iwxstr_printf(xstr, "?%s", s->query));
+          }
+          RCC(rc, finish, jbn_add_item_str(n, "urls", iwxstr_ptr(xstr), iwxstr_size(xstr), 0, ctx->pool));
         }
       }
 
@@ -1893,6 +1900,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
 finish:
   rct_resource_ref_unlock(member, locked, -1, __func__);
   iwulist_destroy_keep(&clist);
+  iwxstr_destroy(xstr);
 
   if (rc) {
     if (!error) {
