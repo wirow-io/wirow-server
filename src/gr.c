@@ -189,6 +189,9 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
     memcpy(port, server + k + 1, len - k - 1);
     port[len - k - 1] = '\0';
     i = iwatoi(port);
+    if (i < 1) {
+      i = k = 0;
+    }
   }
   k = (k > 0 ? k : len) - j;
   host = iwpool_alloc(k + 1, pool);
