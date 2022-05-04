@@ -807,22 +807,13 @@ finish:
   return rc;
 }
 
+static int64_t _room_tm(rct_room_t *room) {
+  uint64_t llv;
+  iwp_current_time_ms(&llv, false);
+  return llv - room->cid_ts;
+}
+
 static iwrc _room_join(struct ws_message_ctx *ctx, void *op) {
-  /* Payload: {
-      room: room uuid,
-      name: member name
-     }
-     Response: {
-       room: room uuid,
-       name: room name,
-       member: room member uuid,
-       activeSpeaker: uuid,
-       members: [
-         [member_uuid, member_name],
-         ...
-      ]
-     }
-   */
   iwrc rc = 0;
   bool locked = false;
   wrc_resource_t member_id = 0;
@@ -876,6 +867,7 @@ finish:
       jbn_add_item_str(n, "room", member->room->uuid, -1, 0, ctx->pool);
       jbn_add_item_str(n, "cid", member->room->cid, -1, 0, ctx->pool);
       jbn_add_item_i64(n, "ts", member->room->cid_ts, 0, ctx->pool);
+      jbn_add_item_i64(n, "tm", _room_tm(member->room), 0, ctx->pool);
       jbn_add_item_str(n, "name", member->room->name, -1, 0, ctx->pool);
       jbn_add_item_str(n, "member", member->uuid, IW_UUID_STR_LEN, 0, ctx->pool);
       if (active_speaker) {
@@ -914,6 +906,8 @@ static iwrc _room_create(struct ws_message_ctx *ctx, void *op) {
      Response: {
       room: room uuid,
       name: room name,
+      ts: number; /// Room creation timestamp
+      tm: number; /// Room session time in milliseconds
       rtpCapabilities, {...},
       member: room member uuid,
       owner: boolean, // If user is a room owner
@@ -1041,6 +1035,7 @@ finish:
       jbn_add_item_str(n, "room", member->room->uuid, -1, 0, ctx->pool);
       jbn_add_item_str(n, "cid", member->room->cid, -1, 0, ctx->pool);
       jbn_add_item_i64(n, "ts", member->room->cid_ts, 0, ctx->pool);
+      jbn_add_item_i64(n, "tm", _room_tm(member->room), 0, ctx->pool);
       jbn_add_item_str(n, "name", member->room->name, -1, 0, ctx->pool);
       jbn_add_item_i64(n, "flags", member->room->flags, 0, ctx->pool);
       jbn_add_item_str(n, "member", member->uuid, -1, 0, ctx->pool);

@@ -72,6 +72,7 @@ interface CreateRoomResponse {
   name: string; /// Room name
   flags: number;
   ts: number; /// Room creation timestamp
+  tm: number; /// Room session time in milliseconds
   rtpCapabilities: RtpCapabilities;
   member: string; /// Member UUID
   activeSpeaker?: string; /// Active speaker UUID
@@ -292,12 +293,14 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   readonly producers: Producer[] = [];
   readonly stateSend = writable<RoomConnectionState>('');
   readonly stateRecv = writable<RoomConnectionState>('');
+  readonly time = writable<number>(0); // Room time in minutes
+  private _time = 0;
   readonly activeSpeaker = writable<string>('');
   readonly stateMerged = derived<[Readable<RoomConnectionState>, Readable<RoomConnectionState>], RoomConnectionState>(
     [this.stateSend, this.stateRecv],
     ([ss, rs]): RoomConnectionState => {
       let ret: RoomConnectionState = '';
-      if (ss === rs) {
+      if (ss === rs && ss !== '') {
         ret = ss;
       } else if (rs === '') {
         ret = ss;
@@ -359,7 +362,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     log.debug.enabled && log.debug(`Room.init() | CreateRoomResponse: ${JSON.stringify(resp, null, 2)}`);
     this.isClosed = false;
 
-    const { name, room, member, members, rtpCapabilities, owner, flags, recording, whiteboard } = resp;
+    const { name, room, member, members, rtpCapabilities, owner, flags, recording, whiteboard, tm } = resp;
     this._name = name;
     this.uuid = room;
     this.owner = owner;
@@ -372,6 +375,21 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
       headerExtensions: rtpCapabilities.headerExtensions?.filter((ext) => ext.uri !== 'urn:3gpp:video-orientation'),
     };
     this.whiteboard = whiteboard;
+    this._time = +new Date();
+    if (typeof tm === 'number') {
+      this._time -= tm;
+    }
+
+    // Init room time tracker
+    const updateTime = () => {
+      const ts = +new Date();
+      this.time.set(Math.floor((ts - this._time) / 1000 / 60));
+      if (!this.isClosed) {
+        window.setTimeout(updateTime, 1000);
+      }
+    };
+    updateTime();
+
     if (resp.activeSpeaker) {
       this.activeSpeaker.set(resp.activeSpeaker);
     }

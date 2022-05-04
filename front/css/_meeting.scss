@@ -44,8 +44,11 @@
     border-top: 1px solid $color_split_divider_background;
     padding: 0 0.5rem;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     color: #9f9f9f;
+    >div {
+      margin-right: 0.5rem;
+    }
     a {
       color: #9f9f9f;
       text-decoration: none;

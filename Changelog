@@ -1,5 +1,6 @@
 greenrooms (1.0.1) UNRELEASED; urgency=medium
 
+  * UI: Added room time tracker.
   * UI: Media devices detection improvements.
   * Fix: Wrong number of active rooms in admin pane.
   * Perf: iwstree replaced by iwhmap.
