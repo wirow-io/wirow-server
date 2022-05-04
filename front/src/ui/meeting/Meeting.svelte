@@ -12,7 +12,8 @@
   import usersIcon from '../../kit/icons/users';
   import { openModal, recommendedModalOptions } from '../../kit/Modal.svelte';
   import { Logger } from '../../logger';
-  import { closeAllMediaTracks } from '../../media';
+  import { allInputDevices, closeAllMediaTracks } from '../../media';
+  import { recommendedTimeout, sendNotification } from '../../notify';
   import type { Room } from '../../room';
   import { route } from '../../router';
   import { t } from '../../translate';
@@ -52,6 +53,7 @@
   setContext(Key, ctx);
 
   let sideBarState: any;
+  let inputDevices = $allInputDevices;
 
   const slots: ActivityBarSlot[] = [
     {
@@ -220,6 +222,24 @@
     return slot?.mainProps;
   }
 
+  function onOpenSettings(devices: MediaDeviceInfo[]) {
+    const slot = findActivityBarSlot('settings');
+    if (slot && inputDevices != devices) {
+      sendNotification({
+        text: t(
+          inputDevices.length > devices.length ? 'Meeting.input_device_disconnected' : 'Meeting.input_device_connected'
+        ),
+        style: 'warning',
+        timeout: recommendedTimeout,
+      });
+      $activityBarSlots = $activityBarSlots.map((s) => {
+        s.active = s == slot;
+        return s;
+      });
+      inputDevices = devices;
+    }
+  }
+
   onMount(() => {
     return () => {
       const mr = $meetingRoomStore;
@@ -239,6 +259,7 @@
   $: onSideBarStateChanged(sideBarState);
   $: onRoomChanged($meetingRoomStore);
   $: onActivityBarSlotChanged($hasStartedRecording);
+  $: onOpenSettings($allInputDevices);
 </script>
 
 <template>

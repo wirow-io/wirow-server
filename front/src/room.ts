@@ -498,10 +498,10 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
     const track = ev.track;
     const producer = this.producers.find((p) => p.track === track);
     if (producer) {
-      if (track.enabled === true /*  && producer.paused === true */) {
+      if (track.enabled === true) {
         log.debug.enabled && log.info('onOwnTrackEnabled() | producerResume()');
         this.producerResume(producer);
-      } else if (track.enabled === false /*  && producer.paused === false */) {
+      } else if (track.enabled === false) {
         log.debug.enabled && log.info('onOwnTrackEnabled() | producerPause()');
         this.producerPause(producer);
       }

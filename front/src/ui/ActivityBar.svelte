@@ -6,12 +6,10 @@
   import microphoneMuteIcon from '../kit/icons/microphoneMute';
   import videoIcon from '../kit/icons/video';
   import videoMuteIcon from '../kit/icons/videoMute';
-  import Tooltip from '../kit/Tooltip.svelte';
-  import { audioInputDevices, audioInputMuted, videoInputDevices, videoInputMuted } from '../media';
+  import { audioInputDevices,audioInputMuted,sharingEnabled,videoInputDevices,videoInputMuted } from '../media';
   import type { ActivityBarSlot } from './ActivityBarLib';
   import ActivityButton from './ActivityButton.svelte';
   import { meetingRoomStore } from './meeting/meeting';
-  import { sharingEnabled } from '../media';
 
   export let slots: ActivityBarSlot[] = [];
 
@@ -30,50 +28,38 @@
     <ul>
       {#if $videoInputDevices.length > 0}
         <li>
-          <Tooltip>
-            <Button
-              icon={videoIcon}
-              bind:toggled={$videoInputMuted}
-              toggleIcon={videoMuteIcon}
-              toggleIconClass="toggled-onmedia"
-            />
-            <div slot="tooltip">
-              {$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
-            </div>
-          </Tooltip>
+          <Button
+            icon={videoIcon}
+            bind:toggled={$videoInputMuted}
+            toggleIcon={videoMuteIcon}
+            toggleIconClass="toggled-onmedia"
+            title={$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
+          />
         </li>
       {/if}
       {#if $audioInputDevices.length > 0}
         <li>
-          <Tooltip>
-            <Button
-              bind:toggled={$audioInputMuted}
-              icon={microphoneIcon}
-              toggleIcon={microphoneMuteIcon}
-              toggleIconClass="toggled-onmedia"
-            />
-            <div slot="tooltip">
-              {$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
-            </div>
-          </Tooltip>
+          <Button
+            bind:toggled={$audioInputMuted}
+            icon={microphoneIcon}
+            toggleIcon={microphoneMuteIcon}
+            toggleIconClass="toggled-onmedia"
+            title={$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
+          />
         </li>
       {/if}
       {#if member}
         <li>
-          <Tooltip>
-            <Button
-              autotoggle={false}
-              componentClass="onmedia"
-              icon={desktopIcon}
-              on:click={() => member.onToggleSharing()}
-              toggleIcon={desktopIcon}
-              toggleIconClass="toggled-onmedia"
-              toggled={$sharingEnabled}
-            />
-            <div slot="tooltip">
-              {$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
-            </div>
-          </Tooltip>
+          <Button
+            autotoggle={false}
+            componentClass="onmedia"
+            icon={desktopIcon}
+            on:click={() => member.onToggleSharing()}
+            toggleIcon={desktopIcon}
+            toggleIconClass="toggled-onmedia"
+            toggled={$sharingEnabled}
+            title={$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
+          />
         </li>
       {/if}
       {#each slots.filter((s) => s.side === 'bottom') as s (s.id)}

@@ -1,12 +1,11 @@
 <!-- svelte-ignore unused-export-let -->
 <script lang="ts">
+  import anchorme from 'anchorme';
   import { createEventDispatcher, onMount } from 'svelte';
   import { _ } from 'svelte-intl';
   import Button from '../../kit/Button.svelte';
-  import uploadIcon from '../../kit/icons/upload';
   import paperPlaneIcon from '../../kit/icons/paperPlane';
-  import Tooltip from '../../kit/Tooltip.svelte';
-  import anchorme from 'anchorme';
+  import uploadIcon from '../../kit/icons/upload';
   import Dropzone from './ChatDropzone.svelte';
 
   export let disabled: boolean = false;
@@ -28,7 +27,7 @@
           attributes: {
             target: '_blank',
           },
-          protocol: "https://",
+          protocol: 'https://',
           truncate: 32,
         },
       });
@@ -70,14 +69,12 @@
       tabindex="0"
     />
     <div class="chat-right-control">
-      <Tooltip>
-        <Button
-          on:click={send}
-          componentClass="chat-control-button {inputHtml.length ? 'active' : ''}"
-          icon={paperPlaneIcon}
-        />
-        <div slot="tooltip">{$_('ChatInput.tooltip_send')}</div>
-      </Tooltip>
+      <Button
+        on:click={send}
+        componentClass="chat-control-button {inputHtml.length ? 'active' : ''}"
+        icon={paperPlaneIcon}
+        title={$_('ChatInput.tooltip_send')}
+      />
     </div>
   </div>
 </template>

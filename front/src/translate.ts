@@ -187,6 +187,8 @@ translations.update({
     'Meeting.tooltip_recording_stop': 'Stop room recording',
     'Meeting.tooltip_setting': 'Settings',
     'Meeting.tooltip_leave': 'Leave the room',
+    'Meeting.input_device_connected': 'Media input device connected',
+    'Meeting.input_device_disconnected': 'Media input device disconnected',
 
     'ActivityBar.tooltip_videoMute': 'Mute video',
     'ActivityBar.tooltip_videoUnmute': 'Unmute video',
@@ -195,9 +197,8 @@ translations.update({
     'ActivityBar.tooltip_shareScreen': 'Share screen',
     'ActivityBar.tooltip_shareScreenStop': 'Stop screen sharing',
 
-    'MeetingGridUnit.tooltip_enter_fulscreen': 'Enter fullscreen',
-    'MeetingGridUnit.tooltip_exit_fulscreen': 'Exit fullscreen',
-
+    'MeetingGridUnit.tooltip_enter_fullscreen': 'Enter fullscreen',
+    'MeetingGridUnit.tooltip_exit_fullscreen': 'Exit fullscreen',
 
     'RoomInfoDialog.activity': 'Activity',
     'RoomInfoDialog.chat': 'Chat',

@@ -67,7 +67,6 @@ function _closeAllMediaTracks(stop = false): void {
   stream.removeTracks({ stop }) && streamTrigger.set({});
 }
 
-
 export function closeAllMediaTracks(): void {
   acquireMediaDevices(undefined, undefined, true);
 }
@@ -181,7 +180,6 @@ async function _acquireMediaDevicesImpl(): Promise<void> {
   }
 
   while (_acquireTasks.length > 0) {
-
     const task = _acquireTasks[_acquireTasks.length - 1];
 
     if (task.terminate === true) {

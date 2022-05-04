@@ -104,9 +104,7 @@ export class EnhancedMediaStream extends MediaStream {
     if (track == null || this.getTrackById(track.id) != null) {
       return;
     }
-
     super.addTrack(track);
-
     (() => {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const me = this;
@@ -120,21 +118,23 @@ export class EnhancedMediaStream extends MediaStream {
         set(value) {
           log.debug && log.debug(`EnhancedMediaStream | Set track.enabled=${value} for ${track.kind} ${track.id}`);
           const old = pd.get?.call(track);
-          if (value !== old) {
+          if (value != old) {
             pd.set?.call(track, value);
-            if (value === true) {
-              me.dispatchEvent(
-                new MediaStreamTrackEvent('enabletrack', {
-                  track,
-                })
-              );
-            } else {
-              me.dispatchEvent(
-                new MediaStreamTrackEvent('disabletrack', {
-                  track,
-                })
-              );
-            }
+            window.setTimeout(() => {
+              if (value === true) {
+                me.dispatchEvent(
+                  new MediaStreamTrackEvent('enabletrack', {
+                    track,
+                  })
+                );
+              } else {
+                me.dispatchEvent(
+                  new MediaStreamTrackEvent('disabletrack', {
+                    track,
+                  })
+                );
+              }
+            }, 0);
           }
         },
       });
@@ -252,11 +252,13 @@ export class EnhancedMediaStream extends MediaStream {
   }
 
   private onTrackMuted(track: MediaStreamTrack) {
-    this.dispatchEvent(
-      new MediaStreamTrackEvent(track.muted ? 'mutetrack' : 'unmutetrack', {
-        track,
-      })
-    );
+    window.setTimeout(() => {
+      this.dispatchEvent(
+        new MediaStreamTrackEvent(track.muted ? 'mutetrack' : 'unmutetrack', {
+          track,
+        })
+      );
+    }, 0);
   }
 
   private onTrackEnded(track: MediaStreamTrack) {

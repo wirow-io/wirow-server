@@ -1,12 +1,13 @@
 greenrooms (1.0.1) UNRELEASED; urgency=medium
 
+  * UI: Media devices detection improvements.
   * Fix: Wrong number of active rooms in admin pane.
   * Perf: iwstree replaced by iwhmap.
   * Fix: Endless loop due to typo.
   * Implemented: Active speaker identification.
   * Fix: iwnet upgraded (critical bugs fixed).
   * Fix: disabled Set-Cookie samesite=node for non secure connections.
-  * Added Docker image.
-  * Disabled building of unneeded libdeflate shared library.
+  * Implemented: Added Docker image.
+  * Fix: Disabled building of unneeded libdeflate shared library.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 11 Mar 2020 17:24:44 +0700

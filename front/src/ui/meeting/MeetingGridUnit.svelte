@@ -9,8 +9,7 @@
   import microphoneMuteIcon from '../../kit/icons/microphoneMute';
   import videoIcon from '../../kit/icons/video';
   import videoMuteIcon from '../../kit/icons/videoMute';
-  import Tooltip from '../../kit/Tooltip.svelte';
-  import { audioInputDevices, audioInputMuted, sharingEnabled, videoInputDevices, videoInputMuted } from '../../media';
+  import { audioInputDevices,audioInputMuted,sharingEnabled,videoInputDevices,videoInputMuted } from '../../media';
   import Video from '../media/Video.svelte';
   import VideoUserOverlay from '../media/VideoUserOverlay.svelte';
   import { meetingRoomStore } from './meeting';
@@ -37,64 +36,48 @@
     <div class="video-toolbar">
       {#if member.itsme}
         {#if $videoInputDevices.length > 0}
-          <Tooltip>
-            <Button
-              bind:toggled={$videoInputMuted}
-              icon={videoIcon}
-              toggleIcon={videoMuteIcon}
-              toggleIconClass="toggled-onmedia"
-              componentClass="onmedia"
-            />
-            <div slot="tooltip">
-              {$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
-            </div>
-          </Tooltip>
+          <Button
+            bind:toggled={$videoInputMuted}
+            icon={videoIcon}
+            toggleIcon={videoMuteIcon}
+            toggleIconClass="toggled-onmedia"
+            componentClass="onmedia"
+            title={$_($videoInputMuted ? 'ActivityBar.tooltip_videoUnmute' : 'ActivityBar.tooltip_videoMute')}
+          />
         {/if}
         {#if $audioInputDevices.length > 0}
-          <Tooltip>
-            <Button
-              bind:toggled={$audioInputMuted}
-              icon={microphoneIcon}
-              toggleIcon={microphoneMuteIcon}
-              toggleIconClass="toggled-onmedia"
-              componentClass="onmedia"
-            />
-            <div slot="tooltip">
-              {$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
-            </div>
-          </Tooltip>
+          <Button
+            bind:toggled={$audioInputMuted}
+            icon={microphoneIcon}
+            toggleIcon={microphoneMuteIcon}
+            toggleIconClass="toggled-onmedia"
+            componentClass="onmedia"
+            title={$_($audioInputMuted ? 'ActivityBar.tooltip_audioUnmute' : 'ActivityBar.tooltip_audioMute')}
+          />
         {/if}
         <div class="flex-expand" />
-        <Tooltip>
-          <Button
-            autotoggle={false}
-            componentClass="onmedia"
-            icon={desktopIcon}
-            on:click={() => member.onToggleSharing()}
-            toggleIcon={desktopIcon}
-            toggleIconClass="toggled-onmedia"
-            toggled={$sharingEnabled}
-          />
-          <div slot="tooltip">
-            {$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
-          </div>
-        </Tooltip>
-        <Tooltip>
-          <Button
-            on:click={() => member.toggleFullscreen()}
-            toggled={member.fullscreen}
-            autotoggle={false}
-            componentClass="onmedia"
-            icon={fullScreenIcon}
-            toggleIcon={fullScreenIcon}
-            toggleIconClass="toggled-onmedia"
-          />
-          <div slot="tooltip">
-            {$_(
-              member.fullscreen ? 'MeetingGridUnit.tooltip_exit_fuulscreen' : 'MeetingGridUnit.tooltip_enter_fulscreen'
-            )}
-          </div>
-        </Tooltip>
+        <Button
+          autotoggle={false}
+          componentClass="onmedia"
+          icon={desktopIcon}
+          on:click={() => member.onToggleSharing()}
+          toggleIcon={desktopIcon}
+          toggleIconClass="toggled-onmedia"
+          toggled={$sharingEnabled}
+          title={$_($sharingEnabled ? 'ActivityBar.tooltip_shareScreenStop' : 'ActivityBar.tooltip_shareScreen')}
+        />
+        <Button
+          on:click={() => member.toggleFullscreen()}
+          toggled={member.fullscreen}
+          autotoggle={false}
+          componentClass="onmedia"
+          icon={fullScreenIcon}
+          toggleIcon={fullScreenIcon}
+          toggleIconClass="toggled-onmedia"
+          title={$_(
+            member.fullscreen ? 'MeetingGridUnit.tooltip_exit_fullscreen' : 'MeetingGridUnit.tooltip_enter_fullscreen'
+          )}
+        />
       {:else}
         <Button
           hidden={$videoEnabled}

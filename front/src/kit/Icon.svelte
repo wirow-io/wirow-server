@@ -32,7 +32,7 @@
     if (typeof size === 'number') {
       sizeAttr = size;
     } else if (size.endsWith('px')) {
-      sizeAttr = size.substr(0, size.length - 2);
+      sizeAttr = size.substring(0, size.length - 2);
     } else {
       sizeAttr = 0;
     }
