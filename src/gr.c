@@ -868,12 +868,10 @@ static void _configure(int argc, char *argv[]) {
   }
   if (g_env.worker.max_workers < 1) {
     int cc = iwp_num_cpu_cores();
-    if (cc > 6) {
-      g_env.worker.max_workers = 6;
-    } else if (cc < 3) {
+    if (cc > 3) {
       g_env.worker.max_workers = 2;
     } else {
-      g_env.worker.max_workers = cc;
+      g_env.worker.max_workers = 1;
     }
   }
   if (!g_env.acme.endpoint) {
