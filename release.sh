@@ -68,7 +68,7 @@ while [ "$1" != "" ]; do
     "-d"  )  readme
              exit
              ;;
-    "-r" )   release_tag
+    "-r" )   readme && release_tag
              exit
              ;;
   esac
