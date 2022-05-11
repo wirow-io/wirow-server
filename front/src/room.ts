@@ -539,6 +539,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
   private initProducer(producer: Producer): Producer {
     producer.addListener('trackended', onProducerClosed.bind(onProducerClosed, 'trackended', this, producer));
     producer.addListener('transportclose', onProducerClosed.bind(onProducerClosed, 'transportclose', this, producer));
+    producer.addListener('@close', onProducerClosed.bind(onProducerClosed, '@close', this, producer));
 
     function onProducerClosed(this: typeof onProducerClosed, eventType: string, room: Room, producer: Producer) {
       log.debug.enabled && log.debug(`Room.onProducerClosed() | ${eventType} event`);
@@ -822,6 +823,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
 
     consumer.addListener('trackended', onConsumerClosed.bind(onConsumerClosed, 'trackended', member, consumer));
     consumer.addListener('transportclose', onConsumerClosed.bind(onConsumerClosed, 'transportclose', member, consumer));
+    consumer.addListener('@close', onConsumerClosed.bind(onConsumerClosed, '@close', member, consumer));
 
     member[kind]?.close(); // Close old consumer if exists
     member[kind] = consumer;
