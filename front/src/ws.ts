@@ -254,8 +254,7 @@ export function start(reconnect = false): any {
   const p = window.location.protocol;
   const wp = p === 'https:' ? 'wss://' : 'ws://';
   const location = window.document.location;
-  const host = window.location.host.replace(/:.*/, '');
-  const prefix = `${host}${location.port ? ':' + location.port : ''}`;
+  const prefix = location.host;
 
   startWS(`${wp}${prefix}/ws/channel`, `${p}//${prefix}/ws/ticket`)
     .then((ws) => {
