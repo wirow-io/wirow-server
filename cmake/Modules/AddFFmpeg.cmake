@@ -1,17 +1,17 @@
 include(ExternalProject)
 
-set(LIBAVCODEC "${CMAKE_BINARY_DIR}/lib/libavcodec.a")
-set(LIBAVFILTER "${CMAKE_BINARY_DIR}/lib/libavfilter.a")
-set(LIBAVFORMAT "${CMAKE_BINARY_DIR}/lib/libavformat.a")
-set(LIBAVUTIL "${CMAKE_BINARY_DIR}/lib/libavutil.a")
-set(LIBSWSCALE "${CMAKE_BINARY_DIR}/lib/libswscale.a")
-set(LIBSWRESAMPLE "${CMAKE_BINARY_DIR}/lib/libswresample.a")
-set(LIBFFMPEGCL "${CMAKE_BINARY_DIR}/lib/libffmpegcl.a")
+set(LIBAVCODEC "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libavcodec.a")
+set(LIBAVFILTER "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libavfilter.a")
+set(LIBAVFORMAT "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libavformat.a")
+set(LIBAVUTIL "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libavutil.a")
+set(LIBSWSCALE "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libswscale.a")
+set(LIBSWRESAMPLE "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libswresample.a")
+set(LIBFFMPEGCL "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libffmpegcl.a")
 
 set(PATCH_COMMAND "${CMAKE_CURRENT_LIST_DIR}/AddFFmpeg/patch.sh")
 
 set(CONFIGURE_COMMAND
-    "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/lib/pkgconfig \
+    "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/pkgconfig \
  ./configure \
  --prefix=${CMAKE_BINARY_DIR} \
  --logfile=config.log \
@@ -65,7 +65,7 @@ set(CONFIGURE_COMMAND
  --enable-filter=aformat,format,vflip,hflip,transpose,color,scale,trim,atrim,setpts,asetpts,amerge,anullsrc,pan,null,anull,overlay,concat,copy,acopy,abuffer,buffer,abuffersink,buffersink \
  --enable-bsf=setts \
  --pkg-config-flags=\"--static\" \
- --extra-ldflags=\"-lpthread -L${CMAKE_BINARY_DIR}/lib\" \
+ --extra-ldflags=\"-lpthread -L${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}\" \
  --extra-cflags=\"-I${CMAKE_BINARY_DIR}/include\" \
  --extra-cxxflags=\"-I${CMAKE_BINARY_DIR}/include\"")
 

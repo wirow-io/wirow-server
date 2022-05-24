@@ -1,4 +1,4 @@
-set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libvpx.a")
+set(BYPRODUCT "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libvpx.a")
 
 set(PATCH_COMMAND "${CMAKE_CURRENT_LIST_DIR}/AddLibVpx/patch.sh")
 

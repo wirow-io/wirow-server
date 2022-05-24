@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(CURL_SOURCE_DIR ${CMAKE_SOURCE_DIR}/extra/curl)
-set(LIBCURL ${CMAKE_BINARY_DIR}/lib/libcurl.a)
+set(LIBCURL ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libcurl.a)
 set(CMAKE_ARGS
     -DBUILD_CURL_EXE=OFF
     -DBUILD_SHARED_LIBS=OFF

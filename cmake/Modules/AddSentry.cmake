@@ -1,8 +1,8 @@
 include(ExternalProject)
 
 set(SENTRY_SOURCE_DIR ${CMAKE_SOURCE_DIR}/extra/sentry)
-set(LIBSENTRY ${CMAKE_BINARY_DIR}/lib/libsentry.a)
-set(LIBBREAKPAD ${CMAKE_BINARY_DIR}/lib/libbreakpad_client.a)
+set(LIBSENTRY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libsentry.a)
+set(LIBBREAKPAD ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libbreakpad_client.a)
 
 set(PATCH_COMMAND sh -c "${CMAKE_SOURCE_DIR}/cmake/Modules/AddSentry/patch.sh")
 

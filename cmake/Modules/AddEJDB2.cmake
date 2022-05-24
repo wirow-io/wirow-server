@@ -2,9 +2,9 @@ include(ExternalProject)
 
 set(EJDB2_SOURCE_DIR ${CMAKE_SOURCE_DIR}/extra/ejdb)
 set(BYPRODUCT
-    "${CMAKE_BINARY_DIR}/lib/libejdb2-2.a"
-    "${CMAKE_BINARY_DIR}/lib/libiwnet-1.a"
-    "${CMAKE_BINARY_DIR}/lib/libiowow-1.a")
+    "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libejdb2-2.a"
+    "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libiwnet-1.a"
+    "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libiowow-1.a")
 
 set(CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -31,22 +31,22 @@ ExternalProject_Add(
 add_library(iwnet_s STATIC IMPORTED GLOBAL)
 set_target_properties(
   iwnet_s PROPERTIES IMPORTED_LOCATION
-                     ${CMAKE_BINARY_DIR}/lib/libiwnet-1.a)
+                     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libiwnet-1.a)
 
 add_library(iowow_s STATIC IMPORTED GLOBAL)
 set_target_properties(
   iowow_s PROPERTIES IMPORTED_LOCATION
-                     ${CMAKE_BINARY_DIR}/lib/libiowow-1.a)
+                     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libiowow-1.a)
 
 add_library(ejdb2_s STATIC IMPORTED GLOBAL)
 set_target_properties(
   ejdb2_s PROPERTIES IMPORTED_LOCATION
-                     ${CMAKE_BINARY_DIR}/lib/libejdb2-2.a)
+                     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libejdb2-2.a)
 
 add_dependencies(ejdb2_s extern_ejdb2)
 add_dependencies(iwnet_s extern_ejdb2)
 add_dependencies(iowow_s extern_ejdb2)
 
-#set_target_properties(iwnet_s PROPERTIES INTERFACE_LINK_LIBRARIES "iowow_s")
-#set_target_properties(ejdb2_s PROPERTIES INTERFACE_LINK_LIBRARIES "iwnet_s")
-#set_target_properties(iowow_s PROPERTIES INTERFACE_LINK_LIBRARIES "m")
+# set_target_properties(iwnet_s PROPERTIES INTERFACE_LINK_LIBRARIES "iowow_s")
+# set_target_properties(ejdb2_s PROPERTIES INTERFACE_LINK_LIBRARIES "iwnet_s")
+# set_target_properties(iowow_s PROPERTIES INTERFACE_LINK_LIBRARIES "m")

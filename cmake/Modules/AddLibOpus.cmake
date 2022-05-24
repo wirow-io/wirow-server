@@ -1,6 +1,6 @@
 include(ExternalProject)
 
-set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libopus.a")
+set(BYPRODUCT "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libopus.a")
 
 set(CONFIGURE_ENV "X86_SSE4_1_CFLAGS= X86_AVX_CFLAGS= ")
 if(DEFINED CMAKE_C_COMPILER)
@@ -11,12 +11,12 @@ set(CONFIGURE_COMMAND
     "(test -f ./configure || ./autogen.sh) && \
     ${CONFIGURE_ENV} \
     ./configure --prefix=${CMAKE_BINARY_DIR} \
-                --disable-rtcd --disable-extra-programs --disable-doc --disable-shared")
+                --disable-rtcd --disable-extra-programs --disable-doc --disable-shared"
+)
 
-if (CROSS_HOST)
+if(CROSS_HOST)
   set(CONFIGURE_COMMAND "${CONFIGURE_COMMAND} --host=${CROSS_HOST}")
 endif()
-
 
 ExternalProject_Add(
   extern_opus

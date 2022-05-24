@@ -1,6 +1,6 @@
 include(ExternalProject)
 
-set(BYPRODUCT "${CMAKE_BINARY_DIR}/lib/libdeflate.a")
+set(BYPRODUCT "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/libdeflate.a")
 set(BUILD_ENV "PREFIX=${CMAKE_BINARY_DIR} DISABLE_SHARED=1")
 
 find_program(MAKE_EXEC gmake)
