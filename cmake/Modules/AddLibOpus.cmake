@@ -11,6 +11,7 @@ set(CONFIGURE_COMMAND
     "(test -f ./configure || ./autogen.sh) && \
     ${CONFIGURE_ENV} \
     ./configure --prefix=${CMAKE_BINARY_DIR} \
+                --libdir=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR} \
                 --disable-rtcd --disable-extra-programs --disable-doc --disable-shared"
 )
 

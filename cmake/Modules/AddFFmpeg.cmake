@@ -14,6 +14,7 @@ set(CONFIGURE_COMMAND
     "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/pkgconfig \
  ./configure \
  --prefix=${CMAKE_BINARY_DIR} \
+ --libdir=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR} \
  --logfile=config.log \
  --disable-all \
  --disable-shared \

@@ -1,5 +1,6 @@
 wirow (1.0.3) UNRELEASED; urgency=medium
 
+  * fix: Build fail on Fedora 35+
   * chore: Upgraded to the latest Excalidraw whiteboard
   * fix: Producers leak on screen sharing.
 

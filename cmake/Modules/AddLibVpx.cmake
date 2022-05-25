@@ -11,6 +11,7 @@ endif()
 
 set(CONFIGURE_COMMAND
     "${CONFIGURE_ENV} ./configure --prefix=${CMAKE_BINARY_DIR} --disable-examples --disable-docs \
+                        --libdir=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR} \
                         --disable-tools --enable-vp8 --enable-vp9 --enable-vp9-highbitdepth \
                         --as=yasm --disable-sse4_1 --disable-runtime_cpu_detect \
                         --disable-unit-tests")
