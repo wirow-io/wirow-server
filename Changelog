@@ -1,6 +1,6 @@
 wirow (1.0.3) UNRELEASED; urgency=medium
 
-  *
+  * chore: Upgraded to the latest Excalidraw whiteboard
   * fix: Producers leak on screen sharing.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 11 May 2022 15:40:43 +0700
