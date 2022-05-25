@@ -1,6 +1,7 @@
 wirow (1.0.3) UNRELEASED; urgency=medium
 
-  * Fix: Producers leak on screen sharing.
+  *
+  * fix: Producers leak on screen sharing.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 11 May 2022 15:40:43 +0700
 
@@ -13,15 +14,15 @@ wirow (1.0.2) testing; urgency=medium
 
 wirow (1.0.1) testing; urgency=medium
 
-  * UI: Added room time tracker.
-  * UI: Media devices detection improvements.
-  * Fix: Wrong number of active rooms in admin pane.
-  * Perf: iwstree replaced by iwhmap.
-  * Fix: Endless loop due to typo.
-  * Impl: Active speaker identification.
-  * Fix: iwnet upgraded (critical bugs fixed).
-  * Fix: disabled Set-Cookie samesite=node for non secure connections.
-  * Impl: Added Docker image.
-  * Fix: Disabled building of unneeded libdeflate shared library.
+  * ui: Added room time tracker.
+  * ui: Media devices detection improvements.
+  * fix: Wrong number of active rooms in admin pane.
+  * perf: iwstree replaced by iwhmap.
+  * fix: Endless loop due to typo.
+  * impl: Active speaker identification.
+  * fix: iwnet upgraded (critical bugs fixed).
+  * fix: disabled Set-Cookie samesite=node for non secure connections.
+  * impl: Added Docker image.
+  * fix: Disabled building of unneeded libdeflate shared library.
 
  -- Anton Adamansky <adamansky@gmail.com>  Wed, 04 May 2022 14:41:15 +0700
