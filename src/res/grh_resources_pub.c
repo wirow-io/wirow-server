@@ -55,7 +55,6 @@
 #include "data_front_whiteboard_index.inc"
 #include "data_front_whiteboard_main_js_gz.inc"
 #include "data_front_whiteboard_main_css_gz.inc"
-#include "data_front_whiteboard_excalidraw_image_js_gz.inc"
 #include "data_front_whiteboard_excalidraw_vendor_js_gz.inc"
 #include "data_front_whiteboard_excalidraw_virgil_woff2.inc"
 #include "data_front_whiteboard_excalidraw_cascadia_woff2.inc"
@@ -235,13 +234,6 @@ static struct resource _res[] = {
       0xfd0f0c08,
       "text/css;charset=UTF-8",
       data_front_whiteboard_main_css_gz,
-      true,
-      false),
-
-  RES("/whiteboard/excalidraw-assets/image.js",
-      0x47c4062d,
-      "application/javascript;charset=UTF-8",
-      data_front_whiteboard_excalidraw_image_js_gz,
       true,
       false),
 

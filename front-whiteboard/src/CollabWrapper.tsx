@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Excalidraw from '@excalidraw/excalidraw';
+import { Excalidraw } from '@excalidraw/excalidraw';
 import Collab from './collab';
 import './CollabWrapper.css';
 import { RouteComponentProps, withRouter } from 'react-router';

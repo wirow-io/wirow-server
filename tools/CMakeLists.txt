@@ -180,7 +180,6 @@ if(ENABLE_WHITEBOARD)
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_index.inc"
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_main_js_gz.inc"
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_main_css_gz.inc"
-      "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_excalidraw_image_js_gz.inc"
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_excalidraw_vendor_js_gz.inc"
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_excalidraw_virgil_woff2.inc"
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_excalidraw_cascadia_woff2.inc"
@@ -212,11 +211,6 @@ if(ENABLE_WHITEBOARD)
       $<TARGET_FILE:hoststrliteral> -i "data_front_whiteboard_main_css_gz"
       build/main.css.gz >
       "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_main_css_gz.inc"
-    COMMAND
-      $<TARGET_FILE:hoststrliteral> -i
-      "data_front_whiteboard_excalidraw_image_js_gz"
-      build/excalidraw-assets/image.js.gz >
-      "${CMAKE_BINARY_DIR}/include/data_front_whiteboard_excalidraw_image_js_gz.inc"
     COMMAND
       $<TARGET_FILE:hoststrliteral> -i
       "data_front_whiteboard_excalidraw_vendor_js_gz"
