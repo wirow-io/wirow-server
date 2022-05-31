@@ -302,7 +302,7 @@ static int _handler(struct iwn_wf_req *req, void *data) {
 login:
   if (!on_login) {
     struct iwn_val val = iwn_http_request_header_get(req->http, "connection", IW_LLEN("connection"));
-    bool is_upgrade = strncmp(val.buf, "upgrade", val.len) == 0;
+    bool is_upgrade = val.len > 0 && strncmp(val.buf, "upgrade", val.len) == 0;
     if (is_upgrade) {
       return 0;
     } else {
