@@ -154,40 +154,48 @@ static iwrc _add_server(gr_server_e type, const char *server, int len) {
   IWPOOL *pool = g_env.impl.pool;
   int i = 0, j = 0, k = 0;
   char *user = 0, *password = 0, *port = 0, *host = 0, *query = 0;
-  for (i = len - 2; i > 0; --i) {
-    if (server[i] == '@') {
-      j = i;
-      break;
+
+  if (type != GRSTART_FLAG_CONFIG_HAS_ANNOUNCED_IP) {
+    // User/password
+    for (i = len - 2; i > 0; --i) {
+      if (server[i] == '@') {
+        j = i;
+        break;
+      }
+    }
+
+    if (j > 0) {
+      for (i = 0; i < j && server[i] != ':'; ++i);
+      RCB(finish, user = iwpool_alloc(i + 1, pool));
+      memcpy(user, server, i);
+      user[i] = '\0';
+      if (++i < j) {
+        password = iwpool_alloc(j - i + 1, pool);
+        memcpy(password, server + i, j - i);
+        password[j - i] = '\0';
+      }
+      ++j;
+    }
+
+    // Query
+    for (i = len - 2; i > j; --i) {
+      if (server[i] == '?') {
+        RCB(finish, query = iwpool_alloc(len - i, pool));
+        memcpy(query, server + i + 1, len - i - 1);
+        query[len - i - 1] = '\0';
+        break;
+      }
+    }
+
+    // Port
+    for (i = i > j ? i - 1 : len - 2; i > j; --i) {
+      if (server[i] == ':' && server[i + 1] > '0' && server[i + 1] <= '9') {
+        k = i;
+        break;
+      }
     }
   }
-  if (j > 0) {
-    for (i = 0; i < j && server[i] != ':'; ++i);
-    RCB(finish, user = iwpool_alloc(i + 1, pool));
-    memcpy(user, server, i);
-    user[i] = '\0';
-    if (++i < j) {
-      password = iwpool_alloc(j - i + 1, pool);
-      memcpy(password, server + i, j - i);
-      password[j - i] = '\0';
-    }
-    ++j;
-  } else {
-    j = 0;
-  }
-  for (i = len - 2; i > j; --i) {
-    if (server[i] == '?') {
-      RCB(finish, query = iwpool_alloc(len - i, pool));
-      memcpy(query, server + i + 1, len - i - 1);
-      query[len - i - 1] = '\0';
-      break;
-    }
-  }
-  for (i = i > j ? i - 1 : len - 2; i > j; --i) {
-    if (server[i] == ':' && server[i + 1] > '0' && server[i + 1] <= '9') {
-      k = i;
-      break;
-    }
-  }
+
   i = 0;
   if (k > 0) {
     RCB(finish, port = iwpool_alloc(len - k, pool));
