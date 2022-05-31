@@ -24,6 +24,7 @@
 #include <ejdb2/ejdb2.h>
 #include <iowow/iwp.h>
 #include <iowow/iwconv.h>
+#include <iwnet/iwn_codec.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -272,6 +273,7 @@ static int _handler(struct iwn_wf_req *req, void *data) {
     if (req->flags & IWN_WF_POST) {
       int64_t id;
       char *perms;
+      struct iwn_val t = iwn_pair_find_val(&req->query_params, "t", IW_LLEN("t")); // Target resources
       struct iwn_val user = iwn_pair_find_val(&req->form_params, "__ref__", IW_LLEN("__ref__"));
       if (user.len) {
         return _guest_create(user.buf, req);
@@ -294,7 +296,11 @@ static int _handler(struct iwn_wf_req *req, void *data) {
       iwn_wf_session_put(req, GR_PERMISSIONS_SESSION_KEY, perms);
       free(perms);
 
-      iwn_http_response_header_set(req->http, "location", "/", IW_LLEN("/"));
+      if (t.len) {
+        iwn_http_response_header_set(req->http, "location", t.buf, t.len);
+      } else {
+        iwn_http_response_header_set(req->http, "location", "/", IW_LLEN("/"));
+      }
       return 302;
     }
   }
@@ -306,7 +312,13 @@ login:
     if (is_upgrade) {
       return 0;
     } else {
-      iwn_http_response_header_set(req->http, "location", "/login.html", IW_LLEN("/login.html"));
+      struct iwn_val target = iwn_http_request_target(req->http);
+      char *t = iwn_url_encode_new(target.buf, target.len);
+      if (!t) {
+        return 500;
+      }
+      iwn_http_response_header_printf(req->http, "location", "/login.html?t=%s", t);
+      free(t);
       return 302;
     }
   } else {
