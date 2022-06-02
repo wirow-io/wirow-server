@@ -409,7 +409,7 @@ static int _ini_handler(
       rc = _http_header(value, pool);
     } else if (!strcmp(name, "session_cookies_max_age")) {
       int64_t llv = iwatoi(value);
-      if (llv > 0) {
+      if (llv != 0) {
         g_env.session_cookies_max_age = llv;
       }
     } else {
