@@ -858,6 +858,8 @@ static void _configure(int argc, char *argv[]) {
   }
   if (g_env.session_cookies_max_age == 0) {
     g_env.session_cookies_max_age = 60 * 60 * 24 * 30;  // 30 days
+  } else if (g_env.session_cookies_max_age == -1) {
+    g_env.session_cookies_max_age = 0; // Make session cookie
   }
   if (g_env.alo.interval_ms < 1) {
     g_env.alo.interval_ms = 800;

@@ -261,6 +261,14 @@ data = {cwd}
 cert_file = {config_file_dir}/cert.pem
 cert_key_file = {config_file_dir}/key.pem
 
+;;
+;; Max age of sessions cookies in seconds.
+;; Default: 2592000 (30 days)
+;;
+;; If -1 specified the session cookies will be removed when browser closed.
+
+session_cookies_max_age = 2592000
+
 ;; Stun / turn servers
 [servers]
 
