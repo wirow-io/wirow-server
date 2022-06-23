@@ -517,7 +517,7 @@ finish:
   return rc == 0;
 }
 
-static bool _on_ws_message(struct iwn_ws_sess *ws, const char *msg, size_t msg_len) {
+static bool _on_ws_message(struct iwn_ws_sess *ws, const char *msg, size_t msg_len, uint8_t opcode) {
   struct ws_session *wss = (void*) grh_req_data_find(ws->req->http, GRH_USER_DATA_TYPE_WS);
   if (!wss) {
     return false;

@@ -1,5 +1,6 @@
 wirow (1.0.3) UNRELEASED; urgency=medium
 
+  * chore: Upgraded to the latest iwnet
   * fix: Allows session cookies removal on browser closing. (session_cookies_max_age .ini param)
   * fix: Build fail on Fedora 35+
   * chore: Upgraded to the latest Excalidraw whiteboard

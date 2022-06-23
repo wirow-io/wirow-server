@@ -596,7 +596,7 @@ static void _wb_ws_destroy_userdata(struct grh_user_data *u) {
   free(u);
 }
 
-static bool _on_ws_message(struct iwn_ws_sess *ws, const char *msg, size_t msg_len) {
+static bool _on_ws_message(struct iwn_ws_sess *ws, const char *msg, size_t msg_len, uint8_t opcode) {
   iwrc rc = 0;
   JBL_NODE json_in, json_out, json_out_back, n, n2, n3;
   struct wb_element_t *json_el = 0;
