@@ -31,13 +31,13 @@
 #include "lic_vars.h"
 #include "rct/rct.h"
 #include "upd/upd.h"
-#include "utils/ini.h"
 #include "utils/network.h"
 #include "wrc/wrc.h"
 
 #include <iowow/iwutils.h>
 #include <iowow/iwconv.h>
 #include <iowow/iwp.h>
+#include <iowow/iwini.h>
 #include <iwnet/iwn_proc.h>
 #include <curl/curl.h>
 
@@ -777,7 +777,7 @@ static void _configure(int argc, char *argv[]) {
     free(data);
     RCGO(rc, exit);
 
-    if (ini_parse_string(iwxstr_ptr(buf), _ini_handler, 0)) {
+    if (iwini_parse_string(iwxstr_ptr(buf), _ini_handler, 0)) {
       iwlog_error("Failed to load configuration file: %s", g_env.config_file);
       iwxstr_destroy(buf);
       goto exit;
