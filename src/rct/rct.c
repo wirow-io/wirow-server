@@ -314,7 +314,7 @@ iwrc rct_resource_register_lk(void *v) {
   }
   iwrc rc = iwhmap_put(rct_state.map_uuid2ptr, b->uuid, b);
   RCGO(rc, finish);
-  RCC(rc, finish, iwhmap_put(rct_state.map_id2ptr, (void*) (intptr_t) b->id, b));
+  RCC(rc, finish, iwhmap_put_i32(rct_state.map_id2ptr, b->id, b));
 
   wrc_resource_t wid = 0;
   if (b->type == RCT_TYPE_ROUTER) {

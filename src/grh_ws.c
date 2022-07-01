@@ -236,7 +236,7 @@ iwrc grh_ws_send_all_room_participants(int64_t room_id, const char *data, ssize_
     if (!nn || nn->type != JBV_I64) {
       continue;
     }
-    iwhmap_put(idmap, (void*) nn->vi64, (void*) (intptr_t) -1); // Save user ID
+    iwhmap_put_i64(idmap, nn->vi64, (void*) (intptr_t) -1); // Save user ID
   }
   if (iwhmap_count(idmap) == 0) {
     goto finish;
@@ -504,7 +504,7 @@ static bool _ws_message_init(struct ws_session *wss, const char *msg, size_t msg
   iwn_ws_server_write(wss->ws, "{}", IW_LLEN("{}"));
 
   WLOCK();
-  iwhmap_put(_map_wsid_wsdata, (void*) (intptr_t) wss->wsid, wss);
+  iwhmap_put_i32(_map_wsid_wsdata, wss->wsid, wss);
   iwhmap_put(_map_uuid_sessions, wss->uuid, wss);
   UNLOCK();
 
