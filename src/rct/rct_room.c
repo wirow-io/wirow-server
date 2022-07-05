@@ -674,11 +674,13 @@ static iwrc _rct_init_whiteboard(rct_room_t *room) {
   IWXSTR *link = 0;
   RCA((link = iwxstr_new()), finish);
   RCC(rc, finish, iwxstr_printf(link, "/whiteboard/#%s", room->cid));
-  room->whiteboard_link = iwxstr_ptr(link);
+  room->whiteboard_link = iwxstr_destroy_keep_ptr(link);
   room->num_whiteboard_clicks = 0;
 
 finish:
-  iwxstr_destroy_keep_ptr(link);
+  if (rc) {
+    iwxstr_destroy(link);
+  }
   return rc;
 }
 

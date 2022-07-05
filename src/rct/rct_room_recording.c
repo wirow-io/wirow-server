@@ -130,8 +130,7 @@ finish:
   if (rc) {
     iwxstr_destroy(xstr);
   } else if (xstr) {
-    res = iwxstr_ptr(xstr);
-    iwxstr_destroy_keep_ptr(xstr);
+    res = iwxstr_destroy_keep_ptr(xstr);
   }
   *rcp = rc;
   return res;

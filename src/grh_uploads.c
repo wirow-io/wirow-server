@@ -71,9 +71,7 @@ static char* _file_path_create(const char *uuid, bool rdonly) {
     iwxstr_destroy(xstr);
     return 0;
   }
-  ret = iwxstr_ptr(xstr);
-  iwxstr_destroy_keep_ptr(xstr);
-  return ret;
+  return iwxstr_destroy_keep_ptr(xstr);
 }
 
 static char* _file_link_create(struct iwn_wf_req *req, const char *uuid, const struct iwn_val *fname) {
@@ -96,10 +94,7 @@ static char* _file_link_create(struct iwn_wf_req *req, const char *uuid, const s
     iwxstr_destroy(xstr);
     return 0;
   }
-  ret = iwxstr_ptr(xstr);
-  iwxstr_destroy_keep_ptr(xstr);
-  //free(fname_encoded);
-  return ret;
+  return iwxstr_destroy_keep_ptr(xstr);
 }
 
 static iwrc _file_persist(struct iwn_pair *file, const char *path) {

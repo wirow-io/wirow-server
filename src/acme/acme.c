@@ -379,8 +379,7 @@ static iwrc _jws(struct acme *acme, const char *url, JBL payload, char **out) {
 
   iwxstr_clear(xstr);
   RCC(rc, finish, jbl_as_json(jbl, jbl_xstr_json_printer, xstr, 0));
-  *out = iwxstr_ptr(xstr);
-  iwxstr_destroy_keep_ptr(xstr), xstr = 0;
+  *out = iwxstr_destroy_keep_ptr(xstr), xstr = 0;
 
 finish:
   free(buf);

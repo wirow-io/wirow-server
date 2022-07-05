@@ -156,7 +156,5 @@ char* html_safe_alloc_from_jbn(JBL_NODE message) {
     return 0;
   }
 
-  char *ret = iwxstr_ptr(xstr);
-  iwxstr_destroy_keep_ptr(xstr);
-  return ret;
+  return iwxstr_destroy_keep_ptr(xstr);
 }
