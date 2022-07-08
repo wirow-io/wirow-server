@@ -343,16 +343,6 @@ finish:
   return rc;
 }
 
-#define PARSE_BOOL(var) { \
-    if (!strcasecmp(value, "true") || !strcasecmp(value, "on") || !strcasecmp(value, "yes")) { \
-      var = true; \
-    } else if (!strcasecmp(value, "false") || !strcasecmp(value, "off") || !strcasecmp(value, "no")) { \
-      var = false; \
-    } else { \
-      iwlog_error("Config: Wrong [%s] section property %s value", section, name); \
-    } \
-}
-
 static int _ini_handler(
   void *user, const char *section, const char *name,
   const char *value
@@ -462,9 +452,9 @@ static int _ini_handler(
     }
   } else if (!strcmp(section, "log")) {
     if (!strcmp(name, "verbose")) {
-      PARSE_BOOL(g_env.log.verbose);
+      IWINI_PARSE_BOOL(g_env.log.verbose);
     } else if (!strcmp(name, "report_errors")) {
-      PARSE_BOOL(g_env.log.report_errors);
+      IWINI_PARSE_BOOL(g_env.log.report_errors);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -573,7 +563,7 @@ static int _ini_handler(
     } else if (!strcmp(name, "bind")) {
       g_env.dbparams.bind = iwpool_strdup(pool, value, &rc);
     } else if (!strcmp(name, "truncate")) {
-      PARSE_BOOL(g_env.dbparams.truncate);
+      IWINI_PARSE_BOOL(g_env.dbparams.truncate);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -594,7 +584,7 @@ static int _ini_handler(
         g_env.alo.interval_ms = llv;
       }
     } else if (!strcmp(name, "disabled")) {
-      PARSE_BOOL(g_env.alo.disabled);
+      IWINI_PARSE_BOOL(g_env.alo.disabled);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -605,7 +595,7 @@ static int _ini_handler(
         g_env.aso.interval_ms = llv;
       }
     } else if (!strcmp(name, "disabled")) {
-      PARSE_BOOL(g_env.aso.disabled);
+      IWINI_PARSE_BOOL(g_env.aso.disabled);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -619,7 +609,7 @@ static int _ini_handler(
     if (!strcmp(name, "ffmpeg")) {
       g_env.recording.ffmpeg = iwpool_strdup(pool, value, &rc);
     } else if (!strcmp(name, "verbose")) {
-      PARSE_BOOL(g_env.recording.verbose);
+      IWINI_PARSE_BOOL(g_env.recording.verbose);
     } else if (!strcmp(name, "max_processes")) {
       int64_t llv = iwatoi(value);
       if (llv > 0) {
@@ -628,9 +618,9 @@ static int _ini_handler(
     } else if (!strcmp(name, "dir")) {
       g_env.recording.dir = iwpool_strdup(pool, value, &rc);
     } else if (!strcmp(name, "nopostproc")) {
-      PARSE_BOOL(g_env.recording.nopostproc);
+      IWINI_PARSE_BOOL(g_env.recording.nopostproc);
     } else if (!strcmp(name, "nopostproc_wallts")) {
-      PARSE_BOOL(g_env.recording.nopostproc_wallts);
+      IWINI_PARSE_BOOL(g_env.recording.nopostproc_wallts);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -652,7 +642,7 @@ static int _ini_handler(
         g_env.whiteboard.room_data_ttl_sec = (int) llv;
       }
     } else if (!strcmp(name, "public_available")) {
-      PARSE_BOOL(g_env.whiteboard.public_available);
+      IWINI_PARSE_BOOL(g_env.whiteboard.public_available);
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -760,7 +750,7 @@ static void _configure(int argc, char *argv[]) {
   }
 
   if (g_env.config_file) {
-    RCB(exit,  g_env.config_file_dir = iwpool_strdup2(pool, g_env.config_file));
+    RCB(exit, g_env.config_file_dir = iwpool_strdup2(pool, g_env.config_file));
     g_env.config_file_dir = dirname((char*) g_env.config_file_dir);
 
     char *data = iwu_file_read_as_buf(g_env.config_file);
