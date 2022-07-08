@@ -760,9 +760,7 @@ static void _configure(int argc, char *argv[]) {
   }
 
   if (g_env.config_file) {
-    g_env.config_file_dir = iwpool_alloc(strlen(g_env.config_file) + 1, pool);
-    RCA(g_env.config_file_dir, exit);
-    memcpy((char*) g_env.config_file_dir, g_env.config_file, strlen(g_env.config_file) + 1);
+    RCB(exit,  g_env.config_file_dir = iwpool_strdup2(pool, g_env.config_file));
     g_env.config_file_dir = dirname((char*) g_env.config_file_dir);
 
     char *data = iwu_file_read_as_buf(g_env.config_file);
