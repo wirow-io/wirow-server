@@ -51,7 +51,6 @@ static bool _file_name_is_valid(const struct iwn_val *filename) {
 
 static char* _file_path_create(const char *uuid, bool rdonly) {
   iwrc rc = 0;
-  char *ret = 0;
   IWXSTR *xstr = iwxstr_new();
   if (!xstr) {
     return 0;
@@ -80,7 +79,6 @@ static char* _file_link_create(struct iwn_wf_req *req, const char *uuid, const s
     return 0;
   }
   intptr_t baselen = sp - req->path;
-  char *ret = 0;
   IWXSTR *xstr = iwxstr_new();
   if (!xstr) {
     return 0;
