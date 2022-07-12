@@ -751,7 +751,7 @@ static void _configure(int argc, char *argv[]) {
 
   if (g_env.config_file) {
     RCB(exit, g_env.config_file_dir = iwpool_strdup2(pool, g_env.config_file));
-    g_env.config_file_dir = dirname((char*) g_env.config_file_dir);
+    g_env.config_file_dir = iwp_dirname((char*) g_env.config_file_dir);
 
     char *data = iwu_file_read_as_buf(g_env.config_file);
     if (!data) {
