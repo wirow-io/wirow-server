@@ -16,7 +16,7 @@
  */
 
 #include <iwnet/iwn_curl.h>
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 
 struct xcurlresp {
   IWXSTR     *body;

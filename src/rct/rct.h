@@ -19,12 +19,14 @@
 #include "lic_env.h"
 #include "wrc/wrc.h"
 #include "utils/utf8.h"
-#include <ejdb2/iowow/iwlog.h>
-#include <ejdb2/iowow/iwuuid.h>
-#include <ejdb2/iowow/iwpool.h>
-#include <ejdb2/iowow/iwhmap.h>
-#include <ejdb2/iowow/iwarr.h>
-#include <ejdb2/jbl.h>
+
+#include <iowow/iwlog.h>
+#include <iowow/iwuuid.h>
+#include <iowow/iwpool.h>
+#include <iowow/iwhmap.h>
+#include <iowow/iwarr.h>
+#include <iowow/iwjson.h>
+
 #include <stdbool.h>
 #include <pthread.h>
 #include <stdatomic.h>

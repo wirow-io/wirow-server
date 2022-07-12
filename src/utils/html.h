@@ -16,6 +16,6 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 
 char* html_safe_alloc_from_jbn(JBL_NODE message);

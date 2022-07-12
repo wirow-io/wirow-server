@@ -17,9 +17,11 @@
  */
 
 #include "gr.h"
+
+#include <iowow/iwjson.h>
+
 #include <stdlib.h>
 #include <string.h>
-#include <ejdb2/jbl.h>
 #include <pthread.h>
 
 typedef int32_t wrc_resource_t;

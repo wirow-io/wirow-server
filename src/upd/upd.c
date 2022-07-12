@@ -23,7 +23,7 @@
 #include "gr_crypt.h"
 #include "utils/xcurl.h"
 
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 #include <iwnet/iwnet.h>
 #include <iwnet/bearssl_hash.h>
 

@@ -16,9 +16,10 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
+#include <iowow/iwlog.h>
+#include <iowow/iwjson.h>
+
 #include <stdbool.h>
-#include <ejdb2/iowow/iwlog.h>
-#include <ejdb2/jbl.h>
 
 typedef enum {
   PROFILE_CONSTRAINED_BASELINE = 1,

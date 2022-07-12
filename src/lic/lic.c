@@ -26,7 +26,7 @@
 
 #include <iowow/iwp.h>
 #include <iowow/iwxstr.h>
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 #include <iwnet/bearssl_hash.h>
 #include <iwnet/bearssl_block.h>
 #include <iwnet/iwn_base64.h>

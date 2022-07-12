@@ -16,6 +16,6 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 
 int recording_postproc(int64_t task_id, JBL doc);

@@ -16,7 +16,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 #include <iwnet/iwn_ws_server.h>
 
 #define GRH_USER_DATA_TYPE_WS            0x01U

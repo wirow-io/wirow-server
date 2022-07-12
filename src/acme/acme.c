@@ -25,7 +25,7 @@
 #include <iwnet/bre.h>
 #include <iwnet/iwn_base64.h>
 
-#include <ejdb2/jbl.h>
+#include <iowow/iwjson.h>
 #include <iowow/iwpool.h>
 #include <iowow/iwxstr.h>
 #include <iowow/iwarr.h>

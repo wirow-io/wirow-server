@@ -1,7 +1,9 @@
 #include "wrc/wrc.h"
+
+#include <iowow/iwstree.h>
+#include <iowow/iwjson.h>
+
 #include <assert.h>
-#include <ejdb2/iowow/iwstree.h>
-#include <ejdb2/jbl.h>
 #include <stdint.h>
 #include <pthread.h>
 
