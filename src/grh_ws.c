@@ -206,7 +206,7 @@ iwrc grh_ws_send_all_room_participants(int64_t room_id, const char *data, ssize_
   IWHMAP_ITER iter;
 
   IWULIST wsidlist = { 0 };
-  IWHMAP *idmap = iwhmap_create_i64(0);
+  IWHMAP *idmap = iwhmap_create_u64(0);
   RCA(idmap, finish);
 
   RCC(rc, finish, iwulist_init(&wsidlist, 32, sizeof(uint32_t)));
@@ -236,7 +236,7 @@ iwrc grh_ws_send_all_room_participants(int64_t room_id, const char *data, ssize_
     if (!nn || nn->type != JBV_I64) {
       continue;
     }
-    iwhmap_put_i64(idmap, nn->vi64, (void*) (intptr_t) -1); // Save user ID
+    iwhmap_put_u64(idmap, nn->vi64, (void*) (intptr_t) -1); // Save user ID
   }
   if (iwhmap_count(idmap) == 0) {
     goto finish;
@@ -504,7 +504,7 @@ static bool _ws_message_init(struct ws_session *wss, const char *msg, size_t msg
   iwn_ws_server_write(wss->ws, "{}", IW_LLEN("{}"));
 
   WLOCK();
-  iwhmap_put_i32(_map_wsid_wsdata, wss->wsid, wss);
+  iwhmap_put_u32(_map_wsid_wsdata, wss->wsid, wss);
   iwhmap_put(_map_uuid_sessions, wss->uuid, wss);
   UNLOCK();
 
@@ -620,7 +620,7 @@ static iwrc _init(void) {
   pthread_mutex_init(&_handlers_mtx, 0);
   pthread_rwlock_init(&_rwl, 0);
 
-  RCB(finish, _map_wsid_wsdata = iwhmap_create_i32(_on_wsid_wsdata_free));
+  RCB(finish, _map_wsid_wsdata = iwhmap_create_u32(_on_wsid_wsdata_free));
   RCB(finish, _map_uuid_sessions = iwhmap_create_str(0));
   RCB(finish, _wsh_handlers = iwhmap_create_str(_free_wsh_handlers_entry));
 

@@ -1,6 +1,6 @@
 #include "wrc/wrc.h"
 
-#include <iowow/iwstree.h>
+#include <iowow/iwhmap.h>
 #include <iowow/iwjson.h>
 
 #include <assert.h>
@@ -10,7 +10,7 @@
 #define RCT_BUFFERED_EVENTS 64
 
 struct _event_stats {
-  IWSTREE *stats; // Mapping event wrc_event_e => int
+  IWHMAP *stats;// Mapping event wrc_event_e => int
   pthread_mutex_t mtx;
   pthread_cond_t  econd;
   wrc_event_e     last_events[RCT_BUFFERED_EVENTS];
@@ -53,7 +53,7 @@ finish:
 static void _rct_event_stats_reset(struct _event_stats *s) {
   assert(s && s->stats);
   pthread_mutex_lock(&s->mtx);
-  iwstree_clear(s->stats);
+  iwhmap_clear(s->stats);
   pthread_mutex_unlock(&s->mtx);
 }
 
@@ -62,15 +62,15 @@ static iwrc _rct_event_stats_register(struct _event_stats *s, wrc_event_e evt) {
   pthread_mutex_lock(&s->mtx);
   iwrc rc = 0;
   uintptr_t idx = (uintptr_t) evt;
-  IWSTREE *stree = s->stats;
+  IWHMAP *stree = s->stats;
   assert(stree);
 
   s->last_events[s->last_events_idx] = evt;
   s->last_events_idx = (s->last_events_idx + 1) % 64;
 
-  uintptr_t cnt = (uintptr_t) iwstree_get(stree, (void*) idx);
+  uintptr_t cnt = (uintptr_t) iwhmap_get_u64(stree, idx);
   ++cnt;
-  rc = iwstree_put_overwrite(stree, (void*) idx, (void*) cnt);
+  rc = iwhmap_put_u64(stree, idx, (void*) cnt);
   pthread_cond_broadcast(&event_stats.econd);
   pthread_mutex_unlock(&s->mtx);
   return rc;
@@ -79,7 +79,7 @@ static iwrc _rct_event_stats_register(struct _event_stats *s, wrc_event_e evt) {
 static int _rct_event_stats_count(struct _event_stats *s, wrc_event_e evt) {
   pthread_mutex_lock(&s->mtx);
   uintptr_t idx = (uintptr_t) evt;
-  uintptr_t cnt = (uintptr_t) iwstree_get(s->stats, (void*) idx);
+  uintptr_t cnt = (uintptr_t) iwhmap_get_u64(s->stats, idx);
   pthread_mutex_unlock(&s->mtx);
   return (int) cnt;
 }
@@ -91,30 +91,11 @@ static iwrc _rct_event_stats_handler(wrc_event_e evt, wrc_resource_t resource_id
   return rc;
 }
 
-static void _rct_event_stats_print(struct _event_stats *s) {
-  pthread_mutex_lock(&s->mtx);
-  IWSTREE_ITER it;
-  iwrc rc = iwstree_iter_init(s->stats, &it);
-  RCGO(rc, finish);
-  while (iwstree_iter_has_next(&it)) {
-    void *k, *v;
-    rc = iwstree_iter_next(&it, &k, &v);
-    RCBREAK(rc);
-    int evt = (uintptr_t) k;
-    int cnt = (uintptr_t) v;
-    fprintf(stderr, "%s => %d\n", wrc_event_name(evt), cnt);
-  }
-  iwstree_iter_close(&it);
-
-finish:
-  pthread_mutex_unlock(&s->mtx);
-}
-
 static uint32_t _event_stats_handler_id;
 
 static iwrc _rct_event_stats_init() {
   if (!event_stats.stats) {
-    event_stats.stats = iwstree_create(0, 0);
+    event_stats.stats = iwhmap_create_u64(0);
     assert(event_stats.stats);
   }
   return wrc_add_event_handler(_rct_event_stats_handler, &event_stats, &_event_stats_handler_id);
@@ -124,7 +105,7 @@ static void _rct_event_stats_destroy() {
   wrc_remove_event_handler(_event_stats_handler_id);
   pthread_mutex_lock(&event_stats.mtx);
   if (event_stats.stats) {
-    iwstree_destroy(event_stats.stats);
+    iwhmap_destroy(event_stats.stats);
     event_stats.stats = 0;
   }
   pthread_mutex_unlock(&event_stats.mtx);

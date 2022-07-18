@@ -314,7 +314,7 @@ iwrc rct_resource_register_lk(void *v) {
   }
   iwrc rc = iwhmap_put(rct_state.map_uuid2ptr, b->uuid, b);
   RCGO(rc, finish);
-  RCC(rc, finish, iwhmap_put_i32(rct_state.map_id2ptr, b->id, b));
+  RCC(rc, finish, iwhmap_put_u32(rct_state.map_id2ptr, b->id, b));
 
   wrc_resource_t wid = 0;
   if (b->type == RCT_TYPE_ROUTER) {
@@ -1088,7 +1088,7 @@ iwrc rct_init() {
   iwrc rc = RCR(iwlog_register_ecodefn(_ecodefn));
 
   RCB(finish, rct_state.pool = iwpool_create(512));
-  RCB(finish, rct_state.map_id2ptr = iwhmap_create_i32(0));
+  RCB(finish, rct_state.map_id2ptr = iwhmap_create_u32(0));
   RCB(finish, rct_state.map_uuid2ptr = iwhmap_create_str(0));
 
   RCC(rc, finish, jbn_from_json((void*) data_supported_rtp_capabilities,

@@ -1886,7 +1886,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
         goto finish;
       }
 
-      rc = iwhmap_put_i32(_map_resource_member, transport->id, (void*) (uintptr_t) member->id);
+      rc = iwhmap_put_u32(_map_resource_member, transport->id, (void*) (uintptr_t) member->id);
       if (rc) {
         rct_resource_ref_lk(transport, -1, __func__);
         iwulist_remove(&member->resource_refs, 0);
@@ -2031,7 +2031,7 @@ static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_i
   RCC(rc, finish, iwulist_push(&member->resource_refs, &(struct rct_resource_ref) {
     .b = rct_resource_ref_lk(consumer, 1, __func__),
   }));
-  RCC(rc, finish, iwhmap_put_i32(_map_resource_member, consumer->id, (void*) (uintptr_t) member->id));
+  RCC(rc, finish, iwhmap_put_u32(_map_resource_member, consumer->id, (void*) (uintptr_t) member->id));
   rct_unlock(), locked = false;
 
   RCC(rc, finish, jbl_from_node(&jbl, resp));
@@ -2128,7 +2128,7 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
     goto finish;
   }
 
-  RCC(rc, finish, iwhmap_put_i32(_map_resource_member, producer->id, (void*) (uintptr_t) member->id));
+  RCC(rc, finish, iwhmap_put_u32(_map_resource_member, producer->id, (void*) (uintptr_t) member->id));
   // Collect room members
   for (rct_room_member_t *m = member->room->members; m; m = m->next) {
     if (m != member) {
@@ -3161,7 +3161,7 @@ static uint32_t _event_handler_id;
 
 iwrc rct_room_module_init(void) {
   iwrc rc = 0;
-  RCB(finish, _map_resource_member = iwhmap_create_i64(0));
+  RCB(finish, _map_resource_member = iwhmap_create_u64(0));
 
   RCC(rc, finish, wrc_add_event_handler(_rct_event_handler, 0, &_event_handler_id));
   RCC(rc, finish, grh_ws_register_wsh_handler(

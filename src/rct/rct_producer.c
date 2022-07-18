@@ -23,7 +23,8 @@
 
 #include <iowow/iwutils.h>
 #include <iowow/iwarr.h>
-#include <iowow/iwstree.h>
+#include <iowow/iwhmap.h>
+
 #include <assert.h>
 
 #define REPORT(msg_)                         \
@@ -395,7 +396,7 @@ finish:
 static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_input_t *input) {
   iwrc rc = 0, rc2;
 
-  IWSTREE *map_codec2cap = 0;
+  IWHMAP *map_codec2cap = 0;
   rct_producer_spec_t *spec = producer->spec;
   const char *kind = (spec->rtp_kind & RTP_KIND_VIDEO) ? "video" : "audio";
 
@@ -427,7 +428,7 @@ static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_in
   IWPOOL *pool = iwpool_create(1024);
   RCA(pool, finish);
 
-  RCB(finish, map_codec2cap = iwstree_create(0, 0));
+  RCB(finish, map_codec2cap = iwhmap_create_u64(0));
 
   RCC(rc, finish, jbn_from_json("{\"codecs\":[],\"encodings\":[]}", &rtp_mapping, pool));
   RCC(rc, finish, jbn_from_json("{\"codecs\":[],\"headerExtensions\":[],\"encodings\":[],\"rtcp\":{}}",
@@ -457,7 +458,8 @@ static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_in
       iwlog_ecode_error3(rc);
       goto finish;
     }
-    RCC(rc, finish, iwstree_put(map_codec2cap, pc, matched_codec));
+
+    RCC(rc, finish, iwhmap_put_u64(map_codec2cap, (uintptr_t) pc, matched_codec));
   }
 
   // Match parameters RTX codecs to capabilities RTX codecs
@@ -478,7 +480,7 @@ static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_in
       goto finish;
     }
     JBL_NODE cap_media_codex_rtx = 0;
-    JBL_NODE cap_media_codec = iwstree_get(map_codec2cap, associated_media_codec);
+    JBL_NODE cap_media_codec = iwhmap_get_u64(map_codec2cap, (uintptr_t) associated_media_codec);
     if (!cap_media_codec) {
       rc = IW_ERROR_ASSERTION;
       iwlog_ecode_error3(rc);
@@ -497,15 +499,20 @@ static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_in
       iwlog_ecode_error3(rc);
       goto finish;
     }
-    RCC(rc, finish, iwstree_put(map_codec2cap, pc, cap_media_codex_rtx));
+    RCC(rc, finish, iwhmap_put_u64(map_codec2cap, (uintptr_t) pc, cap_media_codex_rtx));
   }
 
   // Generate codecs mapping
-  RCC(rc, finish, iwstree_visit(map_codec2cap, _rct_transport_produce_input_mapper,
-                     &(struct _rct_transport_produce_input_mapper_ctx) {
-    .mapping_codecs = mapping_codecs,
-    .pool = pool
-  }));
+  IWHMAP_ITER iter;
+  iwhmap_iter_init(map_codec2cap, &iter);
+  while (iwhmap_iter_next(&iter)) {
+    _rct_transport_produce_input_mapper((void*) (uintptr_t) iter.key, (void*) iter.val,
+                                        &(struct _rct_transport_produce_input_mapper_ctx) {
+      .mapping_codecs = mapping_codecs,
+      .pool = pool
+    }, &rc);
+    RCGO(rc, finish);
+  }
 
   // Generate encodings mapping
   uint64_t mapped_ssrc = 100000000 + iwu_rand_range(900000000);
@@ -666,7 +673,7 @@ static iwrc _rct_transport_produce_input(rct_producer_t *producer, wrc_worker_in
   RCC(rc, finish, jbn_clone(consumable_rtp_parameters, &spec->consumable_rtp_parameters, spec->pool));
 
 finish:
-  iwstree_destroy(map_codec2cap);
+  iwhmap_destroy(map_codec2cap);
   iwpool_destroy(pool);
   return rc;
 }
