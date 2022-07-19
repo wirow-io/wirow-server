@@ -543,7 +543,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
 
     function onProducerClosed(this: typeof onProducerClosed, eventType: string, room: Room, producer: Producer) {
       log.debug.enabled && log.debug(`Room.onProducerClosed() | ${eventType} event`);
-      producer.removeListener(eventType, this);
+      producer.removeListener(eventType as any, this);
       const idx = room.producers.indexOf(producer);
       if (idx > -1) {
         room.producers.splice(idx, 1);
@@ -854,7 +854,7 @@ export class Room extends ExtendedEventEmitter<RoomEvents> {
       if (member[kind] === consumer) {
         member[kind] = undefined;
       }
-      consumer.removeListener(eventType, this);
+      consumer.removeListener(eventType as any, this);
     }
   }
 

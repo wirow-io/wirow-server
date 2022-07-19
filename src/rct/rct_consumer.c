@@ -521,6 +521,7 @@ static iwrc _rct_consumer_produce_input(rct_consumer_t *consumer, wrc_worker_inp
       RCC(rc, finish, jbn_add_item_i64(n1, "temporalLayer", consumer->preferred_layer.temporal, 0, pool));
     }
   }
+  RCC(rc, finish, jbn_add_item_str(data, "producerId", producer->uuid, -1, 0, pool));
   RCC(rc, finish, jbl_from_node(&input->data, data));
 
   // Save consumer params
@@ -670,7 +671,6 @@ static iwrc _rct_consumer_create(
     }
   }));
   RCC(rc, finish, jbl_clone(transport->identity, &m->input.worker.internal));
-  RCC(rc, finish, jbl_set_string(m->input.worker.internal, "producerId", producer->uuid));
   RCC(rc, finish, jbl_set_string(m->input.worker.internal, "consumerId", consumer->uuid));
   RCC(rc, finish, jbl_clone_into_pool(m->input.worker.internal, &consumer->identity, pool));
   RCC(rc, finish, _rct_consumer_produce_input(consumer, &m->input.worker));

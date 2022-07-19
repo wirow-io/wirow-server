@@ -112,11 +112,11 @@ iwrc rct_consumer_data_create(
   // Build identity
   RCC(rc, finish, jbl_clone(transport->identity, &m->input.worker.internal));
   RCC(rc, finish, jbl_set_string(m->input.worker.internal, "dataConsumerId", consumer->uuid));
-  RCC(rc, finish, jbl_set_string(m->input.worker.internal, "dataProducerId", producer->uuid));
   RCC(rc, finish, jbl_clone_into_pool(m->input.worker.internal, &consumer->identity, pool));
 
   // Build command data
   RCC(rc, finish, jbn_from_json("{}", &data, pool_tmp));
+  RCC(rc, finish, jbn_add_item_str(data, "dataProducerId", producer->uuid, -1, 0, pool_tmp));
   RCC(rc, finish, jbn_add_item_str(data, "type", type, -1, 0, pool_tmp));
   if (sctp_stream_parameters) {
     sctp_stream_parameters->key = "sctpStreamParameters";

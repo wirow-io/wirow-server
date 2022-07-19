@@ -1207,21 +1207,21 @@
     "@sentry/types" "6.19.7"
     tslib "^1.9.3"
 
-"@softmotions/mediasoup-client@^3.6.51":
-  version "3.6.51"
-  resolved "https://registry.yarnpkg.com/@softmotions/mediasoup-client/-/mediasoup-client-3.6.51.tgz#f6095dbd48518ca4d7b5d39caf502b3b685c20bc"
-  integrity sha512-FO3Ju48FgmIrsNZbT2GTRFGxtguYQvIGC2GFRB4kDMpeUGKSxWGibsaoxY2eXMIRuvozVFrsTaPEUARVj+Yt/A==
+"@softmotions/mediasoup-client@^3.6.54":
+  version "3.6.54"
+  resolved "https://registry.yarnpkg.com/@softmotions/mediasoup-client/-/mediasoup-client-3.6.54.tgz#2340856aa893b729943ded1737056fc212c3a748"
+  integrity sha512-/d71HDTijDjXIw+/knC2ItZhd+OmNOZ9Q0Jkqc7yaEWzdQUI/wv5M00xDZLB4o4O5GBTJ07OStbJxO6wwgWcWg==
   dependencies:
     "@types/debug" "^4.1.7"
     "@types/events" "^3.0.0"
-    awaitqueue "^2.3.3"
+    awaitqueue "^2.4.0"
     bowser "^2.11.0"
-    debug "^4.3.3"
+    debug "^4.3.4"
     events "^3.3.0"
     fake-mediastreamtrack "^1.1.6"
     h264-profile-level-id "^1.0.1"
     sdp-transform "^2.14.1"
-    supports-color "^9.2.1"
+    supports-color "^9.2.2"
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -1615,10 +1615,10 @@ autoprefixer@^10.4.5:
     picocolors "^1.0.0"
     postcss-value-parser "^4.2.0"
 
-awaitqueue@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/awaitqueue/-/awaitqueue-2.3.3.tgz#35e6568970fcac3de1644a2c28abc1074045b570"
-  integrity sha512-RbzQg6VtPUtyErm55iuQLTrBJ2uihy5BKBOEkyBwv67xm5Fn2o/j+Bz+a5BmfSoe2oZ5dcz9Z3fExS8pL+LLhw==
+awaitqueue@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/awaitqueue/-/awaitqueue-2.4.0.tgz#beb9a2b563b4817921f21c09cca2cdbb0d5989d4"
+  integrity sha512-9nTnPxVuxiuKFTHslm9ltnekUECJidOQ5kE6JpZUH77KrKqStQuWUW7JPB2GJZ7rOwWLcbToHiIXle/nJe1VpQ==
 
 aws-sign2@~0.7.0:
   version "0.7.0"
@@ -2146,7 +2146,7 @@ date-fns@^2.28.0:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.28.0.tgz#9570d656f5fc13143e50c975a3b6bbeb46cd08b2"
   integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
 
-debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -5378,7 +5378,7 @@ supports-color@^7.0.0, supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-supports-color@^9.2.1:
+supports-color@^9.2.2:
   version "9.2.2"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.2.2.tgz#502acaf82f2b7ee78eb7c83dcac0f89694e5a7bb"
   integrity sha512-XC6g/Kgux+rJXmwokjm9ECpD6k/smUoS5LKlUCcsYr4IY3rW0XyAympon2RmxGrlnZURMpg5T18gWDP9CsHXFA==
