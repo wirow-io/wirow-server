@@ -850,7 +850,6 @@ static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data
       if (g_env.log.verbose) {
         iwlog_info("RCT WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE: %u", resource_id);
       }
-
       break;
     case WRC_EVT_TRANSPORT_SCTP_STATE_CHANGE:
       if (g_env.log.verbose) {

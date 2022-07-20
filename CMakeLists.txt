@@ -39,6 +39,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(BUILD_TESTS "Build test cases" OFF)
 option(ASAN "Turn on address sanitizer" OFF)
+option(UBSAN "Turn on UB address sanitizer" OFF)
 option(PACKAGE_TGZ "Build .tgz package archive" ON)
 option(PACKAGE_ZIP "Build .zip package archive" ON)
 option(BUILD_DISTRIB "Build distribution package" OFF)

@@ -101,6 +101,9 @@ set(CMAKE_C_FLAGS
 if(ASAN)
   set(CMAKE_C_ASAN "-fsanitize=address -fno-omit-frame-pointer")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_C_ASAN}")
+elseif (UBSAN)
+  set(CMAKE_C_ASAN "-fsanitize=undefined -fno-omit-frame-pointer")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_C_ASAN}")
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG
