@@ -51,11 +51,13 @@ static _profile_pattern_t _profile_patterns[] = {
 // flag specifies if level 1b or level 1.1 is used.
 static const int constraint_set3_flag = 0x10;
 
-iwrc h264_plid_parse(const char spec[static 6], h264_plid_t *out) {
+iwrc h264_plid_parse(const char *spec, h264_plid_t *out) {
+  if (!out || !spec || strlen(spec) != 6) {
+    return IW_ERROR_INVALID_ARGS;
+  }
   // 4d0032
   char nspec[7];
-  memcpy(nspec, spec, 6);
-  nspec[6] = '\0';
+  memcpy(nspec, spec, 7);
 
   memset(out, 0, sizeof(*out));
   unsigned long int numspec = strtol(nspec, 0, 16);

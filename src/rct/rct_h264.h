@@ -55,7 +55,7 @@ typedef struct h264_plid {
   h264_level_e   level;
 } h264_plid_t;
 
-iwrc h264_plid_parse(const char spec[static 6], h264_plid_t *out);
+iwrc h264_plid_parse(const char *spec, h264_plid_t *out);
 
 bool h264_plid_equal(const char *p1, size_t p1len, const char *p2, size_t p2len);
 
