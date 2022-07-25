@@ -28,6 +28,7 @@
 #include <iwnet/iwn_scheduler.h>
 
 #include <pthread.h>
+#include <string.h>
 #include <assert.h>
 #include <stdatomic.h>
 #include <signal.h>

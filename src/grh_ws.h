@@ -125,4 +125,4 @@ iwrc grh_ws_send_confirm2(struct ws_message_ctx *ctx, JBL_NODE n, const char *er
 
 iwrc grh_route_ws(struct iwn_wf_route *parent);
 
-void grh_ws_close(void);
+void grh_ws_destroy(void);

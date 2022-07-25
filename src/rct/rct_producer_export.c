@@ -20,6 +20,8 @@
 #include "utils/network.h"
 
 #include <ejdb2/iowow/iwstw.h>
+
+#include <string.h>
 #include <assert.h>
 
 static void _rct_producer_export_dispose_lk(rct_producer_export_t *export) {
@@ -306,7 +308,6 @@ iwrc rct_producer_export(
   RCC(rc, finish, _export_consumer_create_sdp(export));
 
   rct_lock(), locked = true;
-  export->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(export));
 
   export->hook_user_data = params->hook_user_data;
@@ -377,6 +378,6 @@ iwrc rct_producer_export_module_init(void) {
   return wrc_add_event_handler(_rct_event_handler, 0, &_event_handler_id);
 }
 
-void rct_producer_export_module_close(void) {
+void rct_producer_export_module_destroy(void) {
   wrc_remove_event_handler(_event_handler_id);
 }

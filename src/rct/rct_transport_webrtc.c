@@ -17,6 +17,8 @@
 
 #include "rct_transport.h"
 
+#include <string.h>
+
 iwrc rct_transport_webrtc_spec_create2(
   uint32_t flags,
   const char *listen_ip, const char *announced_ip,
@@ -185,7 +187,7 @@ iwrc rct_transport_webrtc_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = router->worker_id,
+    .worker_id = router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_ROUTER_CREATE_WEBRTC_TRANSPORT
@@ -205,7 +207,6 @@ iwrc rct_transport_webrtc_create(
   router->transports = (void*) transport;
   transport->next = th;
 
-  transport->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(transport));
   rct_resource_unlock_keep_ref(router), locked = false;
 
@@ -235,7 +236,7 @@ iwrc _rct_transport_webrtc_connect(rct_transport_webrtc_t *transport, rtc_transp
   JBL jbl = 0, jbl2 = 0, jbl3 = 0;
   wrc_msg_t *m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .worker     = {
         .cmd      = WRC_CMD_TRANSPORT_CONNECT,
@@ -255,7 +256,7 @@ iwrc _rct_transport_webrtc_connect(rct_transport_webrtc_t *transport, rtc_transp
   for (struct rct_dtls_fp *fp = spec->fingerprints; fp; fp = fp->next) {
     jbl_destroy(&jbl3);
     RCC(rc, finish, jbl_create_empty_object(&jbl3));
-    RCC(rc, finish, jbl_set_string(jbl3, "algorithm", rct_hash_func_name(fp->algorithm)));
+    RCC(rc, finish, jbl_set_string(jbl3, "algorithm", rct_transport_hash_func_name(fp->algorithm)));
     RCC(rc, finish, jbl_set_string(jbl3, "value", fp->value));
     RCC(rc, finish, jbl_set_nested(jbl2, 0, jbl3));
   }

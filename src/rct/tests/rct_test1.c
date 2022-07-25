@@ -1,5 +1,6 @@
 #include "rct/rct.h"
 #include "rct/rct_h264.h"
+#include "rct/rct_utils.h"
 #include <CUnit/Basic.h>
 
 static int init_suite(void) {
@@ -89,17 +90,17 @@ void _rct_scalbility_mode_test(void) {
   int spartial = 0;
   int temporal = 0;
   bool ksvc = false;
-  rct_parse_scalability_mode("S1T2", &spartial, &temporal, &ksvc);
+  rct_utils_parse_scalability_mode("S1T2", &spartial, &temporal, &ksvc);
   CU_ASSERT_EQUAL(spartial, 1);
   CU_ASSERT_EQUAL(temporal, 2);
   CU_ASSERT_EQUAL(ksvc, false);
 
-  rct_parse_scalability_mode("L11T2_KEY", &spartial, &temporal, &ksvc);
+  rct_utils_parse_scalability_mode("L11T2_KEY", &spartial, &temporal, &ksvc);
   CU_ASSERT_EQUAL(spartial, 11);
   CU_ASSERT_EQUAL(temporal, 2);
   CU_ASSERT_EQUAL(ksvc, true);
 
-  rct_parse_scalability_mode("zzz", &spartial, &temporal, &ksvc);
+  rct_utils_parse_scalability_mode("zzz", &spartial, &temporal, &ksvc);
   CU_ASSERT_EQUAL(spartial, 1);
   CU_ASSERT_EQUAL(temporal, 1);
   CU_ASSERT_EQUAL(ksvc, false);

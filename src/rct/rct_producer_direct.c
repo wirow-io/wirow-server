@@ -33,7 +33,7 @@ iwrc rct_producer_direct_send_rtp_packet(wrc_resource_t producer_id, char *paylo
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_PAYLOAD,
-    .resource_id = producer->transport->router->worker_id,
+    .worker_id = producer->transport->router->worker_id,
     .input = {
       .payload       = {
         .type        = WRC_PAYLOAD_RTP_PACKET_SEND,

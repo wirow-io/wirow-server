@@ -66,9 +66,9 @@ struct rct_state {
 };
 
 extern struct gr_env g_env;
-extern struct rct_state rct_state;
+extern struct rct_state state;
 
-#define RCT_INIT_REFS 1000
+#define RCT_INIT_REFS 0xffffff
 
 #define RCT_TYPE_ROUTER           0x01U
 #define RCT_TYPE_TRANSPORT_WEBRTC 0x02U
@@ -87,25 +87,15 @@ extern struct rct_state rct_state;
 #define RCT_TYPE_OBSERVER_AS      0x400U // Active speaker
 #define RCT_TYPE_OBSERVER_ALL     (RCT_TYPE_OBSERVER_AL | RCT_TYPE_OBSERVER_AS)
 
-#define RCT_TYPE_ROOM        0x800U
-#define RCT_TYPE_ROOM_MEMBER 0x1000U
-
+#define RCT_TYPE_ROOM            0x800U
+#define RCT_TYPE_ROOM_MEMBER     0x1000U
 #define RCT_TYPE_PRODUCER_EXPORT 0x2000U
+#define RCT_TYPE_WORKER_ADAPTER  0x4000U
 
-#define RCT_TYPE_UPPER (RCT_TYPE_PRODUCER_EXPORT + 1)
-
-typedef enum {
-  RCT_MD2 = 1,
-  RCT_MD5,
-  RCT_SHA1,
-  RCT_SHA224,
-  RCT_SHA256,
-  RCT_SHA384,
-  RCT_SHA512,
-} rct_hash_func_e;
+#define RCT_TYPE_UPPER (RCT_TYPE_WORKER_ADAPTER + 1)
 
 #define RCT_RESOURCE_BASE_FIELDS            \
-  int32_t type;                             \
+  uint32_t type;                             \
   wrc_resource_t id;                        \
   char uuid[IW_UUID_STR_LEN + 1];           \
   /* Unsafe fields, resource must be \
@@ -355,10 +345,10 @@ typedef struct rct_consumer {
   // *INDENT-ON*
   rct_consumer_layer_t preferred_layer;
   rct_consumer_layer_t current_layer;
-  int  score;
-  int  producer_score;
-  int  priority;
-  bool paused;
+  int score;
+  int producer_score;
+  int priority;
+  atomic_bool paused;
   bool resume_by_producer; // Unpause consumer when producer will be resumed
 } rct_consumer_t;
 
@@ -428,6 +418,8 @@ void* rct_resource_close_lk(void *b);
 
 void rct_resource_close(wrc_resource_t resource_id);
 
+void rct_resource_close_of_type(uint32_t resource_type);
+
 void rct_resource_ref_unlock(void *b, bool locked, int nrefs, const char *tag);
 
 void rct_resource_ref_keep_locking(void *b, bool locked, int nrefs, const char *tag);
@@ -441,8 +433,6 @@ iwrc rct_resource_register_lk(void *b);
 iwrc rct_resource_probe_by_uuid(const char *uuid, rct_resource_base_t *b);
 
 iwrc rct_resource_probe_by_id(wrc_resource_t resource_id, rct_resource_base_t *b);
-
-wrc_resource_t rct_resource_id_next_lk(void);
 
 void rct_lock(void);
 
@@ -472,6 +462,8 @@ void* rct_resource_by_id_unsafe(wrc_resource_t resource_id, int type);
 void* rct_resource_by_uuid_locked(const char *resource_uuid, int type, const char *tag);
 
 void* rct_resource_by_id_locked(wrc_resource_t resource_id, int type, const char *tag);
+
+void* rct_resource_by_id_unlocked(wrc_resource_t resource_id, int type, const char *tag);
 
 void* rct_resource_by_id_locked_lk(wrc_resource_t resource_id, int type, const char *tag);
 
@@ -525,20 +517,14 @@ iwrc rct_resource_json_command_lk_then_unlock(
   JBL              cmd_data,
   JBL             *cmd_out);
 
-const char* rct_hash_func_name(rct_hash_func_e hf);
-
-rct_hash_func_e rct_name_to_hash_func(const char *name);
-
 bool rct_codec_is_rtx(JBL_NODE n);
 
 iwrc rct_validate_rtcp_feedback(JBL_NODE n, IWPOOL *pool);
 
-iwrc rct_codecs_is_matched(JBL_NODE ac, JBL_NODE bc, bool strict, bool modify, IWPOOL *pool, bool *res);
-
-void rct_parse_scalability_mode(const char *mode, int *spartial_layers_out, int *temporal_layers_out, bool *ksvc_out);
+iwrc rct_utils_codecs_is_matched(JBL_NODE ac, JBL_NODE bc, bool strict, bool modify, IWPOOL *pool, bool *res);
 
 iwrc rct_init(void);
 
 void rct_shutdown(void);
 
-void rct_close(void);
+void rct_destroy(void);

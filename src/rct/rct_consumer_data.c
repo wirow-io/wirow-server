@@ -101,7 +101,7 @@ iwrc rct_consumer_data_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_TRANSPORT_CONSUME_DATA
@@ -137,7 +137,6 @@ iwrc rct_consumer_data_create(
   producer->consumers = rct_resource_ref_lk(consumer, RCT_INIT_REFS, __func__);
   consumer->next = pp;
 
-  consumer->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(consumer));
   rct_resource_unlock_keep_ref(producer), locked = false;
 

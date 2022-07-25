@@ -16,10 +16,12 @@
  */
 
 #include "rct_consumer.h"
+#include "rct_utils.h"
 
 #include <iowow/iwutils.h>
 #include <iowow/iwconv.h>
 
+#include <string.h>
 
 #define REPORT(msg_)                         \
   iwlog_error2(msg_);                        \
@@ -328,7 +330,7 @@ static iwrc _rct_consumer_produce_input(rct_consumer_t *consumer, wrc_worker_inp
   for (JBL_NODE codec = consumable_codecs->child; codec; codec = codec->next) {
     JBL_NODE matched_cap_codec = 0;
     for (JBL_NODE cap_codec = caps_codecs->child; cap_codec; cap_codec = cap_codec->next) {
-      RCC(rc, finish, rct_codecs_is_matched(cap_codec, codec, true, false, pool, &bv));
+      RCC(rc, finish, rct_utils_codecs_is_matched(cap_codec, codec, true, false, pool, &bv));
       if (bv) {
         matched_cap_codec = cap_codec;
         break;
@@ -460,7 +462,7 @@ static iwrc _rct_consumer_produce_input(rct_consumer_t *consumer, wrc_worker_inp
   // If there is simulast, mangle spatial layers in scalabilityMode.
   if (consumable_encodings->child && consumable_encodings->child->next) {
     int temporalLayers;
-    rct_parse_scalability_mode(scalability_mode, 0, &temporalLayers, 0);
+    rct_utils_parse_scalability_mode(scalability_mode, 0, &temporalLayers, 0);
     RCB(finish, scalability_mode = iwpool_printf(pool, "S%dT%d", jbn_length(consumable_encodings), temporalLayers));
   }
 
@@ -663,7 +665,7 @@ static iwrc _rct_consumer_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_TRANSPORT_CONSUME
@@ -685,7 +687,6 @@ static iwrc _rct_consumer_create(
   transport->consumers = (void*) consumer;
   consumer->next_transport = pp;
 
-  consumer->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(consumer));
   rct_resource_unlock_keep_ref((void*) producer), locked = false;
 
@@ -1039,6 +1040,6 @@ iwrc rct_consumer_module_init(void) {
   return wrc_add_event_handler(_rct_event_handler, 0, &_event_handler_id);
 }
 
-void rct_consumer_module_close(void) {
+void rct_consumer_module_destroy(void) {
   wrc_remove_event_handler(_event_handler_id);
 }

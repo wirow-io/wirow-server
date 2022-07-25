@@ -22,7 +22,7 @@ let g:termdebug_wide=1
 
 nnoremap <leader>cc :call asyncrun#run('',
         \ {'mode':'bang','cwd':g:build_dir,'save':2},
-        \ 'cmake .. -G Ninja -DCMAKE_BUILD_TYPE='.g:build_type.' -DBUILD_TESTS=ON -DIW_EXEC=ON -DCMAKE_CXX_COMPILER='.g:cxx.' -DCMAKE_C_COMPILER='.g:cc.' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCREATE_DEV_USER=ON')
+        \ 'cmake .. -G Ninja -DCMAKE_BUILD_TYPE='.g:build_type.' -DBUILD_TESTS=ON -DIW_EXEC=ON -DCMAKE_CXX_COMPILER='.g:cxx.' -DCMAKE_C_COMPILER='.g:cc.' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCREATE_DEV_USER=ON -DASAN=ON')
         \<CR>
 
 augroup lvimrc

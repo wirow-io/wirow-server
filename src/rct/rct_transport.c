@@ -16,9 +16,53 @@
  */
 
 #include "rct_transport.h"
+
+#include <string.h>
 #include <assert.h>
 
+
 iwrc _rct_transport_webrtc_connect(rct_transport_webrtc_t *transport, rtc_transport_webrtc_connect_t *spec);
+
+const char* rct_transport_hash_func_name(rct_hash_func_e hf) {
+  switch (hf) {
+    case RCT_SHA256:
+      return "sha-256";
+    case RCT_SHA512:
+      return "sha-512";
+    case RCT_SHA384:
+      return "sha-384";
+    case RCT_SHA224:
+      return "sha-224";
+    case RCT_SHA1:
+      return "sha-1";
+    case RCT_MD2:
+      return "md2";
+    case RCT_MD5:
+      return "md5";
+    default:
+      return "unknown";
+  }
+}
+
+rct_hash_func_e rct_transport_name_to_hash_func(const char *name) {
+  if (!strcmp(name, "sha-256")) {
+    return RCT_SHA256;
+  } else if (!strcmp(name, "sha-512")) {
+    return RCT_SHA512;
+  } else if (!strcmp(name, "sha-384")) {
+    return RCT_SHA384;
+  } else if (!strcmp(name, "sha-224")) {
+    return RCT_SHA224;
+  } else if (!strcmp(name, "sha-1")) {
+    return RCT_SHA1;
+  } else if (!strcmp(name, "md2")) {
+    return RCT_MD2;
+  } else if (!strcmp(name, "md5")) {
+    return RCT_MD5;
+  } else {
+    return 0;
+  }
+}
 
 void rct_transport_dispose_lk(rct_transport_t *t) {
   assert(t);
@@ -232,7 +276,7 @@ static iwrc _rct_connect_webrtc_spec_from_json(
       rc = GR_ERROR_INVALID_DATA_RECEIVED;
       goto finish;
     }
-    rct_hash_func_e algorithm = rct_name_to_hash_func(n->vptr);
+    rct_hash_func_e algorithm = rct_transport_name_to_hash_func(n->vptr);
     if (!algorithm) {
       rc = GR_ERROR_INVALID_DATA_RECEIVED;
       goto finish;
@@ -323,6 +367,6 @@ iwrc rct_transport_module_init(void) {
   return wrc_add_event_handler(_rct_event_handler, 0, &_event_handler_id);
 }
 
-void rct_transport_module_close(void) {
+void rct_transport_module_destroy(void) {
   wrc_remove_event_handler(_event_handler_id);
 }

@@ -17,8 +17,10 @@
 
 #include "rct_router.h"
 
-#include <ejdb2/iowow/iwuuid.h>
-#include <ejdb2/iowow/iwarr.h>
+#include <iowow/iwuuid.h>
+#include <iowow/iwarr.h>
+
+#include <string.h>
 
 static int initial_payloads[] = {
   100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
@@ -50,7 +52,7 @@ static iwrc _rct_router_create_rt_capabilities(JBL_NODE *caps_out, IWPOOL *pool)
   int64_t preferred_payload_type, clock_rate;
 
   JBL_NODE n1, n2;
-  JBL_NODE available_caps = rct_state.available_capabilities, available_codecs;
+  JBL_NODE available_caps = state.available_capabilities, available_codecs;
   JBL_NODE user_caps, user_codecs;
   JBL_NODE result_caps, result_codecs, result_codec;
 
@@ -247,7 +249,7 @@ iwrc rct_router_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = router->worker_id,
+    .worker_id = router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_WORKER_ROUTER_CREATE
@@ -259,15 +261,13 @@ iwrc rct_router_create(
   RCC(rc, finish, jbl_clone_into_pool(m->input.worker.internal, &router->identity, pool));
 
   rct_resource_ref_locked(router, RCT_INIT_REFS, __func__), locked = true; // NOLINT clang-analyzer-deadcode.DeadStores
-
-  router->id = rct_resource_id_next_lk();
   rc = rct_resource_register_lk(router);
   rct_resource_unlock_keep_ref(router), locked = false;
   RCGO(rc, finish);
 
   if (g_env.log.verbose) {
     IWXSTR *xstr = iwxstr_new();
-    iwxstr_printf(xstr, "RCT Creating router: id=%" PRIu32
+    iwxstr_printf(xstr, "RCT Creating router: 0x%" PRIx64
                   " uuid=%s\n", router->id, router->uuid);
     iwlog_info2(iwxstr_ptr(xstr));
     iwxstr_destroy(xstr);
@@ -294,7 +294,7 @@ iwrc rct_router_dump(wrc_resource_t router_id, JBL *dump_out) {
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = worker_id,
+    .worker_id = worker_id,
     .input = {
       .worker     = {
         .cmd      = WRC_CMD_ROUTER_DUMP,
@@ -339,7 +339,7 @@ iwrc rct_router_close(wrc_resource_t router_id) {
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = worker_id,
+    .worker_id = worker_id,
     .input = {
       .worker     = {
         .cmd      = WRC_CMD_ROUTER_CLOSE,

@@ -17,14 +17,9 @@
  */
 
 #include "gr.h"
-
 #include <iowow/iwjson.h>
 
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
-
-typedef int32_t wrc_resource_t;
+typedef uint64_t wrc_resource_t;
 typedef uint32_t wrc_event_handler_t;
 
 struct wrc_msg;
@@ -192,7 +187,7 @@ typedef struct wrc_event_output {
 typedef struct wrc_msg {
   iwrc rc;
   wrc_msg_type_e type;
-  wrc_resource_t resource_id;
+  wrc_resource_t worker_id;
   wrc_msg_processed_handler handler;
 
   union {
@@ -207,8 +202,6 @@ typedef struct wrc_msg {
   } output;
 } wrc_msg_t;
 
-const char* wrc_event_name(wrc_event_e evt);
-
 void wrc_msg_destroy(wrc_msg_t *msg);
 
 wrc_msg_t* wrc_msg_create(const wrc_msg_t *proto);
@@ -221,13 +214,13 @@ iwrc wrc_notify_event_handlers(wrc_event_e evt, wrc_resource_t resource_id, JBL 
 
 iwrc wrc_add_event_handler(wrc_event_handler event_handler, void *op, wrc_event_handler_t *oid);
 
-iwrc wrc_remove_event_handler(wrc_event_handler_t id);
+iwrc wrc_remove_event_handler(wrc_event_handler_t wid);
 
-void wrc_worker_kill(wrc_resource_t id);
+void wrc_worker_kill(wrc_resource_t wid);
 
-iwrc wrc_worker_acquire(wrc_resource_t *out_id);
+iwrc wrc_worker_acquire(wrc_resource_t *out_wid);
 
-void wrc_ajust_load_score(wrc_resource_t id, int load_score);
+void wrc_ajust_load_score(wrc_resource_t wid, int load_score);
 
 void wrc_register_uuid_resolver(wrc_resource_t (*resolver)(const char *uuid));
 
@@ -235,4 +228,4 @@ iwrc wrc_init(void);
 
 void wrc_shutdown(void);
 
-void wrc_close(void);
+void wrc_destroy(void);

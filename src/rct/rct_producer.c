@@ -25,6 +25,7 @@
 #include <iowow/iwarr.h>
 #include <iowow/iwhmap.h>
 
+#include <string.h>
 #include <assert.h>
 
 #define REPORT(msg_)                         \
@@ -350,7 +351,7 @@ iwrc rct_producer_close(wrc_resource_t producer_id) {
 JBL_NODE rct_codec_find_matched(JBL_NODE codec, JBL_NODE codecs, bool strict, bool modify, IWPOOL *pool) {
   bool matched = false;
   for (JBL_NODE cc = codecs->child; cc; cc = cc->next) {
-    iwrc rc = rct_codecs_is_matched(codec, cc, strict, modify, pool, &matched);
+    iwrc rc = rct_utils_codecs_is_matched(codec, cc, strict, modify, pool, &matched);
     if (rc) {
       iwlog_ecode_warn3(rc);
     }
@@ -738,7 +739,7 @@ iwrc rct_producer_create(wrc_resource_t transport_id, rct_producer_spec_t *spec,
   // Prepare transport.produce message
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_TRANSPORT_PRODUCE
@@ -755,7 +756,6 @@ iwrc rct_producer_create(wrc_resource_t transport_id, rct_producer_spec_t *spec,
   transport->producers = (void*) producer;
   producer->next = pp;
 
-  producer->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(producer));
   rct_resource_unlock_keep_ref(transport), locked = false;
 

@@ -18,6 +18,16 @@
 
 #include "rct_router.h"
 
+typedef enum {
+  RCT_MD2 = 1,
+  RCT_MD5,
+  RCT_SHA1,
+  RCT_SHA224,
+  RCT_SHA256,
+  RCT_SHA384,
+  RCT_SHA512,
+} rct_hash_func_e;
+
 typedef struct rct_transport_webrtc_connect {
   const char *role;
   struct rct_dtls_fp {
@@ -66,6 +76,10 @@ iwrc rct_transport_close_async(wrc_resource_t transport_id);
 //
 // Common
 //
+
+const char* rct_transport_hash_func_name(rct_hash_func_e hf);
+
+rct_hash_func_e rct_transport_name_to_hash_func(const char *name);
 
 iwrc rct_transport_complete_registration(JBL data, rct_transport_t *transport);
 
@@ -134,4 +148,4 @@ iwrc _rct_transport_plain_connect(rct_transport_plain_t *transport, rct_transpor
 
 iwrc rct_transport_module_init(void);
 
-void rct_transport_module_close(void);
+void rct_transport_module_destroy(void);

@@ -63,7 +63,7 @@ iwrc rct_observer_al_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = router->worker_id,
+    .worker_id = router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_ROUTER_CREATE_AUDIO_LEVEL_OBSERVER
@@ -84,7 +84,6 @@ iwrc rct_observer_al_create(
   router->observers = obs;
   obs->next = o;
 
-  obs->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(obs));
   rct_resource_unlock_keep_ref(router), locked = false;
 

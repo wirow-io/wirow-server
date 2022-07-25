@@ -34,6 +34,7 @@ iwrc rct_consumer_create2(
   rct_consumer_layer_t *preferred_layer,
   wrc_resource_t       *consumer_out);
 
+
 iwrc rct_consumer_set_preferred_layers(wrc_resource_t consumer_id, rct_consumer_layer_t layer);
 
 iwrc rct_consumer_set_priority(wrc_resource_t consumer_id, int priority);

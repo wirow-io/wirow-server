@@ -24,6 +24,8 @@
 #include <ejdb2/ejdb2.h>
 #include <ejdb2/jql.h>
 
+#include <string.h>
+
 /// Remove room history item
 static iwrc _history_rooms_remove(struct ws_message_ctx *ctx, void *op) {
   /* Payload: {

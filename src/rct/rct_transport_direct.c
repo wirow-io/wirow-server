@@ -53,7 +53,7 @@ iwrc rct_transport_direct_create(
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = router->worker_id,
+    .worker_id = router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_ROUTER_CREATE_DIRECT_TRANSPORT
@@ -71,7 +71,6 @@ iwrc rct_transport_direct_create(
   rct_transport_t *pp = router->transports;
   router->transports = (void*) transport;
   transport->next = pp;
-  transport->id = rct_resource_id_next_lk();
 
   RCC(rc, finish, rct_resource_register_lk(transport));
   rct_resource_unlock_keep_ref((void*) router), locked = false;
@@ -113,7 +112,7 @@ iwrc rct_transport_direct_send_rtcp(wrc_resource_t transport_id, char *payload, 
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_PAYLOAD,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .payload       = {
         .type        = WRC_PAYLOAD_RTCP_PACKET_SEND,

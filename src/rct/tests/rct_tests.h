@@ -3,6 +3,7 @@
 #include <iowow/iwhmap.h>
 #include <iowow/iwjson.h>
 
+#include <string.h>
 #include <assert.h>
 #include <stdint.h>
 #include <pthread.h>

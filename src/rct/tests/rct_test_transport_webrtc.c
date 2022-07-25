@@ -7,8 +7,9 @@
 static pthread_t poll_in_thr;
 
 static int init_suite(void) {
-  iwrc rc = gr_init_noweb(3, (char*[]) {
+  iwrc rc = gr_init_noweb(4, (char*[]) {
     "rct_test2",
+    "-s",
     "-c",
     "./rct_test2.ini",
     0
@@ -17,7 +18,8 @@ static int init_suite(void) {
     iwlog_ecode_error3(rc);
     return 1;
   }
-  rc = iwn_poller_poll_in_thread(g_env.poller, &poll_in_thr);
+  iwn_poller_flags_set(g_env.poller, IWN_POLLER_POLL_NO_FDS);
+  rc = iwn_poller_poll_in_thread(g_env.poller, 0, &poll_in_thr);
   return rc != 0;
 }
 
@@ -66,7 +68,7 @@ static void test2_1(void) {
   // Execute worker.dump
   m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = worker_id,
+    .worker_id = worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_WORKER_DUMP

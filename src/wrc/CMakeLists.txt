@@ -1,0 +1,4 @@
+file(GLOB MODULE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/local/*.c)
+set(ALL_SRC
+    "${ALL_SRC};${MODULE_SRC}"
+    PARENT_SCOPE)

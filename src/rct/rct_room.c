@@ -38,6 +38,7 @@
 #include <iwnet/iwn_scheduler.h>
 
 #include <pthread.h>
+#include <string.h>
 #include <assert.h>
 
 #define MRES_SEND_TRANSPORT 0x01U
@@ -330,7 +331,7 @@ static void _member_dispose_lk(void *m) {
   for (int i = (int) iwulist_length(&member->resource_refs) - 1; i >= 0; --i) {
     struct rct_resource_ref *r = iwulist_at2(&member->resource_refs, i);
     if (r->b) {
-      iwhmap_remove(_map_resource_member, (void*) (uintptr_t) r->b->id);
+      iwhmap_remove_u64(_map_resource_member, r->b->id);
     }
   }
   for (int i = (int) iwulist_length(&member->resource_refs) - 1; i >= 0; --i) {
@@ -610,7 +611,6 @@ static iwrc _rct_room_join_lk(
     }
   }
 
-  member->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(member));
   RCC(rc, finish, _wss_member_set(spec->wss, member->id));
 
@@ -736,8 +736,6 @@ static iwrc _rct_room_create(
     rct_resource_close_lk((void*) router->room);
   }
   router->room = rct_resource_ref_lk(room, RCT_INIT_REFS, __func__);
-
-  room->id = rct_resource_id_next_lk();
   RCC(rc, finish, rct_resource_register_lk(room));
 
   // Join the first participant
@@ -1886,7 +1884,7 @@ static iwrc _transports_init(struct ws_message_ctx *ctx, void *op) {
         goto finish;
       }
 
-      rc = iwhmap_put_u32(_map_resource_member, transport->id, (void*) (uintptr_t) member->id);
+      rc = iwhmap_put_u64(_map_resource_member, transport->id, (void*) (uintptr_t) member->id);
       if (rc) {
         rct_resource_ref_lk(transport, -1, __func__);
         iwulist_remove(&member->resource_refs, 0);
@@ -1979,11 +1977,11 @@ static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_i
     rc = GR_ERROR_RESOURCE_NOT_FOUND;
     goto finish;
   }
-  producer_member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) producer_id);
+  producer_member_id = (uintptr_t) iwhmap_get_u64(_map_resource_member, producer_id);
   producer_member = rct_resource_by_id_locked_lk(producer_member_id, RCT_TYPE_ROOM_MEMBER, __func__);
   transport = _rct_member_findref_by_flag_lk(member, MRES_RECV_TRANSPORT, false);
   if (!producer_member || !transport) {
-    iwlog_warn("No recv transport or producer member for consumer member %u", member_id);
+    iwlog_warn("No recv transport or producer member for consumer member 0x%" PRIx64, member_id);
     goto finish;
   }
   consumer_transport_id = transport->id;
@@ -1991,7 +1989,7 @@ static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_i
 
   RCC(rc, finish, rct_producer_can_consume2(producer_id, member->rtp_capabilities, &can_consume));
   if (!can_consume) {
-    iwlog_warn("Cannot consume producer %" PRIu32 " member: %u", producer_id, member_id);
+    iwlog_warn("Cannot consume producer 0x%" PRIx64 " member: 0x%" PRIx64, producer_id, member_id);
     fprintf(stderr, "Member RTP caps:\n");
     jbn_as_json(member->rtp_capabilities, jbl_fstream_json_printer, stderr, JBL_PRINT_PRETTY);
     producer = rct_resource_by_id_locked(producer_id, RCT_TYPE_PRODUCER, __func__);
@@ -2031,7 +2029,7 @@ static iwrc _consumer_create(wrc_resource_t member_id, wrc_resource_t producer_i
   RCC(rc, finish, iwulist_push(&member->resource_refs, &(struct rct_resource_ref) {
     .b = rct_resource_ref_lk(consumer, 1, __func__),
   }));
-  RCC(rc, finish, iwhmap_put_u32(_map_resource_member, consumer->id, (void*) (uintptr_t) member->id));
+  RCC(rc, finish, iwhmap_put_u64(_map_resource_member, consumer->id, (void*) (uintptr_t) member->id));
   rct_unlock(), locked = false;
 
   RCC(rc, finish, jbl_from_node(&jbl, resp));
@@ -2128,7 +2126,7 @@ static iwrc _transport_produce(struct ws_message_ctx *ctx, void *op) {
     goto finish;
   }
 
-  RCC(rc, finish, iwhmap_put_u32(_map_resource_member, producer->id, (void*) (uintptr_t) member->id));
+  RCC(rc, finish, iwhmap_put_u64(_map_resource_member, producer->id, (void*) (uintptr_t) member->id));
   // Collect room members
   for (rct_room_member_t *m = member->room->members; m; m = m->next) {
     if (m != member) {
@@ -2730,7 +2728,7 @@ static void _on_resource_closed(wrc_resource_t resource_id) {
   iwulist_push(&idlist, &resource_id);
   rct_resource_base_t *b = rct_resource_by_id_locked(resource_id, 0, __func__);
   if (b) {
-    iwlog_debug("room_on_resource_closed() ROOT %" PRIu32 " %s %s",
+    iwlog_debug("room_on_resource_closed() ROOT 0x%" PRIx64 " %s %s",
                 b->id, b->uuid, rct_resource_type_name(b->type));
     _collect_dependent_resource_ids_lk(b, &idlist);
   }
@@ -2740,16 +2738,16 @@ static void _on_resource_closed(wrc_resource_t resource_id) {
     rct_room_member_t *member = 0;
     resource_id = *(wrc_resource_t*) iwulist_at2(&idlist, i);
     rct_lock();
-    wrc_resource_t member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) resource_id);
+    wrc_resource_t member_id = (uintptr_t) iwhmap_get_u64(_map_resource_member, resource_id);
     if (member_id) {
       member = rct_resource_by_id_unsafe(member_id, RCT_TYPE_ROOM_MEMBER);
-      iwhmap_remove(_map_resource_member, (void*) (uintptr_t) resource_id);
+      iwhmap_remove_u64(_map_resource_member, resource_id);
     }
     if (member) {
       for (int i = 0, l = iwulist_length(&member->resource_refs); i < l; ++i) {
         struct rct_resource_ref *ref = iwulist_at2(&member->resource_refs, i);
         if (ref->b->id == resource_id) {
-          iwlog_debug("room_on_resource_closed() DEP %" PRIu32 " %s %s",
+          iwlog_debug("room_on_resource_closed() DEP 0x%" PRIx64 " %s %s",
                       ref->b->id, ref->b->uuid, rct_resource_type_name(ref->b->type));
           _resource_closed_notify_member_lk(member, ref->b);
           rct_resource_ref_lk(ref->b, -1, __func__); // Unref -1
@@ -2785,7 +2783,7 @@ static void _on_resource_score(wrc_resource_t resource_id, JBL data) {
   RCC(rc, finish, jbl_at(data, "/data", &event_data));
 
   rct_lock(), locked = true;
-  wrc_resource_t member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) resource_id);
+  wrc_resource_t member_id = (uintptr_t) iwhmap_get_u64(_map_resource_member, resource_id);
   rct_resource_base_t *b = rct_resource_by_id_unsafe(resource_id, 0);
   if (b) {
     if (b->type & RCT_TYPE_CONSUMER_ALL) {
@@ -2827,7 +2825,7 @@ static void _on_consumer_layer_change(wrc_resource_t resource_id, JBL data) {
   RCC(rc, finish, jbl_clone(jbl, &event_data));
 
   rct_lock();
-  wrc_resource_t member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) resource_id);
+  wrc_resource_t member_id = (uintptr_t) iwhmap_get_u64(_map_resource_member, resource_id);
   rct_resource_base_t *b = rct_resource_by_id_unsafe(resource_id, 0);
   if (b) {
     jbl_set_string(event_data, "id", b->uuid);
@@ -2857,7 +2855,7 @@ static void _on_consumer_paused_changed(wrc_resource_t resource_id, bool paused)
   RCGO(rc, finish);
 
   rct_lock();
-  wrc_resource_t member_id = (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) resource_id);
+  wrc_resource_t member_id = (uintptr_t) iwhmap_get_u64(_map_resource_member, resource_id);
   rct_consumer_t *consumer = rct_resource_by_id_unsafe(resource_id, RCT_TYPE_CONSUMER_ALL);
   if (consumer) {
     jbl_set_string(event_data, "id", consumer->uuid);
@@ -2950,7 +2948,7 @@ void _on_alo_volumes(wrc_resource_t resource_id, JBL data) {
     }
     rct_resource_base_t *b = rct_resource_by_uuid_unsafe(pn->vptr, RCT_TYPE_PRODUCER);
     if (b) {
-      wrc_resource_t mid = (wrc_resource_t) (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) b->id);
+      wrc_resource_t mid = (uintptr_t) iwhmap_get_u64(_map_resource_member, b->id);
       b = rct_resource_by_id_unsafe(mid, RCT_TYPE_ROOM_MEMBER);
     }
     if (b) {
@@ -3009,7 +3007,7 @@ void _on_active_speaker(wrc_resource_t resource_id, JBL data) {
       room_id = room->id;
       rct_resource_base_t *b = rct_resource_by_uuid_unsafe(producer_id, RCT_TYPE_PRODUCER);
       if (b) {
-        wrc_resource_t mid = (wrc_resource_t) (uintptr_t) iwhmap_get(_map_resource_member, (void*) (uintptr_t) b->id);
+        wrc_resource_t mid = (uintptr_t) iwhmap_get_u64(_map_resource_member, b->id);
         b = rct_resource_by_id_unsafe(mid, RCT_TYPE_ROOM_MEMBER);
         if (b) {
           room->active_speaker_member_id = b->id;
@@ -3224,7 +3222,7 @@ finish:
   return rc;
 }
 
-void rct_room_module_close(void) {
+void rct_room_module_destroy(void) {
   wrc_remove_event_handler(_event_handler_id);
   rct_room_recording_module_close();
   iwhmap_destroy(_map_resource_member);

@@ -155,7 +155,7 @@ iwrc grh_ws_send_all(const char *data, ssize_t len) {
     if (wss) {
 #ifdef _DEBUG
       int64_t user_id = grh_auth_get_userid(wss->ws->req);
-      iwlog_debug("SEND[%d,  %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
+      iwlog_debug("SEND[%d, %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
 #endif
       iwn_ws_server_write(wss->ws, data, len);
     }
@@ -175,7 +175,7 @@ void grh_ws_send_by_wsid(int32_t wsid, const char *data, ssize_t len) {
   if (wss) {
 #ifdef _DEBUG
     int64_t user_id = grh_auth_get_userid(wss->ws->req);
-    iwlog_debug("SEND[%d,  %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
+    iwlog_debug("SEND[%d, %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
 #endif
     iwn_ws_server_write(wss->ws, data, len);
   }
@@ -191,7 +191,7 @@ void grh_ws_send_by_uuid(const char *uuid, const char *data, ssize_t len) {
   if (wss) {
 #ifdef _DEBUG
     int64_t user_id = grh_auth_get_userid(wss->ws->req);
-    iwlog_debug("SEND[%d,  %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
+    iwlog_debug("SEND[%d, %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
 #endif
     iwn_ws_server_write(wss->ws, data, len);
   }
@@ -260,7 +260,7 @@ iwrc grh_ws_send_all_room_participants(int64_t room_id, const char *data, ssize_
     if (wss) {
 #ifdef _DEBUG
       int64_t user_id = grh_auth_get_userid(wss->ws->req);
-      iwlog_debug("SEND[%d,  %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
+      iwlog_debug("SEND[%d, %" PRId64 "]: %.*s", wss->wsid, user_id, (int) len, data);
 #endif
       iwn_ws_server_write(wss->ws, data, len);
     }
@@ -601,7 +601,7 @@ static void _on_wsid_wsdata_free(void *key, void *val) {
 
 static bool _initialized = false;
 
-void grh_ws_close(void) {
+void grh_ws_destroy(void) {
   if (!__sync_bool_compare_and_swap(&_initialized, true, false)) {
     grh_ws_user_close();
     iwhmap_destroy(_wsh_handlers);
@@ -629,7 +629,7 @@ static iwrc _init(void) {
 
 finish:
   if (rc) {
-    grh_ws_close();
+    grh_ws_destroy();
   }
   return rc;
 }

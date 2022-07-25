@@ -20,24 +20,24 @@
 #include "rct_modules.h"
 #include "gr_gauges.h"
 
-#include <iowow/iwre.h>
 #include <iowow/iwconv.h>
 #include <iowow/iwre.h>
 
+#include <string.h>
 #include <assert.h>
 
 #include "data_supported_rtp_capabilities.inc"
 
-struct rct_state rct_state = {
+struct rct_state state = {
   .mtx = PTHREAD_MUTEX_INITIALIZER
 };
 
 IW_INLINE void _lock(void) {
-  pthread_mutex_lock(&rct_state.mtx);
+  pthread_mutex_lock(&state.mtx);
 }
 
 IW_INLINE void _unlock(void) {
-  pthread_mutex_unlock(&rct_state.mtx);
+  pthread_mutex_unlock(&state.mtx);
 }
 
 void rct_lock(void) {
@@ -73,10 +73,10 @@ static void _resource_gauge_update_lk(rct_resource_base_t *b) {
 }
 
 static void _resource_unregister_lk(wrc_resource_t resource_id) {
-  rct_resource_base_t *b = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
+  rct_resource_base_t *b = iwhmap_get_u64(state.map_id2ptr, resource_id);
   if (b) {
-    iwhmap_remove(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
-    iwhmap_remove(rct_state.map_uuid2ptr, b->uuid);
+    iwhmap_remove_u64(state.map_id2ptr, resource_id);
+    iwhmap_remove(state.map_uuid2ptr, b->uuid);
     if (b->wid) {
       wrc_ajust_load_score(b->wid, -1);
     }
@@ -86,7 +86,7 @@ static void _resource_unregister_lk(wrc_resource_t resource_id) {
 
 static void _resource_dispose_lk(rct_resource_base_t *b) {
   assert(b->refs < 1);
-  iwlog_debug("RCT Dispose [%s]: %" PRIu32, rct_resource_type_name(b->type), b->id);
+  iwlog_debug("RCT Dispose [%s]: 0x%" PRIx64, rct_resource_type_name(b->type), b->id);
 
   switch (b->type) {
     case RCT_TYPE_PRODUCER:
@@ -124,7 +124,7 @@ void* rct_resource_close_lk(void *v) {
   }
   b->closed = true;
 
-  iwlog_debug("RCT Close  [%s]: %" PRIu32, rct_resource_type_name(b->type), b->id);
+  iwlog_debug("RCT Close [%s]: 0x%" PRIx64, rct_resource_type_name(b->type), b->id);
   switch (b->type) {
     case RCT_TYPE_ROUTER:
       rct_router_close_lk((void*) b);
@@ -161,6 +161,26 @@ void rct_resource_close(wrc_resource_t resource_id) {
   _resource_close(resource_id);
 }
 
+void rct_resource_close_of_type(uint32_t resource_type) {
+  IWULIST list;
+  IWHMAP_ITER iter;
+  iwhmap_iter_init(state.map_id2ptr, &iter);
+  iwulist_init(&list, 32, sizeof(wrc_resource_t));
+  _lock();
+  while (iwhmap_iter_next(&iter)) {
+    const rct_resource_base_t *b = iter.val;
+    if (b && b->type == resource_type) {
+      iwulist_push(&list, &b->id);
+    }
+  }
+  _unlock();
+  for (size_t i = 0, l = iwulist_length(&list); i < l; ++i) {
+    wrc_resource_t id = *(wrc_resource_t*) iwulist_at2(&list, i);
+    rct_resource_close(id);
+  }
+  iwulist_destroy_keep(&list);
+}
+
 const char* rct_resource_type_name(int type) {
   switch (type) {
     case RCT_TYPE_ROUTER:
@@ -191,41 +211,46 @@ const char* rct_resource_type_name(int type) {
       return "RCT_TYPE_OBSERVER_AS";
     case RCT_TYPE_PRODUCER_EXPORT:
       return "RCT_TYPE_PRODUCER_EX";
+    case RCT_TYPE_WORKER_ADAPTER:
+      return "RCT_TYPE_WORKER_AD  ";
     default:
-      iwlog_warn("Unknown resource type: %d", type);
+      iwlog_warn("Unknown resource type: 0x%x", type);
       return "????????????????";
   }
 }
 
-void rct_resource_get_worker_id_lk(void *v, wrc_resource_t *worker_id_out) {
+void rct_resource_get_worker_id_lk(void *v, wrc_resource_t *out_worker_id) {
   assert(v);
   rct_resource_base_t *b = v;
   int resource_type = b->type;
   switch (resource_type) {
     case RCT_TYPE_ROUTER:
-      *worker_id_out = ((rct_router_t*) b)->worker_id;
+      *out_worker_id = ((rct_router_t*) b)->worker_id;
       break;
     case RCT_TYPE_PRODUCER:
     case RCT_TYPE_PRODUCER_DATA:
-      *worker_id_out = ((rct_producer_base_t*) b)->transport->router->worker_id;
+      *out_worker_id = ((rct_producer_base_t*) b)->transport->router->worker_id;
       break;
     case RCT_TYPE_CONSUMER:
     case RCT_TYPE_CONSUMER_DATA:
-      *worker_id_out = ((rct_consumer_base_t*) b)->producer->transport->router->worker_id;
+      *out_worker_id = ((rct_consumer_base_t*) b)->producer->transport->router->worker_id;
       break;
     case RCT_TYPE_TRANSPORT_WEBRTC:
     case RCT_TYPE_TRANSPORT_DIRECT:
     case RCT_TYPE_TRANSPORT_PLAIN:
     case RCT_TYPE_TRANSPORT_PIPE:
-      *worker_id_out = ((rct_transport_t*) b)->router->worker_id;
+      *out_worker_id = ((rct_transport_t*) b)->router->worker_id;
       break;
     case RCT_TYPE_OBSERVER_AL:
     case RCT_TYPE_OBSERVER_AS:
-      *worker_id_out = ((rct_rtp_observer_t*) b)->router->worker_id;
+      *out_worker_id = ((rct_rtp_observer_t*) b)->router->worker_id;
+      break;
+    case RCT_TYPE_WORKER_ADAPTER:
+      *out_worker_id = b->id;
       break;
     default:
-      iwlog_error("Failed find worker id for resource of type: %d", resource_type);
-      *worker_id_out = 0;
+      iwlog_error("Failed find worker id for resource of type: 0x%x", resource_type);
+      *out_worker_id = 0;
       break;
   }
 }
@@ -233,9 +258,12 @@ void rct_resource_get_worker_id_lk(void *v, wrc_resource_t *worker_id_out) {
 void* rct_resource_ref_lk(void *v, int nrefs, const char *tag) {
   if (v) {
     rct_resource_base_t *b = v;
+    if (!b->id) {
+      b->id = (uintptr_t) b;
+    }
 
 #ifndef NDEBUG
-    iwlog_debug("\tRCT REF [%s]: %" PRIu32 ":\t%" PRId64 " => %" PRId64 "\t%s",
+    iwlog_debug("\tRCT REF [%s]: 0x%" PRIx64 ":\t%" PRId64 " => %" PRId64 "\t%s",
                 rct_resource_type_name(b->type), b->id, b->refs, b->refs + nrefs,
                 tag ? tag : "");
 #endif // !NDEBUG
@@ -302,19 +330,26 @@ void rct_resource_unlock_keep_ref(void *b) {
 }
 
 iwrc rct_resource_register_lk(void *v) {
+  iwrc rc = 0;
   rct_resource_base_t *b = v;
   if (!b) {
     return IW_ERROR_INVALID_ARGS;
   }
   assert(b->type > 0 && b->type < RCT_TYPE_UPPER);
+  if (!b->id) {
+    b->id = (uintptr_t) b;
+  }
+  if (!b->uuid[0]) {
+    iwu_uuid4_fill(b->uuid);
+  }
 
-  rct_resource_base_t *old = iwhmap_get(rct_state.map_uuid2ptr, b->uuid);
+  rct_resource_base_t *old = iwhmap_get_u64(state.map_id2ptr, b->id);
   if (old) {
     iwlog_error("RCT Double registration of resource: %s type: 0x%x", old->uuid, old->type);
   }
-  iwrc rc = iwhmap_put(rct_state.map_uuid2ptr, b->uuid, b);
-  RCGO(rc, finish);
-  RCC(rc, finish, iwhmap_put_u32(rct_state.map_id2ptr, b->id, b));
+
+  RCC(rc, finish, iwhmap_put(state.map_uuid2ptr, b->uuid, b));
+  RCC(rc, finish, iwhmap_put_u64(state.map_id2ptr, b->id, b));
 
   wrc_resource_t wid = 0;
   if (b->type == RCT_TYPE_ROUTER) {
@@ -330,6 +365,7 @@ iwrc rct_resource_register_lk(void *v) {
     b->wid = wid;
     wrc_ajust_load_score(wid, 1);
   }
+
   _resource_gauge_update_lk(b);
 
 finish:
@@ -339,7 +375,7 @@ finish:
 int rct_resource_get_number_of_type_lk(int type) {
   int num = 0;
   IWHMAP_ITER iter;
-  iwhmap_iter_init(rct_state.map_id2ptr, &iter);
+  iwhmap_iter_init(state.map_id2ptr, &iter);
   while (iwhmap_iter_next(&iter)) {
     const rct_resource_base_t *b = iter.val;
     if (b && (b->type & type)) {
@@ -383,7 +419,7 @@ iwrc rct_resource_probe_by_uuid(const char *resource_uuid, rct_resource_base_t *
   }
   iwrc rc = 0;
   _lock();
-  rct_resource_base_t *rp = iwhmap_get(rct_state.map_uuid2ptr, resource_uuid);
+  rct_resource_base_t *rp = iwhmap_get(state.map_uuid2ptr, resource_uuid);
   if (!rp) {
     memset(b, 0, sizeof(*b));
     rc = IW_ERROR_NOT_EXISTS;
@@ -400,7 +436,7 @@ iwrc rct_resource_probe_by_id(wrc_resource_t resource_id, rct_resource_base_t *b
   }
   iwrc rc = 0;
   _lock();
-  rct_resource_base_t *rp = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
+  rct_resource_base_t *rp = iwhmap_get_u64(state.map_id2ptr, resource_id);
   if (!rp) {
     memset(b, 0, sizeof(*b));
     rc = IW_ERROR_NOT_EXISTS;
@@ -411,27 +447,24 @@ iwrc rct_resource_probe_by_id(wrc_resource_t resource_id, rct_resource_base_t *b
   return rc;
 }
 
-wrc_resource_t rct_resource_id_next_lk(void) {
-  if (rct_state.resource_seq == ((uint32_t) -1) >> 1) {
-    rct_state.resource_seq = 0;
-  }
-  return ++rct_state.resource_seq;
-}
-
 void* rct_resource_by_uuid_unsafe(const char *resource_uuid, int type) {
   if (!resource_uuid) {
     return 0;
   }
-  rct_resource_base_t *rp = iwhmap_get(rct_state.map_uuid2ptr, resource_uuid);
+  rct_resource_base_t *rp = iwhmap_get(state.map_uuid2ptr, resource_uuid);
   if (rp && type && (rp->type != type)) {
-    iwlog_error("RTC Type: %d of resource: %d,%s doesn't much required type: %d", rp->type, rp->id, rp->uuid, type);
+    iwlog_error("RTC Type: %d of resource: 0x%" PRIx64 ", %s doesn't much required type: 0x%x",
+                rp->type,
+                rp->id,
+                rp->uuid,
+                type);
     return 0;
   }
   return rp;
 }
 
 void* rct_resource_by_id_unsafe(wrc_resource_t resource_id, int type) {
-  rct_resource_base_t *rp = iwhmap_get(rct_state.map_id2ptr, (void*) (intptr_t) resource_id);
+  rct_resource_base_t *rp = iwhmap_get_u64(state.map_id2ptr, resource_id);
   if (rp && type && !(rp->type & type)) {
     return 0;
   }
@@ -446,6 +479,13 @@ void* rct_resource_by_uuid_locked(const char *resource_uuid, int type, const cha
 void* rct_resource_by_id_locked(wrc_resource_t resource_id, int type, const char *tag) {
   _lock();
   return rct_resource_ref_lk(rct_resource_by_id_unsafe(resource_id, type), 1, tag);
+}
+
+void* rct_resource_by_id_unlocked(wrc_resource_t resource_id, int type, const char *tag) {
+  _lock();
+  void *ret = rct_resource_ref_lk(rct_resource_by_id_unsafe(resource_id, type), 1, tag);
+  _unlock();
+  return ret;
 }
 
 void* rct_resource_by_id_locked_lk(wrc_resource_t resource_id, int type, const char *tag) {
@@ -490,7 +530,7 @@ iwrc rct_resource_json_command2(struct rct_json_command_spec *spec) {
 
   RCB(finish, m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = worker_id,
+    .worker_id = worker_id,
     .input = {
       .worker     = {
         .internal = identity,
@@ -585,204 +625,7 @@ iwrc rct_validate_rtcp_feedback(JBL_NODE n, IWPOOL *pool) {
   return 0;
 }
 
-iwrc rct_codecs_is_matched(JBL_NODE ac, JBL_NODE bc, bool strict, bool modify, IWPOOL *pool, bool *res) {
-  *res = false;
-  iwrc rc = 0;
-  JBL_NODE n1, n2;
-  int64_t iv1, iv2;
-  const char *mime_type;
-
-  // Compare mime types
-  rc = jbn_at(ac, "/mimeType", &n1);
-  if (rc || (n1->type != JBV_STR)) {
-    return 0;
-  }
-  rc = jbn_at(bc, "/mimeType", &n2);
-  if (rc || (n2->type != n1->type) || (n2->vsize != n1->vsize) || utf8ncasecmp(n1->vptr, n2->vptr, n1->vsize)) {
-    return 0;
-  }
-  mime_type = n1->vptr;
-
-  if (jbn_path_compare(ac, bc, "/clockRate", 0, &rc)) {
-    return 0;
-  }
-  if (jbn_path_compare(ac, bc, "/channels", 0, &rc)) {
-    return 0;
-  }
-
-  // Checks specific to some codecs
-  if (!strcasecmp(mime_type, "video/h264")) {
-    iv1 = 0, iv2 = 0;
-    rc = jbn_at(ac, "/parameters/packetization-mode", &n1);
-    if (!rc && (n1->type == JBV_I64)) {
-      iv1 = n1->vi64;
-    }
-    rc = jbn_at(bc, "/parameters/packetization-mode", &n2);
-    if (!rc && (n2->type == JBV_I64)) {
-      iv2 = n2->vi64;
-    }
-    if (iv1 != iv2) {
-      return 0;
-    }
-    ;
-    if (strict) {
-      h264_plid_t selected_plid;
-      rc = jbn_at(ac, "/parameters/profile-level-id", &n1);
-      if (rc || (n1->type != JBV_STR)) {
-        n1 = 0;
-      }
-      rc = jbn_at(bc, "/parameters/profile-level-id", &n2);
-      if (rc || (n2->type != JBV_STR)) {
-        n2 = 0;
-      }
-      if (!h264_plid_equal(n1 ? n1->vptr : 0, n1 ? n1->vsize : 0, n2 ? n2->vptr : 0, n2 ? n2->vsize : 0)) {
-        return 0;
-      }
-      rc = jbn_at(ac, "/parameters", &n1);
-      if (rc) {
-        return 0;
-      }
-      jbn_at(bc, "/parameters", &n2);
-      if (rc) {
-        return 0;
-      }
-      rc = h256_plid_to_answer(n1, n2, &selected_plid);
-      if (rc) {
-        return 0;
-      }
-      if (modify) {
-        if (selected_plid.profile) {
-          char plevel[6];
-          RCR(h256_plid_write(&selected_plid, plevel));
-          RCR(jbn_copy_path(&(struct _JBL_NODE) {
-            .type = JBV_STR,
-            .vsize = sizeof(plevel),
-            .vptr = plevel
-          }, "/", ac, "/parameters/profile-level-id", false, false, pool));
-        } else {
-          jbn_detach(ac, "/parameters/profile-level-id");
-        }
-      }
-    }
-  } else if (!strcasecmp(mime_type, "video/vp9")) {
-    if (strict) {
-      iv1 = 0, iv2 = 0;
-      rc = jbn_at(ac, "/parameters/profile-id", &n1);
-      if (!rc && (n1->type == JBV_I64)) {
-        iv1 = n1->vi64;
-      }
-      rc = jbn_at(bc, "/parameters/profile-id", &n2);
-      if (!rc && (n2->type == JBV_I64)) {
-        iv2 = n2->vi64;
-      }
-      if (iv1 != iv2) {
-        return 0;
-      }
-    }
-  }
-  *res = true;
-  return 0;
-}
-
 #undef REPORT
-
-void rct_parse_scalability_mode(
-  const char *mode,
-  int        *spartial_layers_out,
-  int        *temporal_layers_out,
-  bool       *ksvc_out
-  ) {
-  if (spartial_layers_out) {
-    *spartial_layers_out = 1;
-  }
-  if (temporal_layers_out) {
-    *temporal_layers_out = 1;
-  }
-  if (ksvc_out) {
-    *ksvc_out = false;
-  }
-  if (!mode) {
-    return;
-  }
-
-  char buf[3];
-  const char *mpairs[IWRE_MAX_MATCHES];
-  struct iwre *re = iwre_create("[LS]([1-9][0-9]?)T([1-9][0-9]?)(_KEY)?");
-  if (!re) {
-    return;
-  }
-  int nm = iwre_match(re, mode, mpairs, IWRE_MAX_MATCHES);
-  if (nm < 3) {
-    goto finish;
-  }
-
-  if (spartial_layers_out) {
-    if (mpairs[3] - mpairs[2] < sizeof(buf)) {
-      memcpy(buf, mpairs[2], mpairs[3] - mpairs[2]);
-      buf[mpairs[3] - mpairs[2]] = '\0';
-      *spartial_layers_out = (int) iwatoi(buf);
-    } else {
-      goto finish;
-    }
-  }
-
-  if (temporal_layers_out) {
-    if (mpairs[5] - mpairs[4] < sizeof(buf)) {
-      memcpy(buf, mpairs[4], mpairs[5] - mpairs[4]);
-      buf[mpairs[5] - mpairs[4]] = '\0';
-      *temporal_layers_out = (int) iwatoi(buf);
-    } else {
-      goto finish;
-    }
-  }
-  if (ksvc_out && nm >= 4) {
-    *ksvc_out = mpairs[7] - mpairs[6] > 0;
-  }
-
-finish:
-  iwre_destroy(re);
-}
-
-const char* rct_hash_func_name(rct_hash_func_e hf) {
-  switch (hf) {
-    case RCT_SHA256:
-      return "sha-256";
-    case RCT_SHA512:
-      return "sha-512";
-    case RCT_SHA384:
-      return "sha-384";
-    case RCT_SHA224:
-      return "sha-224";
-    case RCT_SHA1:
-      return "sha-1";
-    case RCT_MD2:
-      return "md2";
-    case RCT_MD5:
-      return "md5";
-    default:
-      return "unknown";
-  }
-}
-
-rct_hash_func_e rct_name_to_hash_func(const char *name) {
-  if (!strcmp(name, "sha-256")) {
-    return RCT_SHA256;
-  } else if (!strcmp(name, "sha-512")) {
-    return RCT_SHA512;
-  } else if (!strcmp(name, "sha-384")) {
-    return RCT_SHA384;
-  } else if (!strcmp(name, "sha-224")) {
-    return RCT_SHA224;
-  } else if (!strcmp(name, "sha-1")) {
-    return RCT_SHA1;
-  } else if (!strcmp(name, "md2")) {
-    return RCT_MD2;
-  } else if (!strcmp(name, "md5")) {
-    return RCT_MD5;
-  } else {
-    return 0;
-  }
-}
 
 static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data, void *op) {
   iwrc rc = 0;
@@ -801,211 +644,211 @@ static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data
       break;
     case WRC_EVT_WORKER_SHUTDOWN:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_WORKER_SHUTDOWN: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_WORKER_SHUTDOWN: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_WORKER_LAUNCHED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_WORKER_LAUNCHED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_WORKER_LAUNCHED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROUTER_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROUTER_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROUTER_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROUTER_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROUTER_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROUTER_CLOSED: 0x%" PRIx64, resource_id);
       }
       _resource_close(resource_id);
       break;
     case WRC_EVT_TRANSPORT_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_UPDATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_UPDATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_UPDATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_CLOSED: 0x%" PRIx64, resource_id);
       }
       _resource_close(resource_id);
       break;
     case WRC_EVT_TRANSPORT_ICE_STATE_CHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_ICE_STATE_CHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_ICE_STATE_CHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_ICE_SELECTED_TUPLE_CHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_ICE_SELECTED_TUPLE_CHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_ICE_SELECTED_TUPLE_CHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_DTLS_STATE_CHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_SCTP_STATE_CHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_SCTP_STATE_CHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_SCTP_STATE_CHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_TUPLE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_TUPLE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_TUPLE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_TRANSPORT_RTCPTUPLE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_TRANSPORT_RTCPTUPLE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_TRANSPORT_RTCPTUPLE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_PRODUCER_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_PRODUCER_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_PRODUCER_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_PRODUCER_VIDEO_ORIENTATION_CHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_PRODUCER_VIDEO_ORIENTATION_CHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_PRODUCER_VIDEO_ORIENTATION_CHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_PRODUCER_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_PRODUCER_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_PRODUCER_CLOSED: 0x%" PRIx64, resource_id);
       }
       _resource_close(resource_id);
       break;
     case WRC_EVT_PRODUCER_PAUSE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_PRODUCER_PAUSE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_PRODUCER_PAUSE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_PRODUCER_RESUME:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_PRODUCER_RESUME: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_PRODUCER_RESUME: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_PRODUCER_PAUSE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_PRODUCER_PAUSE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_PRODUCER_PAUSE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_PRODUCER_RESUME:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_PRODUCER_RESUME: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_PRODUCER_RESUME: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_RESOURCE_SCORE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_RESOURCE_SCORE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_RESOURCE_SCORE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_LAYERSCHANGE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_LAYERSCHANGE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_LAYERSCHANGE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_PAUSE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_PAUSE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_PAUSE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_CLOSED: 0x%" PRIx64, resource_id);
       }
       _resource_close(resource_id);
       break;
     case WRC_EVT_CONSUMER_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_CONSUMER_RESUME:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_CONSUMER_RESUME: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_CONSUMER_RESUME: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_AUDIO_OBSERVER_SILENCE:
       // if (g_env.log.verbose) {
-      //   iwlog_info("RCT WRC_EVT_AUDIO_OBSERVER_SILENCE: %u", resource_id);
+      //   iwlog_info("RCT WRC_EVT_AUDIO_OBSERVER_SILENCE: 0x%" PRIx64, resource_id);
       // }
       break;
     case WRC_EVT_AUDIO_OBSERVER_VOLUMES:
       // if (g_env.log.verbose) {
-      //   iwlog_info("RCT WRC_EVT_AUDIO_OBSERVER_VOLUMES: %u", resource_id);
+      //   iwlog_info("RCT WRC_EVT_AUDIO_OBSERVER_VOLUMES: 0x%" PRIx64, resource_id);
       // }
       break;
     case WRC_EVT_ACTIVE_SPEAKER:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ACTIVE_SPEAKER: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ACTIVE_SPEAKER: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_CLOSED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_MEMBER_JOIN:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_JOIN: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_JOIN: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_MEMBER_LEFT:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_LEFT: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_LEFT: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_MEMBER_MUTE:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_MUTE: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_MUTE: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_MEMBER_MSG:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_MSG: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_MEMBER_MSG: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_OBSERVER_CREATED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_OBSERVER_CREATED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_OBSERVER_CREATED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_OBSERVER_PAUSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_OBSERVER_PAUSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_OBSERVER_PAUSED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_OBSERVER_RESUMED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_OBSERVER_RESUMED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_OBSERVER_RESUMED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_OBSERVER_CLOSED:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_OBSERVER_CLOSED: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_OBSERVER_CLOSED: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_RECORDING_ON:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_RECORDING_ON: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_RECORDING_ON: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_RECORDING_OFF:
       if (g_env.log.verbose) {
-        iwlog_info("RCT WRC_EVT_ROOM_RECORDING_OFF: %u", resource_id);
+        iwlog_info("RCT WRC_EVT_ROOM_RECORDING_OFF: 0x%" PRIx64, resource_id);
       }
       break;
     case WRC_EVT_ROOM_RECORDING_PP:
@@ -1014,7 +857,7 @@ static iwrc _event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL data
       }
       break;
     default:
-      iwlog_warn("RCT Unknown event: %d resource_id: %u", evt, resource_id);
+      iwlog_warn("RCT Unknown event: %d resource_id: 0x%" PRIx64, evt, resource_id);
       break;
   }
   if (rc) {
@@ -1071,27 +914,27 @@ static const char* _ecodefn(locale_t locale, uint32_t ecode) {
 
 static void _destroy_lk(void) {
   wrc_register_uuid_resolver(0);
-  if (rct_state.map_id2ptr) {
-    iwhmap_destroy(rct_state.map_id2ptr);
-    rct_state.map_id2ptr = 0;
+  if (state.map_id2ptr) {
+    iwhmap_destroy(state.map_id2ptr);
+    state.map_id2ptr = 0;
   }
-  if (rct_state.map_uuid2ptr) {
-    iwhmap_destroy(rct_state.map_uuid2ptr);
-    rct_state.map_uuid2ptr = 0;
+  if (state.map_uuid2ptr) {
+    iwhmap_destroy(state.map_uuid2ptr);
+    state.map_uuid2ptr = 0;
   }
-  iwpool_destroy(rct_state.pool);
-  rct_state.pool = 0;
+  iwpool_destroy(state.pool);
+  state.pool = 0;
 }
 
 iwrc rct_init() {
   iwrc rc = RCR(iwlog_register_ecodefn(_ecodefn));
 
-  RCB(finish, rct_state.pool = iwpool_create(512));
-  RCB(finish, rct_state.map_id2ptr = iwhmap_create_u32(0));
-  RCB(finish, rct_state.map_uuid2ptr = iwhmap_create_str(0));
+  RCB(finish, state.pool = iwpool_create(512));
+  RCB(finish, state.map_id2ptr = iwhmap_create_u64(0));
+  RCB(finish, state.map_uuid2ptr = iwhmap_create_str(0));
 
   RCC(rc, finish, jbn_from_json((void*) data_supported_rtp_capabilities,
-                                &rct_state.available_capabilities, rct_state.pool));
+                                &state.available_capabilities, state.pool));
 
   wrc_register_uuid_resolver(_rct_wrc_uuid_resolver);
 
@@ -1101,10 +944,8 @@ iwrc rct_init() {
   RCC(rc, finish, rct_producer_export_module_init());
   RCC(rc, finish, rct_room_module_init());
 
-
   // Add as last event handler
-  RCC(rc, finish, wrc_add_event_handler(_event_handler, 0, &rct_state.event_handler_id));
-
+  RCC(rc, finish, wrc_add_event_handler(_event_handler, 0, &state.event_handler_id));
 
 finish:
   if (rc) {
@@ -1117,12 +958,12 @@ void rct_shutdown(void) {
   rct_worker_module_shutdown();
 }
 
-void rct_close(void) {
-  wrc_remove_event_handler(rct_state.event_handler_id);
-  rct_producer_export_module_close();
-  rct_consumer_module_close();
-  rct_room_module_close();
-  rct_transport_module_close();
-  rct_worker_module_close();
+void rct_destroy(void) {
+  wrc_remove_event_handler(state.event_handler_id);
+  rct_producer_export_module_destroy();
+  rct_consumer_module_destroy();
+  rct_room_module_destroy();
+  rct_transport_module_destroy();
+  rct_worker_module_destroy();
   _destroy_lk();
 }

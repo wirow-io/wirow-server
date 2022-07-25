@@ -73,7 +73,7 @@ struct gr_env g_env = {
 
 static char *_admin_pw;
 
-static void _env_close(void) {
+static void _env_destroy(void) {
   pthread_mutex_destroy(&g_env.mtx);
   if (g_env.public_overlays) {
     iwhmap_destroy(g_env.public_overlays);
@@ -105,7 +105,7 @@ static void usage(const char *err) {
   printf("\t-v\t\t\tShow version and license information\n");
   printf("\t-h\t\t\tShow this help message\n");
   printf("\n");
-  _env_close();
+  _env_destroy();
   exit(1);
 }
 
@@ -128,7 +128,7 @@ static void version(void) {
   printf("\nTerms: " LICENSE_TERMS);
 #endif
 
-  _env_close();
+  _env_destroy();
   exit(0);
 }
 
@@ -946,7 +946,7 @@ exit:
   if (rc) {
     iwlog_ecode_error3(rc);
   }
-  _env_close();
+  _env_destroy();
   exit(EXIT_FAILURE);
 }
 
@@ -1173,7 +1173,6 @@ iwrc gr_shutdown_noweb(void) {
   }
   iwrc rc = 0;
   iwlog_info2("Waiting for child processes to be terminated...");
-  wrc_shutdown();
   iwn_proc_kill_all(SIGTERM);
   iwn_proc_wait_all();
   iwlog_info("All child processes terminated");
@@ -1183,15 +1182,16 @@ iwrc gr_shutdown_noweb(void) {
   _app_threads_join();
   IWRC(iwtp_shutdown(&g_env.tp, true), rc);
   IWRC(iwstw_shutdown(&g_env.stw, true), rc);
+  wrc_shutdown();
   iwn_poller_destroy(&g_env.poller);
-  rct_close();
-  wrc_close();
-  grh_ws_close();
+  rct_destroy();
+  wrc_destroy();
+  grh_ws_destroy();
   iwn_wf_destroy(g_env.wf);
   iwn_wf_destroy(g_env.wf80);
   iwn_proc_dispose();
   ejdb_close(&g_env.db);
-  _env_close();
+  _env_destroy();
   curl_global_cleanup();
   return rc;
 }

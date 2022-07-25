@@ -17,6 +17,8 @@
 
 #include "rct_transport.h"
 
+#include <string.h>
+
 iwrc rct_transport_plain_connect_spec_create(
   const char               *ip,
   const char               *key_base64,
@@ -59,7 +61,7 @@ iwrc _rct_transport_plain_connect(rct_transport_plain_t *transport, rct_transpor
 
   RCB(finish,  m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = transport->router->worker_id,
+    .worker_id = transport->router->worker_id,
     .input = {
       .worker     = {
         .cmd      = WRC_CMD_TRANSPORT_CONNECT,
@@ -255,7 +257,7 @@ iwrc rct_transport_plain_create(
 
   m = wrc_msg_create(&(wrc_msg_t) {
     .type = WRC_MSG_WORKER,
-    .resource_id = router->worker_id,
+    .worker_id = router->worker_id,
     .input = {
       .worker = {
         .cmd  = WRC_CMD_ROUTER_CREATE_PLAIN_TRANSPORT
@@ -274,7 +276,6 @@ iwrc rct_transport_plain_create(
   router->transports = (void*) transport;
   transport->next = th;
 
-  transport->id = rct_resource_id_next_lk();
   rct_resource_register_lk(transport);
   rct_resource_unlock_keep_ref(router), locked = false;
 

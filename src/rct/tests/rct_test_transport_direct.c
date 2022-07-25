@@ -26,15 +26,17 @@ static int init_suite(void) {
   if (!suite_pool) {
     return 1;
   }
-  iwrc rc = gr_init_noweb(3, (char*[]) {
+  iwrc rc = gr_init_noweb(4, (char*[]) {
     "rct_test_consumer",
+    "-s",
     "-c",
     "./rct_test_consumer.ini",
     0
   });
   RCGO(rc, finish);
 
-  RCC(rc, finish, iwn_poller_poll_in_thread(g_env.poller, &poll_in_thr));
+  iwn_poller_flags_set(g_env.poller, IWN_POLLER_POLL_NO_FDS);
+  RCC(rc, finish, iwn_poller_poll_in_thread(g_env.poller, 0, &poll_in_thr));
   RCC(rc, finish, rct_worker_acquire_for_router(&worker_id));
   RCC(rc, finish, rct_router_create(0, worker_id, &router_id));
   // Add stats handle as LAST RCT listener
