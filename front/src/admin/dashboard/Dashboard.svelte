@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import colorLib from '@kurkle/color';
 
-  const borderColors = ['#f09415', '#4baf73', '#5aa6c0', '#d17df9', '#6585cf'];
+  const borderColors = ['#f09415', '#4baf73', '#d17df9', '#5aa6c0', '#6585cf'];
   const backgroundColors = borderColors.map((c) => {
     return colorLib(c).alpha(0.5).rgbString();
   });
@@ -43,9 +43,8 @@
 
     const dsets = new Map<number, any>([
       [0x01, { id: 0x01, label: t('Dashboard.chart.label.rooms'), order: 1, stepped: true, data: [] }],
-      [0x02, { id: 0x02, label: t('Dashboard.chart.label.users'), order: 3, stepped: true, data: [] }],
-      [0x04, { id: 0x04, label: t('Dashboard.chart.label.workers'), order: 2, hidden: true, stepped: true, data: [] }],
-      [0x08, { id: 0x08, label: t('Dashboard.chart.label.streams'), order: 4, hidden: true, stepped: true, data: [] }],
+      [0x02, { id: 0x02, label: t('Dashboard.chart.label.users'), order: 2, stepped: true, data: [] }],
+      [0x08, { id: 0x08, label: t('Dashboard.chart.label.streams'), order: 3, hidden: true, stepped: true, data: [] }],
     ]);
 
     for (let i = data.length - 1; i >= 0; --i) {

@@ -163,7 +163,6 @@ static iwrc _gauges_reset_all(void) {
   iwrc rc = RCR(iwp_current_time_ms(&ts, false));
   IWRC(_gauge_set_with_ts(ts, GAUGE_ROOMS, 0, 0), rc);
   IWRC(_gauge_set_with_ts(ts, GAUGE_ROOM_USERS, 0, 0), rc);
-  IWRC(_gauge_set_with_ts(ts, GAUGE_WORKERS, 0, 0), rc);
   IWRC(_gauge_set_with_ts(ts, GAUGE_STREAMS, 0, 0), rc);
   return rc;
 }
@@ -337,7 +336,6 @@ iwrc gr_gauges_maintain(void) {
   RCB(finish, pool = iwpool_create_empty());
   RCC(rc, finish, _gr_gauges_maintain_type(ts, GAUGE_ROOMS, pool));
   RCC(rc, finish, _gr_gauges_maintain_type(ts, GAUGE_ROOM_USERS, pool));
-  RCC(rc, finish, _gr_gauges_maintain_type(ts, GAUGE_WORKERS, pool));
   RCC(rc, finish, _gr_gauges_maintain_type(ts, GAUGE_STREAMS, pool));
 
 finish:
