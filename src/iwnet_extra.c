@@ -183,8 +183,7 @@ void grh_req_data_dispose_all(struct iwn_http_req *req) {
       h->close(h);
     }
   }
-  struct grh_user_data *h = req->user_data;
-  while (h) {
+  for (struct grh_user_data *h = req->user_data; h; ) {
     struct grh_user_data *n = h->next;
     if (h->dispose) {
       h->dispose(h);

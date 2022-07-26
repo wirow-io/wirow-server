@@ -190,7 +190,7 @@ static iwrc _rct_event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL 
 
 static uint32_t _event_handler_id;
 
-void grh_ws_user_close(void) {
+void grh_ws_user_destroy(void) {
   wrc_remove_event_handler(_event_handler_id);
 }
 

@@ -40,6 +40,8 @@ static pthread_rwlock_t _rwl;
 
 #define UNLOCK() pthread_rwlock_unlock(&_rwl)
 
+static iwrc _init(void);
+
 // Mapping WS session id wsid (int) -> *wsdata
 static IWHMAP *_map_wsid_wsdata;
 
@@ -63,8 +65,6 @@ struct ws_event_listener_slot {
   void *data;
   struct ws_event_listener_slot *next;
 };
-
-static iwrc _init_try(void);
 
 static iwrc _ws_ticket_pull(struct ws_session *wss, const char *ticket) {
   JQL q = 0;
@@ -91,10 +91,6 @@ finish:
   return rc;
 }
 
-static void _hmap_val_free(void *key, void *val) {
-  free(val);
-}
-
 iwrc grh_ws_visit_clients(ws_clients_visitor visitor, void *data) {
   IWHMAP_ITER iter;
   RLOCK();
@@ -110,7 +106,7 @@ iwrc grh_ws_visit_clients(ws_clients_visitor visitor, void *data) {
 
 iwrc grh_ws_peek_client_by_wsid(int wsid, ws_clients_visitor visitor, void *data) {
   RLOCK();
-  struct ws_session *wss = iwhmap_get(_map_wsid_wsdata, (void*) (uintptr_t) wsid);
+  struct ws_session *wss = iwhmap_get_u32(_map_wsid_wsdata, wsid);
   if (wss) {
     visitor(wss, data);
   }
@@ -151,7 +147,7 @@ iwrc grh_ws_send_all(const char *data, ssize_t len) {
   for (int i = 0, l = iwulist_length(&idlist); i < l; ++i) {
     int wsid = *(int*) iwulist_at2(&idlist, i);
     RLOCK();
-    struct ws_session *wss = iwhmap_get(_map_wsid_wsdata, (void*) (intptr_t) wsid);
+    struct ws_session *wss = iwhmap_get_u32(_map_wsid_wsdata, wsid);
     if (wss) {
 #ifdef _DEBUG
       int64_t user_id = grh_auth_get_userid(wss->ws->req);
@@ -171,7 +167,7 @@ void grh_ws_send_by_wsid(int32_t wsid, const char *data, ssize_t len) {
     len = strlen(data);
   }
   RLOCK();
-  struct ws_session *wss = iwhmap_get(_map_wsid_wsdata, (void*) (intptr_t) wsid);
+  struct ws_session *wss = iwhmap_get_u32(_map_wsid_wsdata, wsid);
   if (wss) {
 #ifdef _DEBUG
     int64_t user_id = grh_auth_get_userid(wss->ws->req);
@@ -381,7 +377,7 @@ iwrc grh_ws_register_wsh_handler(
   if (!cmd || !name || !wsh) {
     return IW_ERROR_INVALID_ARGS;
   }
-  RCR(_init_try());
+  RCR(_init());
 
   if (g_env.log.verbose) {
     iwlog_info("WSH: %s %s", name, cmd);
@@ -582,7 +578,7 @@ static void _on_wss_dispose(struct grh_user_data *ud) {
   struct ws_session *wss = (void*) ud;
   if (wss) {
     WLOCK();
-    iwhmap_remove(_map_wsid_wsdata, (void*) (intptr_t) wss->wsid);
+    iwhmap_remove_u32(_map_wsid_wsdata, wss->wsid);
     UNLOCK();
   }
 }
@@ -603,7 +599,7 @@ static bool _initialized = false;
 
 void grh_ws_destroy(void) {
   if (!__sync_bool_compare_and_swap(&_initialized, true, false)) {
-    grh_ws_user_close();
+    grh_ws_user_destroy();
     iwhmap_destroy(_wsh_handlers);
     iwhmap_destroy(_map_wsid_wsdata);
     iwhmap_destroy(_map_uuid_sessions);
@@ -634,17 +630,9 @@ finish:
   return rc;
 }
 
-static iwrc _init_try(void) {
-  static bool initialized;
-  if (__sync_bool_compare_and_swap(&initialized, false, true)) {
-    return _init();
-  }
-  return 0;
-}
-
 static bool _on_wss_init(struct iwn_ws_sess *ws) {
   iwrc rc = 0;
-  RCC(rc, finish, _init_try());
+  RCC(rc, finish, _init());
 
   struct ws_session *wss = calloc(1, sizeof(*wss));
   RCB(finish, wss);
