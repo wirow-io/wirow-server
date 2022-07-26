@@ -207,7 +207,7 @@ iwrc grh_ws_send_all_room_participants(int64_t room_id, const char *data, ssize_
 
   RCC(rc, finish, iwulist_init(&wsidlist, 32, sizeof(uint32_t)));
 
-  RCC(rc, finish, jql_create(&q, "rooms", "/= :? | /*"));
+  RCC(rc, finish, jql_create(&q, "rooms", "/= :? | /events"));
   RCC(rc, finish, jql_set_i64(q, 0, 0, room_id));
   RCC(rc, finish, ejdb_list4(g_env.db, q, 1, 0, &qlist));
   if (!qlist->first) {
