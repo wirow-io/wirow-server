@@ -45,16 +45,16 @@ struct worker {
   pthread_mutex_t mtx;
 };
 
-IW_INLINE void _close_fd(struct worker *w, int idx) {
+IW_INLINE void _fd_close(struct worker *w, int idx) {
   if (w->fds[idx] > -1) {
     close(w->fds[idx]);
     w->fds[idx] = -1;
   }
 }
 
-static void _close_fds(struct worker *w) {
+static void _fds_close(struct worker *w) {
   for (int i = 0; i < sizeof(w->fds) / sizeof(w->fds[0]); ++i) {
-    _close_fd(w, i);
+    _fd_close(w, i);
   }
 }
 
@@ -97,7 +97,7 @@ finish:
 }
 
 static void _destroy(struct worker *w) {
-  _close_fds(w);
+  _fds_close(w);
   iwxstr_destroy(w->payload_read_buf);
   iwxstr_destroy(w->payload_write_buf);
   iwxstr_destroy(w->msg_read_buf);
@@ -282,7 +282,7 @@ static void _on_fork_parent(const struct iwn_proc_ctx *ctx, pid_t pid) {
   struct worker *w = ctx->user_data;
   w->pid = pid;
 
-  _close_fd(w, FD_MSG_IN_C);
+  _fd_close(w, FD_MSG_IN_C);
   RCC(rc, finish, iwn_poller_add(&(struct iwn_poller_task) {
     .poller = g_env.poller,
     .fd = w->fds[FD_MSG_IN],
@@ -294,7 +294,7 @@ static void _on_fork_parent(const struct iwn_proc_ctx *ctx, pid_t pid) {
   }));
   iwn_proc_ref(pid);
 
-  _close_fd(w, FD_PAYLOAD_IN_C);
+  _fd_close(w, FD_PAYLOAD_IN_C);
   RCC(rc, finish, iwn_poller_add(&(struct iwn_poller_task) {
     .poller = g_env.poller,
     .fd = w->fds[FD_PAYLOAD_IN],
@@ -306,7 +306,7 @@ static void _on_fork_parent(const struct iwn_proc_ctx *ctx, pid_t pid) {
   }));
   iwn_proc_ref(pid);
 
-  _close_fd(w, FD_MSG_OUT_C);
+  _fd_close(w, FD_MSG_OUT_C);
   RCC(rc, finish, iwn_poller_add(&(struct iwn_poller_task) {
     .poller = g_env.poller,
     .fd = w->fds[FD_MSG_OUT],
@@ -317,7 +317,7 @@ static void _on_fork_parent(const struct iwn_proc_ctx *ctx, pid_t pid) {
   }));
   iwn_proc_ref(pid);
 
-  _close_fd(w, FD_PAYLOAD_OUT_C);
+  _fd_close(w, FD_PAYLOAD_OUT_C);
   RCC(rc, finish, iwn_poller_add(&(struct iwn_poller_task) {
     .poller = g_env.poller,
     .fd = w->fds[FD_PAYLOAD_OUT],
@@ -342,7 +342,7 @@ static void _on_fork_child(const struct iwn_proc_ctx *ctx) {
   while ((dup2(w->fds[FD_MSG_IN_C], 4) == -1) && (errno == EINTR));
   while ((dup2(w->fds[FD_PAYLOAD_OUT_C], 5) == -1) && (errno == EINTR));
   while ((dup2(w->fds[FD_PAYLOAD_IN_C], 6) == -1) && (errno == EINTR));
-  _close_fds(w);
+  _fds_close(w);
 }
 
 static void _on_fork(const struct iwn_proc_ctx *ctx, pid_t pid) {

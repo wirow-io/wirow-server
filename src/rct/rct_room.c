@@ -1004,13 +1004,16 @@ static iwrc _room_create(struct ws_message_ctx *ctx, void *op) {
 
   rct_router_t *router = rct_resource_by_id_locked(router_id, RCT_TYPE_ROUTER, __func__);
   if (router) {
-    RCC(rc, finish, jbn_clone(router->rtp_capabilities, &caps, ctx->pool));
-    caps->key = "rtpCapabilities";
-    caps->klidx = (int) strlen(caps->key);
+    rc = jbn_clone(router->rtp_capabilities, &caps, ctx->pool);
+    if (!rc) {
+      caps->key = "rtpCapabilities";
+      caps->klidx = (int) strlen(caps->key);
+    }
   } else {
     rc = IW_ERROR_FAIL;
   }
   rct_resource_unlock(router, __func__);
+  RCGO(rc, finish);
 
   if (spec.flags & RCT_ROOM_ALO) {
     RCC(rc, finish, _rct_room_alo_attach(room_id));
