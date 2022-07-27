@@ -60,12 +60,6 @@ struct wsh_handler {
   struct wsh_handler *next;
 };
 
-struct ws_event_listener_slot {
-  ws_event_listener_fn listener;
-  void *data;
-  struct ws_event_listener_slot *next;
-};
-
 static iwrc _ws_ticket_pull(struct ws_session *wss, const char *ticket) {
   JQL q = 0;
   EJDB_LIST list = 0;
@@ -323,41 +317,6 @@ iwrc grh_ws_send_confirm(struct ws_message_ctx *ctx, const char *error) {
   return grh_ws_send_confirm2(ctx, 0, error);
 }
 
-iwrc grh_wss_add_event_listener(struct ws_session *wss, ws_event_listener_fn listener, void *data) {
-  iwrc rc = 0;
-  pthread_mutex_lock(&wss->ws->req->http->user_mtx);
-  struct ws_event_listener_slot *s = wss->listeners;
-  if (s) {
-    if (s->listener == listener) {
-      goto finish;
-    }
-    while (s->next) {
-      s = s->next;
-      if (s->listener == listener) {
-        goto finish;
-      }
-    }
-    struct ws_event_listener_slot *n = malloc(sizeof(*n));
-    RCA(n, finish);
-    *n = (struct ws_event_listener_slot) {
-      .data = data,
-      .listener = listener
-    };
-    s->next = n;
-  } else {
-    struct ws_event_listener_slot *n = malloc(sizeof(*n));
-    RCA(n, finish);
-    *n = (struct ws_event_listener_slot) {
-      .data = data,
-      .listener = listener
-    };
-    wss->listeners = n;
-  }
-finish:
-  pthread_mutex_unlock(&wss->ws->req->http->user_mtx);
-  return rc;
-}
-
 struct grh_user_data* grh_wss_get_data_of_type(struct ws_session *wss, int data_type) {
   return grh_req_data_find(wss->ws->req->http, data_type);
 }
@@ -567,10 +526,14 @@ finish:
 
 static void _on_wss_close(struct grh_user_data *ud) {
   struct ws_session *wss = (void*) ud;
-  for (struct ws_event_listener_slot *s = wss->listeners; s; s = s->next) {
-    if (s->listener) {
-      s->listener(WS_EVENT_CLOSE, wss, s->data);
-    }
+
+  pthread_mutex_lock(&wss->ws->req->http->user_mtx);
+  void (*fn)(struct ws_session*, void*) = wss->on_close.fn;
+  void *fn_data = wss->on_close.data;
+  pthread_mutex_unlock(&wss->ws->req->http->user_mtx);
+
+  if (fn) {
+    fn(wss, fn_data);
   }
 }
 
@@ -587,10 +550,6 @@ static void _on_wsid_wsdata_free(void *key, void *val) {
   struct ws_session *wss = val;
   if (val) {
     iwhmap_remove(_map_uuid_sessions, wss->uuid);
-    for (struct ws_event_listener_slot *s = wss->listeners, *n = 0; s; s = n) {
-      n = s->next;
-      free(s);
-    }
     free(wss);
   }
 }

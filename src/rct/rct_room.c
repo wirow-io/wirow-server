@@ -93,7 +93,7 @@ struct send_task {
   const char *tag;
 };
 
-static void _wss_closed_listener(int event, struct ws_session *wss, void *data);
+static void _wss_closed_listener(struct ws_session *wss, void *data);
 
 static void _send_to_task(void *arg) {
   struct send_task *t = arg;
@@ -919,8 +919,13 @@ static iwrc _room_create(struct ws_message_ctx *ctx, void *op) {
       ]
      }
    */
+  iwrc rc = 0;
   struct ws_session *wss = ctx->wss;
-  iwrc rc = RCR(grh_wss_add_event_listener(wss, _wss_closed_listener, 0));
+
+  pthread_mutex_lock(&wss->ws->req->http->user_mtx);
+  wss->on_close.fn = _wss_closed_listener;
+  wss->on_close.data = 0;
+  pthread_mutex_unlock(&wss->ws->req->http->user_mtx);
 
   JBL_NODE room_node, member_node, caps, n;
   const char *uuid = 0, *error = 0;
@@ -3145,12 +3150,10 @@ static iwrc _rct_event_handler(wrc_event_e evt, wrc_resource_t resource_id, JBL 
   return 0;
 }
 
-static void _wss_closed_listener(int event, struct ws_session *wss, void *data) {
-  if (event == WS_EVENT_CLOSE) {
-    iwrc rc = _room_leave_wss(wss);
-    if (rc) {
-      iwlog_ecode_warn3(rc);
-    }
+static void _wss_closed_listener(struct ws_session *wss, void *data) {
+  iwrc rc = _room_leave_wss(wss);
+  if (rc) {
+    iwlog_ecode_warn3(rc);
   }
 }
 

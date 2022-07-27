@@ -36,16 +36,14 @@
   return rc
 
 struct ws_session;
-struct ws_event_listener_slot;
-
-#define WS_EVENT_CLOSE 0x01U
-
-typedef void (*ws_event_listener_fn)(int event, struct ws_session *wss, void *data);
 
 struct ws_session {
   GRH_USER_DATA_FIELDS;
   struct iwn_ws_sess *ws;
-  struct ws_event_listener_slot *listeners;
+  struct {
+    void (*fn)(struct ws_session *wss, void *data);
+    void *data;
+  } on_close;
   int  wsid;    ///< WS id
   char uuid[IW_UUID_STR_LEN + 1];
   bool initialized;
@@ -62,8 +60,6 @@ struct ws_message_ctx {
 typedef bool (*ws_clients_visitor)(struct ws_session *wss, void *data);
 
 typedef iwrc (*wsh_handler_fn)(struct ws_message_ctx *ctx, void *data);
-
-iwrc grh_wss_add_event_listener(struct ws_session *wss, ws_event_listener_fn listener, void *data);
 
 struct grh_user_data* grh_wss_get_data_of_type(struct ws_session *wss, int data_type);
 
