@@ -222,6 +222,12 @@ again:
     goto finish;
   }
 
+  if (iwxstr_size(xstr) + len > READBUF_SIZE_MAX) {
+    iwlog_error("WRC[%d] invalid data from message channel: data length exceeds the max buffer size: %d",
+                w->pid, READBUF_SIZE_MAX);
+    return -1;
+  }
+
   RCC(rc, finish, iwxstr_cat(xstr, buf, len));
 
 again2:
