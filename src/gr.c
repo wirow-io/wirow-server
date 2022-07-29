@@ -798,10 +798,10 @@ static void _configure(int argc, char *argv[]) {
     g_env.start_flags |= GRSTART_FLAG_USE_AUTO_IP;
   }
   if (g_env.rtc.start_port < 1) {
-    g_env.rtc.start_port = 10000;
+    g_env.rtc.start_port = 49152;
   }
   if (g_env.rtc.end_port < 1) {
-    g_env.rtc.end_port = 59999;
+    g_env.rtc.end_port = 65535;
   }
   if (g_env.rtc.start_port > g_env.rtc.end_port) {
     int tmp = g_env.rtc.start_port;

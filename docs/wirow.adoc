@@ -36,7 +36,7 @@ CAUTION: The CPU can be high if you are using the video recording function in ro
 
 * The firewall allows inbound TCP/UDP connections to the following ports
 ** HTTP `80`, HTTPS `443`
-** WebRTC RTP ports `10000..59999`
+** WebRTC RTP ports `49152..65535`
 
 A `wirow` executable must be run by a non-root user and be allowed to listen on `80` and `443` network ports.
 To do this, run the following `setcap` command on Linux:
@@ -106,7 +106,7 @@ one of the strongest features of this product -- the ease of installation and se
 
 [WARNING]
 ====
-Keep in mind -- Wirow WebRTC RTP ports (usually in range `10000..59999`)
+Keep in mind -- Wirow WebRTC RTP ports (usually in range `49152..65535`)
 must be accessible from external network even when server is behind an HTTP proxy.
 So it is wrong to bind the server to `localhost` behind the proxy.
 ====
@@ -287,7 +287,7 @@ session_cookies_max_age = 2592000
 [rtc]
 
 ;; WebRTC RTP ports range
-ports = 10000..59999
+ports = 49152..65535
 
 ----
 
