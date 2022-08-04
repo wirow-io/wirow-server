@@ -138,8 +138,6 @@ struct gr_env {
   } private_overlays;
   IWHMAP *public_overlays; // Resources overlays
   struct {
-    int max_workers;      /**< Max number of active workers */
-    int idle_timeout_sec; /**< Timeout in seconds when idle worker should shut-down */
     const char  *program;
     const char  *log_level;
     const char **log_tags;

@@ -474,18 +474,6 @@ static int _ini_handler(
       }
       RCC(rc, error, iwxstr_cat2(g_env.impl.xstr, value));
       RCC(rc, error, iwxstr_cat2(g_env.impl.xstr, "\n"));
-    } else if (!strcmp(name, "idle_timeout_sec")) {
-      int64_t llv = iwatoi(value);
-      if (llv > 0) {
-        g_env.worker.idle_timeout_sec = llv;
-      }
-    } else if (!strcmp(name, "max_workers")) {
-      if (strcmp(value, "auto") != 0) {
-        int64_t llv = iwatoi(value);
-        if (llv > 0) {
-          g_env.worker.max_workers = llv;
-        }
-      }
     } else {
       iwlog_warn("Config: Unknown [%s] section property %s", section, name);
     }
@@ -820,9 +808,6 @@ static void _configure(int argc, char *argv[]) {
   if (g_env.room.max_history_rooms < 1 || g_env.room.max_history_rooms > 1024) {
     g_env.room.max_history_rooms = 255;
   }
-  if (g_env.worker.idle_timeout_sec < 1) {
-    g_env.worker.idle_timeout_sec = 300; // 5 min
-  }
   if (g_env.ws.idle_timeout_sec < 1) {
     g_env.ws.idle_timeout_sec = 60; // 1 min
   }
@@ -864,14 +849,6 @@ static void _configure(int argc, char *argv[]) {
   if (g_env.log.verbose) {
     iwlog_info("worker:router_options=\n%s", g_env.router_optons_json ?: "");
   }
-  if (g_env.worker.max_workers < 1) {
-    int cc = iwp_num_cpu_cores();
-    if (cc > 3) {
-      g_env.worker.max_workers = 2;
-    } else {
-      g_env.worker.max_workers = 1;
-    }
-  }
   if (!g_env.acme.endpoint) {
     g_env.acme.endpoint = "https://acme-v02.api.letsencrypt.org/directory";
   }
@@ -892,7 +869,6 @@ static void _configure(int argc, char *argv[]) {
   if (g_env.uploads.max_size < 1) {
     g_env.uploads.max_size = 50 * 1024 * 1024;
   }
-  iwlog_info("Number of workers: %d", g_env.worker.max_workers);
 
   if (g_env.start_flags & GRSTART_FLAG_USE_AUTO_IP) {
     char *ip = network_detect_best_listen_ip_address();
