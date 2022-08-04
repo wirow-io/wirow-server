@@ -76,6 +76,7 @@ list(APPEND PROJECT_INCLUDE_DIRS ${PROJECT_GENERATED_DIR}
 add_definitions(-D_GNU_SOURCE)
 add_definitions(-D_LARGEFILE_SOURCE)
 add_definitions(-D_FILE_OFFSET_BITS=64)
+configure_file(gr_config.h.in ${CMAKE_BINARY_DIR}/include/gr_config.h)
 
 file(GLOB ROOT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 list(APPEND ALL_SRC ${ROOT_SRC})
