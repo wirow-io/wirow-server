@@ -566,7 +566,7 @@ static iwrc _worker_send_msg(struct msg *m) {
     pthread_mutex_unlock(&_mtx);
   }
 
-  rc = wrc_adapter_send_data(mm->worker_id, iwxstr_ptr(xstr), iwxstr_size(xstr));
+  rc = wrc_adapter_send_msg(mm->worker_id, iwxstr_ptr(xstr), iwxstr_size(xstr));
 
   if (rc && mm->handler) {
     pthread_mutex_lock(&_mtx);
