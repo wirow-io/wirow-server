@@ -15,34 +15,10 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-// Sentry need to be imported and started very first to handle as much errors as it can
-import Sentry from '../sentry/sentry';
-Sentry?.onLoad(() => console.log('Crash reporting is loaded'));
+// !!! WARNING: Should not be imported directly
 
-import 'focus-visible';
-import '../translate';
-import Root from './Admin.svelte';
-import './translations';
+// By default import this mock file without module imports
+// If need to use sentry build with env ENABLE_SENTRY=1 and ./enabled will be imported instead of ./disabled
 
-import {
-  Chart,
-  LineController,
-  LineElement,
-  PointElement,
-  Title,
-  Legend,
-  Tooltip,
-  LinearScale,
-  TimeScale,
-  Filler,
-} from 'chart.js';
-
-Chart.register(LineController, LineElement, PointElement, Title, Legend, Tooltip, LinearScale, TimeScale, Filler);
-
-import 'chartjs-adapter-date-fns';
-
-const root = new Root({
-  target: document.body,
-});
-
-export default root;
+import type Sentry from './sentry.enabled';
+export default undefined as (undefined | typeof Sentry);

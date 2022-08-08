@@ -15,8 +15,17 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-// By default import this mock file without module imports
-// If need to use sentry build with env SENTRY_FRONT_DSN and instead of ./sentry ./sentry.internal will be imported
+// !!! WARNING: Should not be imported directly
 
-import type Sentry from './sentry.internal';
-export default undefined as (undefined | typeof Sentry);
+import * as Sentry from "@sentry/browser";
+import { Integrations } from "@sentry/tracing";
+
+Sentry.init({
+  dsn: 'https://a@b/1', // DSN will be replaced in backend while tunneling
+  integrations: [new Integrations.BrowserTracing()],
+  attachStacktrace: true,
+  autoSessionTracking: false,
+  tunnel: '/sentry/envelope',
+});
+
+export default Sentry;
