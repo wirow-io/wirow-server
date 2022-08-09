@@ -466,7 +466,7 @@ finish:
   return rc;
 }
 
-iwrc wrc_adapter_send_msg(wrc_resource_t wid, void *buf, size_t len) {
+iwrc wrc_adapter_send_msg(wrc_resource_t wid, const void *buf, size_t len) {
   struct worker *w = rct_resource_by_id_unlocked(wid, RCT_TYPE_WORKER_ADAPTER, __func__);
   if (!w) {
     return IW_ERROR_INVALID_STATE;
@@ -484,7 +484,7 @@ iwrc wrc_adapter_send_msg(wrc_resource_t wid, void *buf, size_t len) {
   return rc;
 }
 
-iwrc wrc_adapter_send_payload(wrc_resource_t wid, void *buf, size_t len) {
+iwrc wrc_adapter_send_payload(wrc_resource_t wid, const void *buf, size_t len) {
   struct worker *w = rct_resource_by_id_unlocked(wid, RCT_TYPE_WORKER_ADAPTER, __func__);
   if (!w) {
     return IW_ERROR_INVALID_STATE;

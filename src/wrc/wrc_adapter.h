@@ -13,9 +13,9 @@ iwrc wrc_adapter_create(
   const struct wrc_adapter_spec *spec,
   wrc_resource_t                *out_wrc_id);
 
-iwrc wrc_adapter_send_msg(wrc_resource_t wid, void *buf, size_t len);
+iwrc wrc_adapter_send_msg(wrc_resource_t wid, const void *buf, size_t len);
 
-iwrc wrc_adapter_send_payload(wrc_resource_t wid, void *buf, size_t len);
+iwrc wrc_adapter_send_payload(wrc_resource_t wid, const void *buf, size_t len);
 
 void wrc_adapter_close(wrc_resource_t wid);
 
