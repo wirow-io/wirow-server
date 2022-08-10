@@ -15,6 +15,10 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
+#include "lic_env.h"
+
+#if ENABLE_MEDIASOUP == 1
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -38,3 +42,5 @@ int mediasoup_worker_run(
 int exec_worker(int argc, char **argv) {
   return mediasoup_worker_run(argc, argv, "3.9.9", 3, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0);
 }
+
+#endif

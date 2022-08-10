@@ -1274,20 +1274,27 @@ finish:
   return rc;
 }
 
-int exec_worker(int argc, char **argv);
-int exec_ffmpeg(int argc, char **argv);
-
 bool gr_exec_embedded(int argc, char *argv[], int *out_rv) {
   if (argc > 1) {
+#if ENABLE_MEDIASOUP == 1
+    int exec_worker(int argc, char **argv);
+
     if (strcmp("w", argv[1]) == 0) {
       argv[1] = argv[0];
       *out_rv = exec_worker(argc - 1, &argv[1]);
       return true;
-    } else if (strcmp("f", argv[1]) == 0) {
+    }
+#endif
+
+#if ENABLE_RECORDING == 1
+    int exec_ffmpeg(int argc, char **argv);
+
+    if (strcmp("f", argv[1]) == 0) {
       argv[1] = argv[0];
       *out_rv = exec_ffmpeg(argc - 1, &argv[1]);
       return true;
     }
+#endif
   }
   return false;
 }

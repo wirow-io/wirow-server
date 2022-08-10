@@ -15,13 +15,18 @@ find_package(Threads REQUIRED CMAKE_THREAD_PREFER_PTHREAD)
 
 include(AddEJDB2)
 include(AddCURL)
-include(AddMediasoup)
 include(AddLibDeflate)
+
+if(ENABLE_MEDIASOUP)
+  include(AddMediasoup)
+endif()
+
 if(ENABLE_RECORDING)
   include(AddLibVpx)
   include(AddLibOpus)
   include(AddFFmpeg)
 endif()
+
 if(SENTRY_DSN)
   include(AddSentry)
 endif()
@@ -36,7 +41,11 @@ set(MODULES
     acme
     upd)
 
-set(PROJECT_LLIBRARIES mediasoup_s curl_s ejdb2_s iwnet_s iowow_s)
+if(ENABLE_MEDIASOUP)
+  list(APPEND PROJECT_LLIBRARIES mediasoup_s)
+endif()
+
+list(APPEND PROJECT_LLIBRARIES curl_s ejdb2_s iwnet_s iowow_s)
 
 if(ENABLE_RECORDING)
   list(APPEND MODULES rec)

@@ -423,7 +423,14 @@ iwrc wrc_adapter_create(
   RCB(finish, w->payload_write_buf = iwxstr_new());
 
   if (ps.path == g_env.program_file) {
+#if ENABLE_MEDIASOUP == 0
+    rc = IW_ERROR_FAIL;
+    iwlog_error("Requested to run wirow binary as mediasoup worker"
+                " but mediasoup code is not integrated into wirow binary since `-DENABLE_MEDEASOUP=0`");
+    goto finish;
+#else
     RCC(rc, finish, iwxstr_cat2(xargs, "w"));
+#endif
   }
   const char **logtags = g_env.worker.log_tags;
   for (int i = 0; logtags && logtags[i]; ++i) {
