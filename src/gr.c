@@ -1223,9 +1223,17 @@ iwrc gr_init_noweb(int argc, char *argv[]) {
     _admin_pw = 0;
   }
 
-  RCC(rc, finish, iwn_poller_create(8, 4, &g_env.poller));
+  RCC(rc, finish, iwn_poller_create_by_spec(&(struct iwn_poller_spec) {
+    .overflow_threads_factor = 1,
+    .warn_on_overflow_thread_spawn = true,
+    .queue_limit = 10000
+  }, &g_env.poller));
   RCC(rc, finish, iwstw_start("grstw", 10000, false, &g_env.stw));
-  RCC(rc, finish, iwtp_start("grtp-", 8, 10000, &g_env.tp));
+  RCC(rc, finish, iwtp_start_spec(&(struct iwtp_spec) {
+    .num_threads = 8,
+    .thread_name_prefix = "grtp-",
+    .queue_limit = 10000
+  }, &g_env.tp));
   RCC(rc, finish, wrc_init());
   RCC(rc, finish, rct_init());
   RCC(rc, finish, gr_watcher_init());
