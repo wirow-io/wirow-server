@@ -1230,7 +1230,7 @@ iwrc gr_init_noweb(int argc, char *argv[]) {
   }, &g_env.poller));
   RCC(rc, finish, iwstw_start("grstw", 10000, false, &g_env.stw));
   RCC(rc, finish, iwtp_start_by_spec(&(struct iwtp_spec) {
-    .num_threads = 8,
+    .num_threads = 6,
     .thread_name_prefix = "grtp-",
     .queue_limit = 10000
   }, &g_env.tp));
