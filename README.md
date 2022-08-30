@@ -10,7 +10,7 @@ A full featured self-hosted video web-conferencing platform shipped as a single 
 - Unlimited meeting rooms and webinars.
 - Integrated whiteboard.
 - Video calls recording.
-- Low memory/CPU consumption due to fast core engine written in C.
+- Low memory/CPU consumption due to lighting fast core engine written in C.
 
 ## Licensing
 
@@ -43,9 +43,9 @@ Fill an [Issue](https://github.com/wirow-io/wirow-server/issues) If you believe 
 
 ## Software used by Wirow
 
-- [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
-- [EJDB2 - Embeddable JSON Database engine](https://github.com/Softmotions/ejdb)
 - [IWNET - Asynchronous HTTP Library](https://github.com/Softmotions/iwnet)
+- [EJDB2 - Embeddable JSON Database engine](https://github.com/Softmotions/ejdb)
+- [Mediasoup - C++ WebRTC SFU router](https://github.com/versatica/mediasoup)
 - [Excalidraw - A Whiteboard Web UI](https://github.com/excalidraw/excalidraw)
 - [FFmpeg](https://ffmpeg.org)
 - [Sentry error reporting](https://sentry.io)
