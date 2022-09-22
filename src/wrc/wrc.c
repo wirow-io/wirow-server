@@ -500,10 +500,13 @@ static void _on_payload(wrc_resource_t wid, const char *buf, size_t len, void *u
 }
 
 static void _msg_init(struct msg *m) {
+  pthread_condattr_t cattr;
   static atomic_uint seq = 0;
   iwp_current_time_ms(&m->ts, true);
   pthread_mutex_init(&m->cond_mtx, 0);
-  pthread_cond_init(&m->cond_completed, 0);
+  pthread_condattr_setclock(&cattr, CLOCK_MONOTONIC);
+  pthread_cond_init(&m->cond_completed, &cattr);
+  pthread_condattr_destroy(&cattr);
   do {
     m->id = ++seq;
   } while (m->id == 0);
