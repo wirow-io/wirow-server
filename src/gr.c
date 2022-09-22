@@ -660,6 +660,7 @@ static void _configure(int argc, char *argv[]) {
 
   g_env.impl.pool = pool;
   g_env.program = argc ? argv[0] : "";
+  g_env.worker.command_timeout_sec = -1;
 
   RCC(rc, exit, iwp_exec_path(path, sizeof(path)));
   RCA(g_env.program_file = iwpool_strdup2(pool, path), exit);
