@@ -74,7 +74,9 @@ const replaceConfigOptions = {
 };
 
 const aliasSentryOptions = {
-  entries: enableSentry ? [{ find: './sentry', replacement: './sentry.internal' }] : [],
+  entries: enableSentry ? [
+    { find: './sentry.disabled', replacement: './sentry.enabled' },
+  ] : [],
 };
 
 function onwarn(warning, warn) {
@@ -106,10 +108,10 @@ async function configAdmin() {
             autoprefixer(),
             ...(isProduction
               ? [
-                  cssnano({
-                    preset: 'default',
-                  }),
-                ]
+                cssnano({
+                  preset: 'default',
+                }),
+              ]
               : []),
           ],
         },
@@ -187,10 +189,10 @@ async function configPublic() {
             autoprefixer(),
             ...(isProduction
               ? [
-                  cssnano({
-                    preset: 'default',
-                  }),
-                ]
+                cssnano({
+                  preset: 'default',
+                }),
+              ]
               : []),
           ],
         },
@@ -267,10 +269,10 @@ async function configMain() {
             autoprefixer(),
             ...(isProduction
               ? [
-                  cssnano({
-                    preset: 'default',
-                  }),
-                ]
+                cssnano({
+                  preset: 'default',
+                }),
+              ]
               : []),
           ],
         },

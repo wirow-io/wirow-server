@@ -16,7 +16,7 @@
  */
 
 // Sentry need to be imported and started very first to handle as much errors as it can
-import Sentry from './sentry';
+import Sentry from './sentry/sentry';
 Sentry?.onLoad(() => console.log('Crash reporting is loaded'));
 
 import { Config } from './config';
