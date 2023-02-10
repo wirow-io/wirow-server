@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   import Bowser from 'bowser';
-  import * as semver from 'semver';
+  import { satisfies } from 'compare-versions';
   import { _ } from 'svelte-intl';
   import { Config } from '../config';
   import Box from '../kit/Box.svelte';
@@ -15,7 +15,6 @@
   const geckoVersion = Config.minGeckoVersion;
 
   const namecmp = (a: string | undefined, b: string) => a && a.toLowerCase() === b.toLowerCase();
-  const vercmp = (ver: string | undefined, check: string) => ver && semver.satisfies(ver, check);
 
   export function compatibilityMatcher(): boolean {
     if (status !== undefined) {
@@ -29,18 +28,16 @@
     const result = Bowser.getParser(window.navigator.userAgent).parse().getResult();
     const { os, engine, browser } = result;
 
-    // Bowser can sometimes give version like "14.0" but semver needs "14.0.0"
-    engine.version = semver.valid(semver.coerce(browser.version)) || undefined;
-    browser.version = semver.valid(semver.coerce(browser.version)) || undefined;
-
     // TODO: check os versions
     status = !(
       namecmp(os.name, OS_MAP.iOS) ||
       namecmp(os.name, OS_MAP.Android) ||
       namecmp(os.name, OS_MAP.ChromeOS) ||
       namecmp(engine.name, ENGINE_MAP.Blink) ||
-      (namecmp(engine.name, ENGINE_MAP.WebKit) && vercmp(browser.version, `>=${webKitVersion}`)) ||
-      (namecmp(engine.name, ENGINE_MAP.Gecko) && vercmp(browser.version, `>=${geckoVersion}`))
+      (namecmp(engine.name, ENGINE_MAP.WebKit) &&
+        browser.version &&
+        satisfies(browser.version, `>=${webKitVersion}`)) ||
+      (namecmp(engine.name, ENGINE_MAP.Gecko) && browser.version && satisfies(browser.version, `>=${geckoVersion}`))
     );
 
     fail = status && result;

@@ -68,8 +68,8 @@ const replaceConfigOptions = {
   MIN_BLINK_VERSION: minBlinkVersion,
   MIN_GECKO_VERSION: minGeckoVersion,
   MIN_WEBKIT_VERSION: minWebKitVersion,
-  ENABLE_WHITEBOARD: enableWhiteboard && 1 || 0,
-  ENABLE_RECORDING: enableRecording && 1 || 0,
+  ENABLE_WHITEBOARD: (enableWhiteboard && 1) || 0,
+  ENABLE_RECORDING: (enableRecording && 1) || 0,
   LIMIT_REGISTERED_USERS: limitRegisteredUsers || 0,
 };
 
@@ -78,12 +78,11 @@ const aliasSentryOptions = {
 };
 
 function onwarn(warning, warn) {
-  if (warning.code === 'CIRCULAR_DEPENDENCY' && ['semver'].some((d) => warning.importer.includes(d))) {
-    return;
-  } else if (warning.code === 'THIS_IS_UNDEFINED' && warning.loc.file.indexOf('/detect-browser') !== -1) {
+  if (warning.code === 'THIS_IS_UNDEFINED') {
     return;
   }
   warn(warning);
+  console.log('!!!! ', warning);
 }
 
 async function configAdmin() {

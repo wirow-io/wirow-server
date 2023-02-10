@@ -258,6 +258,7 @@ static iwrc _licence_check_send(CURL *curl, const char *payload, IWXSTR *out) {
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READFUNCTION, xcurl_read_cursor));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READDATA, &dcur));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_INFILESIZE, dcur.end - dcur.rp));
+  XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, dcur.end - dcur.rp));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, LICENSE_SSL_VERIFY));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, LICENSE_SSL_VERIFY));
 
@@ -325,6 +326,7 @@ static iwrc _license_check_confirm(CURL *curl, const char *resp, long *out_next_
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READFUNCTION, xcurl_read_cursor));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READDATA, &dcur));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_INFILESIZE, dcur.end - dcur.rp));
+  XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, dcur.end - dcur.rp));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, LICENSE_SSL_VERIFY));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, LICENSE_SSL_VERIFY));
 

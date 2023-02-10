@@ -26,8 +26,6 @@
   <Router {routes} />
 </template>
 
-<style lang="scss">
-  :global {
-    @import '../css/global';
-  }
+<style lang="scss" global>
+  @import '../css/global';
 </style>

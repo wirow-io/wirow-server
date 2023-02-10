@@ -61,7 +61,7 @@
     display: block;
     content: '';
     width: 100%;
-    padding-top: (3 / 4) * 100%;
+    padding-top: calc(3 / 4) * 100%;
   }
   &.active-speaker {
     outline: 1px solid $color_palette7;

@@ -106,9 +106,11 @@ static iwrc _curl_perform(struct acme *acme, const char *url, struct xcurlreq *d
     if (data->payload) {
       dcur.rp = data->payload;
       dcur.end = dcur.rp + data->payload_len;
+      xcurlreq_hdr_add(data, "Expect", IW_LLEN("Expect"), "", 0);
       XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READFUNCTION, xcurl_read_cursor));
       XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READDATA, &dcur));
       XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_INFILESIZE, dcur.end - dcur.rp));
+      XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, dcur.end - dcur.rp));
       XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_POST, 1));
     }
     if (data->headers) {
@@ -132,7 +134,7 @@ static iwrc _curl_perform(struct acme *acme, const char *url, struct xcurlreq *d
       iwlog_warn("ACME | HTTP request failed: %s %s%s",
                  url,
                  curl_easy_strerror(cc),
-                 retry < 2 ? " retrying in 5 sec" : "");
+                 retry < 2 ? " retrying in 3 sec" : "");
       if (retry < 2) {
         sleep(RETRY_PAUSE);
         continue;

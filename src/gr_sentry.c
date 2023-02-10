@@ -286,9 +286,12 @@ static int _handler_envelope(struct iwn_wf_req *req, void *d) {
     .rp  = iwxstr_ptr(data_out),
     .end = iwxstr_ptr(data_out) + iwxstr_size(data_out),
   };
+
+  xcurlreq_hdr_add(data, "Expect", IW_LLEN("Expect"), "", 0);
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READFUNCTION, xcurl_read_cursor));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_READDATA, &dcur));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_INFILESIZE, dcur.end - dcur.rp));
+  XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, dcur.end - dcur.rp));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, LICENSE_SSL_VERIFY));
   XCC(cc, finish, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, LICENSE_SSL_VERIFY));
 

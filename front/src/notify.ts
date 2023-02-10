@@ -20,7 +20,7 @@ import { openModal } from './kit/Modal.svelte';
 // @ts-ignore
 import { sendNotification as _sendNotification } from './kit/Notifications.svelte';
 // @ts-ignore
-import FatalModal from './ui/FatalModal.svelte';
+import FatalModal from './kit/FatalModal.svelte';
 
 export const recommendedTimeout = 4000;
 

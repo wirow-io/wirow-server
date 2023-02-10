@@ -30,7 +30,6 @@
   export let componentStyle = '';
   export let onLeft = false;
 
-  const hasDefaultSlot = arguments[1].$$slots?.default != null;
   const dispatch = createEventDispatcher();
 
   let hasSide = false;
@@ -38,7 +37,7 @@
   let input: any;
   const validate = getValidate(validator == null);
 
-  $: hasSide = icon != null || hasDefaultSlot || flavor != null;
+  $: hasSide = icon != null;
   $: hasErrorBorder = error != null || flavor === 'error';
 
   onMount(() => {

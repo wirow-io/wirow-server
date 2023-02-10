@@ -3,11 +3,8 @@
   /// Fatal modal component.
   /// Used to display unescapable errors
   ///
-
-  import Box from '../kit/Box.svelte';
-
+  import Box from './Box.svelte';
   export let title: string;
-
   export let content: string | undefined;
 </script>
 

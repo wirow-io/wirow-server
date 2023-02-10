@@ -28,8 +28,6 @@
   </div>
 </template>
 
-<style lang="scss">
-  :global {
-    @import '../../css/admin';
-  }
+<style lang="scss" global>
+  @import '../../css/admin';
 </style>

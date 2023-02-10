@@ -177,7 +177,7 @@
     const body = document.body;
     body.appendChild(child);
     return () => {
-      document.removeEventListener('keyup', onKey);
+      document.removeEventListener('keydown', onKey);
       body.removeChild(child);
     };
   });

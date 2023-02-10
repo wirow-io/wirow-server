@@ -46,8 +46,7 @@
   let componentClassComplete: string | undefined = undefined;
   let button: HTMLElement;
 
-  const props$$ = arguments[1];
-  const withText = props$$.$$slots?.default != null;
+  const withText = $$slots?.default != null;
   const dispatch = createEventDispatcher();
   const iconSize = ifClassThen(componentClass, ['x', 'xx'], [36, 48], 24);
 
